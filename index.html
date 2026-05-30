@@ -826,6 +826,58 @@ function drawCapacityChart(tmms,cols){
 }
 
 
+function parseTMM3ZoneXL(buf){
+  var wb=XLSX.read(buf,{type:'array'});
+  var ws=wb.Sheets['Data']||wb.Sheets[wb.SheetNames[0]];
+  var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null});
+  var lastRow={};
+  var validZones=['T3R1','T3C1','T3C2','T3C3'];
+  for(var i=1;i<rows.length;i++){
+    var r=rows[i],owner=r[0],stype=r[1],vol=r[2];
+    if(!stype||!vol||typeof vol!=='number'||!owner)continue;
+    if(validZones.indexOf(stype)<0)continue;
+    lastRow[owner+'|'+stype]=vol;
+  }
+  // Get zone distribution ratio per owner from stock type file
+  var ownerZoneDist={};
+  Object.entries(lastRow).forEach(function(e){
+    var parts=e[0].split('|'),owner=parts[0],stype=parts[1],vol=e[1];
+    if(!ownerZoneDist[owner])ownerZoneDist[owner]={};
+    ownerZoneDist[owner][stype]=(ownerZoneDist[owner][stype]||0)+vol;
+  });
+  // Use TMM_OCC.TMM3 as master (from occupancy.xlsx) - EXACT values
+  // Distribute each owner's TMM3 CBM proportionally across zones
+  var zVol={},zOwners={};
+  Object.entries(TMM_OCC.TMM3||{}).forEach(function(e){
+    var owner=e[0],tmm3cbm=e[1];
+    var zones=ownerZoneDist[owner]||{'T3R1':1};
+    var zoneSum=Object.values(zones).reduce(function(s,v){return s+v;},0)||1;
+    Object.entries(zones).forEach(function(ze){
+      var stype=ze[0],zvol=ze[1];
+      if(validZones.indexOf(stype)<0)return;
+      var allocated=tmm3cbm*(zvol/zoneSum);
+      zVol[stype]=(zVol[stype]||0)+allocated;
+      if(!zOwners[stype])zOwners[stype]={};
+      zOwners[stype][owner]=(zOwners[stype][owner]||0)+allocated;
+    });
+  });
+  var meta=[
+    {code:'T3R1',name:'C1',desc:'+18C Temp Control',cap:28670.40,col:'#f59e0b'},
+    {code:'T3C1',name:'C2',desc:'Frozen',cap:2755.20,col:'#3b82f6'},
+    {code:'T3C2',name:'C3',desc:'Frozen',cap:2889.60,col:'#3b82f6'},
+    {code:'T3C3',name:'C4',desc:'Chiller',cap:3192.00,col:'#14b8a6'},
+  ];
+  return meta.map(function(z){
+    var occ=Math.round((zVol[z.code]||0)*100)/100;
+    var avail=Math.round(Math.max(0,z.cap-occ)*100)/100;
+    var pct=Math.min(100,Math.round(occ/z.cap*1000)/10);
+    var owners={};
+    Object.entries(zOwners[z.code]||{}).sort(function(a,b){return b[1]-a[1];})
+      .forEach(function(e){owners[e[0]]=Math.round(e[1]*100)/100;});
+    return Object.assign({},z,{occ:occ,avail:avail,pct:pct,owners:owners});
+  });
+}
+
 function renderTMM3Zones(){
   var el=document.getElementById('tmm3ZoneSection');
   if(!el)return;
