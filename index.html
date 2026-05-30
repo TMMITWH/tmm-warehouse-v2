@@ -301,6 +301,14 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <canvas id="capacityChart" height="200"></canvas>
   </div>
 
+  <!-- TMM3 ZONE BREAKDOWN -->
+  <div class="sl">TMM3 Warehouse &#8212; Zone Breakdown (C1 &middot; C2 &middot; C3 &middot; C4)</div>
+  <div id="tmm3ZoneSection"></div>
+
+  <!-- TMM3 CUSTOMER BREAKDOWN -->
+  <div class="sl">TMM3 &#8212; Customer Breakdown by Zone</div>
+  <div id="tmm3BreakdownSection"></div>
+
   <div class="sl">Customer Breakdown by Warehouse</div>
   <div class="g3" id="tmmcards"></div>
   <div class="g3">
@@ -454,7 +462,7 @@ const fN=n=>Number(Math.round(n)).toLocaleString();
 const now=()=>new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
 const oname=c=>OWNER_MAP[c]||c;
 const sname=c=>{const n=OWNER_MAP[c]||c;return n;}; // full name always
-const TMM3_ZONES=[{"code": "T3R1", "name": "C1", "desc": "+18C Temp Control", "cap": 28670.4, "col": "#f59e0b", "occ": 13965.32, "avail": 14705.08, "pct": 48.7, "owners": {}}, {"code": "T3C1", "name": "C2", "desc": "Frozen", "cap": 2755.2, "col": "#3b82f6", "occ": 532.43, "avail": 2222.77, "pct": 19.3, "owners": {}}, {"code": "T3C2", "name": "C3", "desc": "Frozen", "cap": 2889.6, "col": "#3b82f6", "occ": 1656.2, "avail": 1233.4, "pct": 57.3, "owners": {}}, {"code": "T3C3", "name": "C4", "desc": "Chiller", "cap": 3192.0, "col": "#14b8a6", "occ": 1783.05, "avail": 1408.95, "pct": 55.9, "owners": {}}];
+const TMM3_ZONES=[{"code": "T3R1", "name": "C1", "desc": "+18C Temp Control", "cap": 28670.4, "col": "#f59e0b", "occ": 13965.32, "avail": 14705.08, "pct": 48.7, "owners": {"T320": 7316.46, "T315": 1703.29, "T293": 1380.05, "T117": 594.89, "T314": 584.48, "T285": 447.25, "T316": 380.15, "T109": 265.32, "T337": 237.04, "T339": 213.25, "T291": 210.24, "T073": 135.05, "T297": 125.2, "T322": 110.33, "T281": 102.21, "T334": 88.87, "T304": 46.08, "T323": 25.15}}, {"code": "T3C1", "name": "C2", "desc": "Frozen", "cap": 2755.2, "col": "#3b82f6", "occ": 532.43, "avail": 2222.77, "pct": 19.3, "owners": {"T012": 175.94, "T330": 167.25, "T285": 141.45, "T355": 47.79}}, {"code": "T3C2", "name": "C3", "desc": "Frozen", "cap": 2889.6, "col": "#3b82f6", "occ": 1656.2, "avail": 1233.4, "pct": 57.3, "owners": {"T342": 486.04, "T285": 482.55, "T291": 467.14, "T352": 106.24, "T021": 86.07, "T353": 28.15}}, {"code": "T3C3", "name": "C4", "desc": "Chiller", "cap": 3192.0, "col": "#14b8a6", "occ": 1783.05, "avail": 1408.95, "pct": 55.9, "owners": {"T337": 828.0, "T252": 415.71, "T351": 184.45, "T304": 141.85, "T348": 131.44, "T012": 48.15, "T039": 20.83, "T296": 12.63}}];
 const KPI_DATA_BAKED=[{"code": "T320", "name": "VIVA ENTERPRISE HOLDINGS LIMITED", "t1": 0.0, "t2": 0.0, "t3": 7342.99, "storage": 7342.99, "ib": 0, "ob": 1125.97, "net": -1125.97, "pct": 13.5, "wh": ["TMM3"]}, {"code": "T001", "name": "AL FUTTAIM TRADING (L.L.C)", "t1": 6300.0, "t2": 0.0, "t3": 0.0, "storage": 6300.0, "ib": 51.07, "ob": 0, "net": 51.07, "pct": 11.5, "wh": ["TMM1"]}, {"code": "T109", "name": "AW ROSTAMANI LOGISTICS LLC", "t1": 5305.79, "t2": 0.0, "t3": 266.28, "storage": 5572.07, "ib": 0, "ob": 216.23, "net": -216.23, "pct": 10.2, "wh": ["TMM1", "TMM3"]}, {"code": "T108", "name": "EZRA SHIIPPING- ALLIANCE - 2", "t1": 0.0, "t2": 4748.35, "t3": 0.0, "storage": 4748.35, "ib": 1456.19, "ob": 441.57, "net": 1014.62, "pct": 8.7, "wh": ["TMM2"]}, {"code": "T087", "name": "SIMBA GULF FZCO / FMCG (WH)", "t1": 2981.24, "t2": 0.0, "t3": 0.0, "storage": 2981.24, "ib": 220.97, "ob": 907.58, "net": -686.61, "pct": 5.5, "wh": ["TMM1"]}, {"code": "T086", "name": "SIMBA GULF FZCO / ELECTRONICS (WH)", "t1": 2765.24, "t2": 0.0, "t3": 0.0, "storage": 2765.24, "ib": 1104.49, "ob": 822.4, "net": 282.09, "pct": 5.1, "wh": ["TMM1"]}, {"code": "T073", "name": "HISENSE MIDDLE EAST FZE (WH)", "t1": 2407.44, "t2": 0.0, "t3": 135.54, "storage": 2542.98, "ib": 1916.71, "ob": 775.63, "net": 1141.08, "pct": 4.7, "wh": ["TMM1", "TMM3"]}, {"code": "T276", "name": "WELLNESS FIRST MIDDLE EAST SPORT", "t1": 0.0, "t2": 2517.3, "t3": 0.0, "storage": 2517.3, "ib": 110.97, "ob": 391.51, "net": -280.54, "pct": 4.6, "wh": ["TMM2"]}, {"code": "T091", "name": "THE INDEPENDENT TOBACCO FZE", "t1": 2474.33, "t2": 0.0, "t3": 0.0, "storage": 2474.33, "ib": 412.78, "ob": 216.04, "net": 196.74, "pct": 4.5, "wh": ["TMM1"]}, {"code": "T315", "name": "C K F INTERNATIONAL SHIPPING &", "t1": 0.0, "t2": 0.0, "t3": 1711.23, "storage": 1711.23, "ib": 672.49, "ob": 655.44, "net": 17.05, "pct": 3.1, "wh": ["TMM3"]}, {"code": "T117", "name": "HISENSE MIDDLE EAST FZE-RPK", "t1": 960.4, "t2": 0.0, "t3": 597.04, "storage": 1557.44, "ib": 0, "ob": 397.04, "net": -397.04, "pct": 2.9, "wh": ["TMM1", "TMM3"]}, {"code": "T053", "name": "THOMSUN -MASTERPIECE LLC -W/H", "t1": 1525.04, "t2": 30.63, "t3": 0.0, "storage": 1555.67, "ib": 59.24, "ob": 83.56, "net": -24.32, "pct": 2.9, "wh": ["TMM1", "TMM2"]}, {"code": "T293", "name": "DP World Logistics UAE FZE", "t1": 0.0, "t2": 0.0, "t3": 1385.27, "storage": 1385.27, "ib": 186.2, "ob": 220.8, "net": -34.6, "pct": 2.5, "wh": ["TMM3"]}, {"code": "T285", "name": "ABRECO FREIGHT L.L.C", "t1": 1.51, "t2": 0.0, "t3": 1075.12, "storage": 1076.63, "ib": 674.18, "ob": 1330.98, "net": -656.8, "pct": 2.0, "wh": ["TMM1", "TMM3"]}, {"code": "T337", "name": "Transworld Logistics FZE", "t1": 0.0, "t2": 0.0, "t3": 1009.48, "storage": 1009.48, "ib": 167.69, "ob": 204.0, "net": -36.31, "pct": 1.9, "wh": ["TMM3"]}, {"code": "T035", "name": "PROCONNECT SUPPLY CHAIN LOGISTICS", "t1": 586.69, "t2": 250.82, "t3": 0.0, "storage": 837.51, "ib": 0, "ob": 504.02, "net": -504.02, "pct": 1.5, "wh": ["TMM1", "TMM2"]}, {"code": "T291", "name": "DAWNTAINERS MARITIME SERVICES L.L.C", "t1": 0.0, "t2": 0.0, "t3": 679.82, "storage": 679.82, "ib": 0, "ob": 0, "net": 0, "pct": 1.2, "wh": ["TMM3"]}, {"code": "T314", "name": "C K F INTERNATIONAL SHIPPING &", "t1": 0.0, "t2": 0.0, "t3": 579.08, "storage": 579.08, "ib": 634.54, "ob": 465.24, "net": 169.3, "pct": 1.1, "wh": ["TMM3"]}, {"code": "T342", "name": "BELLOMASSI FOODSTUFF TRADING L.L.C", "t1": 0.0, "t2": 0.0, "t3": 487.8, "storage": 487.8, "ib": 51.64, "ob": 103.28, "net": -51.64, "pct": 0.9, "wh": ["TMM3"]}, {"code": "T041", "name": "IOR GLOBAL CARGO SERVICES LLC -", "t1": 474.37, "t2": 0.0, "t3": 0.0, "storage": 474.37, "ib": 39.0, "ob": 66.46, "net": -27.46, "pct": 0.9, "wh": ["TMM1"]}, {"code": "T322", "name": "A W ROSTAMANI LOGISTICS LLC-GP", "t1": 352.62, "t2": 0.0, "t3": 110.73, "storage": 463.35, "ib": 0, "ob": 1359.37, "net": -1359.37, "pct": 0.8, "wh": ["TMM1", "TMM3"]}, {"code": "T252", "name": "WORLD WATERWAY SEA SHIPPING CO LLC", "t1": 0.0, "t2": 0.0, "t3": 417.21, "storage": 417.21, "ib": 51.14, "ob": 0, "net": 51.14, "pct": 0.8, "wh": ["TMM3"]}, {"code": "T316", "name": "C K F INTERNATIONAL SHIPPING &", "t1": 10.8, "t2": 0.0, "t3": 381.53, "storage": 392.33, "ib": 138.32, "ob": 53.65, "net": 84.67, "pct": 0.7, "wh": ["TMM1", "TMM3"]}, {"code": "T088", "name": "SIN LASER & PRINT FZE", "t1": 0.0, "t2": 327.07, "t3": 0.0, "storage": 327.07, "ib": 3.1, "ob": 112.0, "net": -108.9, "pct": 0.6, "wh": ["TMM2"]}, {"code": "T012", "name": "CLARION LOGISTICS MIDDLE EAST", "t1": 0.0, "t2": 0.0, "t3": 224.9, "storage": 224.9, "ib": 0, "ob": 0, "net": 0, "pct": 0.4, "wh": ["TMM3"]}, {"code": "T007", "name": "SPIDERNET TECHNOLOGY FZE", "t1": 218.08, "t2": 0.0, "t3": 0.0, "storage": 218.08, "ib": 0, "ob": 12.73, "net": -12.73, "pct": 0.4, "wh": ["TMM1"]}, {"code": "T090", "name": "TECHMAY INTERNATIONAL FZE", "t1": 217.91, "t2": 0.0, "t3": 0.0, "storage": 217.91, "ib": 0, "ob": 43.57, "net": -43.57, "pct": 0.4, "wh": ["TMM1"]}, {"code": "T339", "name": "CORVETTE SHIPPING L.L.C", "t1": 0.0, "t2": 0.0, "t3": 214.02, "storage": 214.02, "ib": 0, "ob": 0, "net": 0, "pct": 0.4, "wh": ["TMM3"]}, {"code": "T046", "name": "TEKNODOME FZE", "t1": 211.98, "t2": 0.0, "t3": 0.0, "storage": 211.98, "ib": 0, "ob": 0, "net": 0, "pct": 0.4, "wh": ["TMM1"]}, {"code": "T304", "name": "M O T Shipping & Trading LLC", "t1": 0.0, "t2": 0.0, "t3": 188.61, "storage": 188.61, "ib": 0, "ob": 92.7, "net": -92.7, "pct": 0.3, "wh": ["TMM3"]}, {"code": "T351", "name": "FAISAL AL NUSIF TRADING CO. (L.L.C)", "t1": 0.0, "t2": 0.0, "t3": 185.11, "storage": 185.11, "ib": 352.8, "ob": 158.33, "net": 194.47, "pct": 0.3, "wh": ["TMM3"]}, {"code": "T095", "name": "WORLDWIDE DISTRIBUTION CENTER", "t1": 169.21, "t2": 0.0, "t3": 0.0, "storage": 169.21, "ib": 0, "ob": 0, "net": 0, "pct": 0.3, "wh": ["TMM1"]}, {"code": "T330", "name": "UNIKAI FOODS P.J.S.C", "t1": 0.0, "t2": 0.0, "t3": 167.85, "storage": 167.85, "ib": 0, "ob": 269.05, "net": -269.05, "pct": 0.3, "wh": ["TMM3"]}, {"code": "T296", "name": "Mass Allied Freighters LLC", "t1": 139.2, "t2": 0.0, "t3": 12.67, "storage": 151.87, "ib": 0, "ob": 88.8, "net": -88.8, "pct": 0.3, "wh": ["TMM1", "TMM3"]}, {"code": "T082", "name": "R&M SN ELECTRICAL FZCO", "t1": 0.0, "t2": 145.66, "t3": 0.0, "storage": 145.66, "ib": 109.96, "ob": 12.59, "net": 97.37, "pct": 0.3, "wh": ["TMM2"]}, {"code": "T025", "name": "HELLMANN WORLD WIDE LOGISTICS", "t1": 0.0, "t2": 138.72, "t3": 0.0, "storage": 138.72, "ib": 19.51, "ob": 0, "net": 19.51, "pct": 0.3, "wh": ["TMM2"]}, {"code": "T348", "name": "MOSACO SHIPPING & FORWARDING(L.L.C)", "t1": 0.0, "t2": 0.0, "t3": 131.91, "storage": 131.91, "ib": 0, "ob": 0.06, "net": -0.06, "pct": 0.2, "wh": ["TMM3"]}, {"code": "T297", "name": "Universal Islamic Meat FZCO", "t1": 0.0, "t2": 0.0, "t3": 125.65, "storage": 125.65, "ib": 107.89, "ob": 43.98, "net": 63.91, "pct": 0.2, "wh": ["TMM3"]}, {"code": "T064", "name": "EZRA SHIPPING LLC - AND -W/H", "t1": 122.76, "t2": 0.0, "t3": 0.0, "storage": 122.76, "ib": 0, "ob": 0, "net": 0, "pct": 0.2, "wh": ["TMM1"]}, {"code": "T260", "name": "THOMSUN TRADING EST W/H", "t1": 120.65, "t2": 0.0, "t3": 0.0, "storage": 120.65, "ib": 23.63, "ob": 13.48, "net": 10.15, "pct": 0.2, "wh": ["TMM1"]}, {"code": "T321", "name": "Cleantech Gulf FZCO", "t1": 0.0, "t2": 108.82, "t3": 0.0, "storage": 108.82, "ib": 22.97, "ob": 13.13, "net": 9.84, "pct": 0.2, "wh": ["TMM2"]}, {"code": "T352", "name": "MM GLOBAL LOGISTICS L.L.C", "t1": 0.0, "t2": 0.0, "t3": 106.63, "storage": 106.63, "ib": 141.57, "ob": 0, "net": 141.57, "pct": 0.2, "wh": ["TMM3"]}, {"code": "T281", "name": "Ezra Shipping LLC - InterTabasc", "t1": 0.0, "t2": 0.0, "t3": 102.58, "storage": 102.58, "ib": 38.06, "ob": 353.84, "net": -315.78, "pct": 0.2, "wh": ["TMM3"]}, {"code": "T017", "name": "CMC MAGNETICS CORPORATION - W/H", "t1": 100.17, "t2": 0.0, "t3": 0.0, "storage": 100.17, "ib": 0, "ob": 26.75, "net": -26.75, "pct": 0.2, "wh": ["TMM1"]}, {"code": "T003", "name": "AL YOUSUF ELECTRONICS LLC", "t1": 92.04, "t2": 0.0, "t3": 0.0, "storage": 92.04, "ib": 0, "ob": 0, "net": 0, "pct": 0.2, "wh": ["TMM1"]}, {"code": "T334", "name": "HELLMANN WORLDWIDE LOGISTICS LLC", "t1": 0.0, "t2": 0.0, "t3": 89.19, "storage": 89.19, "ib": 9.24, "ob": 16.35, "net": -7.11, "pct": 0.2, "wh": ["TMM3"]}, {"code": "T021", "name": "EZRA SHIPPING LLC-W/H", "t1": 0.0, "t2": 0.0, "t3": 86.38, "storage": 86.38, "ib": 0, "ob": 0, "net": 0, "pct": 0.2, "wh": ["TMM3"]}, {"code": "T112", "name": "HISENSE MIDDLE EAST FZE-ACTIF", "t1": 73.37, "t2": 0.0, "t3": 0.0, "storage": 73.37, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T022", "name": "EZRA SHIPPING LLC - ETI", "t1": 71.13, "t2": 0.0, "t3": 0.0, "storage": 71.13, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T329", "name": "GENTCO L.L.C-FZ", "t1": 70.88, "t2": 0.0, "t3": 0.0, "storage": 70.88, "ib": 22.07, "ob": 0, "net": 22.07, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T277", "name": "CORNERSTONE SHIPPING & LOGISTICS L.L.C", "t1": 67.73, "t2": 0.0, "t3": 0.0, "storage": 67.73, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T089", "name": "STARLINK DMCC (INV)", "t1": 67.59, "t2": 0.0, "t3": 0.0, "storage": 67.59, "ib": 47.67, "ob": 31.19, "net": 16.48, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T040", "name": "IOR GLOBAL CARGO SERVICES LLC", "t1": 57.59, "t2": 0.0, "t3": 0.0, "storage": 57.59, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T110", "name": "CRANE WORLDWIDE LOGISTICS (CHEVRON)", "t1": 39.96, "t2": 16.82, "t3": 0.0, "storage": 56.78, "ib": 34.22, "ob": 0, "net": 34.22, "pct": 0.1, "wh": ["TMM1", "TMM2"]}, {"code": "T355", "name": "TRANS FREIGHT (L.L.C.)", "t1": 0.0, "t2": 0.0, "t3": 47.97, "storage": 47.97, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM3"]}, {"code": "T043", "name": "INTEX TECHNOLOGIES LLC- W/H", "t1": 45.78, "t2": 0.0, "t3": 0.0, "storage": 45.78, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T037", "name": "CRANE WORLDWIDE LOGISTICS L.L.C", "t1": 43.26, "t2": 0.0, "t3": 0.0, "storage": 43.26, "ib": 4.07, "ob": 2.44, "net": 1.63, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T026", "name": "HELLMANN WORLDWIDE LOGISTICS", "t1": 0.0, "t2": 38.67, "t3": 0.0, "storage": 38.67, "ib": 26.81, "ob": 9.33, "net": 17.48, "pct": 0.1, "wh": ["TMM2"]}, {"code": "T042", "name": "IOR SIGNAUX GLOBAL (WH)", "t1": 36.77, "t2": 0.0, "t3": 0.0, "storage": 36.77, "ib": 0, "ob": 2.81, "net": -2.81, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T047", "name": "JASPA GENERAL TRADING CO. (LLC)", "t1": 33.15, "t2": 0.0, "t3": 0.0, "storage": 33.15, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T353", "name": "DUEEFFE AFADO General Trading", "t1": 0.0, "t2": 0.0, "t3": 28.25, "storage": 28.25, "ib": 28.25, "ob": 0, "net": 28.25, "pct": 0.1, "wh": ["TMM3"]}, {"code": "T005", "name": "MATRIX FZCO", "t1": 0.0, "t2": 26.48, "t3": 0.0, "storage": 26.48, "ib": 7.83, "ob": 22.6, "net": -14.77, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T323", "name": "GLOBAL FOOD & DAIRY INGREDIENTS", "t1": 0.0, "t2": 0.0, "t3": 25.24, "storage": 25.24, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM3"]}, {"code": "T301", "name": "Gulf Evergreen Food Trading LLC", "t1": 21.72, "t2": 0.0, "t3": 0.0, "storage": 21.72, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T039", "name": "JOINT LINE SHIPPING AND FORWARDING", "t1": 0.0, "t2": 0.0, "t3": 20.9, "storage": 20.9, "ib": 20.9, "ob": 0, "net": 20.9, "pct": 0.0, "wh": ["TMM3"]}, {"code": "T085", "name": "SIMBA GULF FZCO / CANON (WH)", "t1": 19.4, "t2": 0.0, "t3": 0.0, "storage": 19.4, "ib": 15.5, "ob": 120.21, "net": -104.71, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T019", "name": "EZRA SHIPPING LLC - STAR W/H", "t1": 0.0, "t2": 18.98, "t3": 0.0, "storage": 18.98, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T051", "name": "ORBITE SKY TRADING LLC - W/H", "t1": 13.94, "t2": 0.0, "t3": 0.0, "storage": 13.94, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T273", "name": "IOR GLOBAL -INFRA", "t1": 10.02, "t2": 0.0, "t3": 0.0, "storage": 10.02, "ib": 0.01, "ob": 22.26, "net": -22.25, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T045", "name": "I LIFE DIGITAL TECHNOLOGY LLC- W/H", "t1": 0.0, "t2": 9.56, "t3": 0.0, "storage": 9.56, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T038", "name": "CRANE WORLDWIDE LOGISTICS L.L.C", "t1": 6.87, "t2": 0.0, "t3": 0.0, "storage": 6.87, "ib": 8.47, "ob": 3.4, "net": 5.07, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T070", "name": "HARIB EXPORT & IMPORT  CO. LLC \u2013WH", "t1": 3.61, "t2": 0.0, "t3": 0.0, "storage": 3.61, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T080", "name": "OCTAGON INTERNATIONAL FZCO - W/H", "t1": 3.43, "t2": 0.0, "t3": 0.0, "storage": 3.43, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T031", "name": "NAVIGATORS SHIPPING & LOGISTICA FZE", "t1": 0.0, "t2": 3.38, "t3": 0.0, "storage": 3.38, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T075", "name": "KLM MIDDLE EAST GENERAL TRADING LLC", "t1": 3.13, "t2": 0.0, "t3": 0.0, "storage": 3.13, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T120", "name": "HISENSE MIDDLE EAST FZE-TRISTAR", "t1": 2.97, "t2": 0.0, "t3": 0.0, "storage": 2.97, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T076", "name": "AL MATEEN EXPRESS LLC", "t1": 0.0, "t2": 2.89, "t3": 0.0, "storage": 2.89, "ib": 154.62, "ob": 2.19, "net": 152.43, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T055", "name": "AQUA COOL TECHNICAL TRADING", "t1": 0.0, "t2": 2.72, "t3": 0.0, "storage": 2.72, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T049", "name": "AL MAJID DIGITAL SOLUTIONS LLC", "t1": 0.0, "t2": 2.0, "t3": 0.0, "storage": 2.0, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T065", "name": "EZRA SHIPPING LLC - IFL", "t1": 1.35, "t2": 0.0, "t3": 0.0, "storage": 1.35, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T066", "name": "AVIENTEK FZCO", "t1": 1.0, "t2": 0.0, "t3": 0.0, "storage": 1.0, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T044", "name": "MIG INFORMATION SYSTEMS - WH", "t1": 0.0, "t2": 0.84, "t3": 0.0, "storage": 0.84, "ib": 0, "ob": 0.26, "net": -0.26, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T115", "name": "HISENSE MIDDLE EAST FZE-WEJA", "t1": 0.84, "t2": 0.0, "t3": 0.0, "storage": 0.84, "ib": 0, "ob": 24.07, "net": -24.07, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T116", "name": "HISENSE MIDDLE EAST FZE-AVATAR", "t1": 0.72, "t2": 0.0, "t3": 0.0, "storage": 0.72, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T033", "name": "Navigators Shipping And Logistica LLC", "t1": 0.0, "t2": 0.49, "t3": 0.0, "storage": 0.49, "ib": 0, "ob": 2.65, "net": -2.65, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T118", "name": "HISENSE MIDDLE EAST FZE-EITHER", "t1": 0.22, "t2": 0.0, "t3": 0.0, "storage": 0.22, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T032", "name": "NAVIGATORS SHIPPING AND LOGISTICA", "t1": 0.0, "t2": 0.12, "t3": 0.0, "storage": 0.12, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T096", "name": "THOMSUN TRADING EST", "t1": 0.07, "t2": 0.0, "t3": 0.0, "storage": 0.07, "ib": 21.16, "ob": 0, "net": 21.16, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T056", "name": "AVIENTEK FZCO - W/H", "t1": 0.01, "t2": 0.0, "t3": 0.0, "storage": 0.01, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T008", "name": "BLUE CONTAINERS INTERNATIONAL", "t1": 0.0, "t2": 0.0, "t3": 0.0, "storage": 0.0, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": []}, {"code": "T084", "name": "SAEED MUQADAS", "t1": 0.0, "t2": 0.0, "t3": 0.0, "storage": 0.0, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": []}, {"code": "T133", "name": "AL MAJID DIGITAL SOLUTIONS LLC", "t1": 0.0, "t2": 0.0, "t3": 0.0, "storage": 0.0, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": []}, {"code": "T155", "name": "DATAM TRADING FZE", "t1": 0.0, "t2": 0.0, "t3": 0.0, "storage": 0.0, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": []}, {"code": "T150", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 0, "ob": 1.85, "net": -1.85, "pct": 0, "wh": []}, {"code": "T054", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 27.39, "ob": 29.05, "net": -1.66, "pct": 0, "wh": []}, {"code": "T030", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 46.43, "ob": 40.21, "net": 6.22, "pct": 0, "wh": []}, {"code": "T224", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 332.72, "ob": 0, "net": 332.72, "pct": 0, "wh": []}, {"code": "T331", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 13.33, "ob": 83.66, "net": -70.33, "pct": 0, "wh": []}, {"code": "T069", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 0, "ob": 110.0, "net": -110.0, "pct": 0, "wh": []}, {"code": "T223", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 757.89, "ob": 0, "net": 757.89, "pct": 0, "wh": []}, {"code": "T153", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 0.0, "ob": 0, "net": 0.0, "pct": 0, "wh": []}, {"code": "T165", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 3.74, "ob": 0, "net": 3.74, "pct": 0, "wh": []}, {"code": "T028", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 9.68, "ob": 2.72, "net": 6.96, "pct": 0, "wh": []}, {"code": "T242", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 32.07, "ob": 0, "net": 32.07, "pct": 0, "wh": []}, {"code": "T340", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 0, "ob": 372.78, "net": -372.78, "pct": 0, "wh": []}, {"code": "T307", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 0, "ob": 165.24, "net": -165.24, "pct": 0, "wh": []}, {"code": "T152", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 0.01, "ob": 0, "net": 0.01, "pct": 0, "wh": []}, {"code": "T204", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 0.06, "ob": 0, "net": 0.06, "pct": 0, "wh": []}, {"code": "T326", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 0, "ob": 33.63, "net": -33.63, "pct": 0, "wh": []}, {"code": "T287", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 0, "ob": 3.22, "net": -3.22, "pct": 0, "wh": []}];
 var KPI_DATA=[];
 const COLS=['#3b82f6','#22c55e','#f59e0b','#ef4444','#a78bfa','#f472b6','#14b8a6','#fbbf24','#60a5fa','#34d399','#fb923c','#f87171','#c084fc','#2dd4bf'];
@@ -817,12 +825,161 @@ function drawCapacityChart(tmms,cols){
   });
 }
 
+
+function renderTMM3Zones(){
+  var el=document.getElementById('tmm3ZoneSection');
+  if(!el)return;
+  var zones=typeof LIVE_TMM3_ZONES!=='undefined'?LIVE_TMM3_ZONES:TMM3_ZONES;
+  var totalCap=zones.reduce(function(s,z){return s+z.cap;},0);
+  var totalOcc=zones.reduce(function(s,z){return s+z.occ;},0);
+  var totalAvail=Math.max(0,totalCap-totalOcc);
+  var totalPct=Math.min(100,Math.round(totalOcc/totalCap*100));
+  var html='';
+  html+='<div style="background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(245,158,11,.04));border:2px solid #f59e0b;border-radius:var(--r);padding:16px 20px;margin-bottom:14px">';
+  html+='<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px">';
+  html+='<div><div style="font-size:15px;font-weight:800;color:#f59e0b">TMM3 Warehouse &#8212; Total</div>';
+  html+='<div style="font-size:11px;color:var(--tx3)">4 Zones (C1+C2+C3+C4) &middot; 31,256 locations</div></div>';
+  html+='<span style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:'+(totalPct>=90?'rgba(239,68,68,.15)':totalPct>=70?'rgba(245,158,11,.15)':'rgba(34,197,94,.15)')+';color:'+(totalPct>=90?'#ef4444':totalPct>=70?'#f59e0b':'#22c55e')+'">'+totalPct+'% Occupied</span>';
+  html+='</div>';
+  html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">';
+  html+='<div style="background:rgba(0,0,0,.2);border-radius:var(--rs);padding:10px;text-align:center"><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Total Capacity</div><div style="font-size:20px;font-weight:800;color:#f59e0b">'+fD(totalCap)+'</div><div style="font-size:10px;color:var(--tx3)">CBM</div></div>';
+  html+='<div style="background:rgba(0,0,0,.2);border-radius:var(--rs);padding:10px;text-align:center"><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Occupied</div><div style="font-size:20px;font-weight:800;color:#ef4444">'+fD(totalOcc)+'</div><div style="font-size:10px;color:#ef4444">'+totalPct+'%</div></div>';
+  html+='<div style="background:rgba(0,0,0,.2);border-radius:var(--rs);padding:10px;text-align:center"><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Available</div><div style="font-size:20px;font-weight:800;color:#22c55e">'+fD(totalAvail)+'</div><div style="font-size:10px;color:#22c55e">'+(100-totalPct)+'%</div></div>';
+  html+='</div>';
+  html+='<div style="height:12px;border-radius:6px;background:rgba(0,0,0,.3);overflow:hidden"><div style="height:100%;width:'+Math.min(100,totalPct)+'%;background:linear-gradient(90deg,#f59e0b,'+(totalPct>=90?'#ef4444':'#22c55e')+');border-radius:6px"></div></div>';
+  html+='<div style="display:flex;justify-content:space-between;font-size:10px;margin-top:4px"><span style="color:#ef4444;font-weight:600">Occ: '+fD(totalOcc)+' CBM</span><span style="color:#22c55e;font-weight:600">Free: '+fD(totalAvail)+' CBM</span></div>';
+  html+='</div>';
+  html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:14px">';
+  zones.forEach(function(z){
+    var col=z.col||'#94a3b8';
+    var usedPct=Math.min(100,z.pct);
+    var availPct=Math.max(0,100-usedPct);
+    var avail=Math.max(0,z.cap-z.occ);
+    var statusColor=usedPct>=90?'#ef4444':usedPct>=70?'#f59e0b':'#22c55e';
+    var statusLabel=usedPct>=90?'Critical':usedPct>=70?'Moderate':'Available';
+    var ownerEntries=Object.entries(z.owners||{}).slice(0,4);
+    var ownerRows=ownerEntries.map(function(e){
+      var code=e[0],vol=e[1];
+      var nm=(OWNER_MAP[code]||code).substring(0,22);
+      var p2=z.occ>0?Math.round(vol/z.occ*100):0;
+      return '<div style="margin-bottom:6px">'+
+        '<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px">'+
+          '<span style="color:var(--tx2);font-weight:600">'+code+' '+nm+'</span>'+
+          '<span style="color:'+col+';font-weight:700">'+fD(vol)+'</span>'+
+        '</div>'+
+        '<div style="height:4px;border-radius:2px;background:var(--sf3);overflow:hidden">'+
+          '<div style="height:100%;width:'+p2+'%;background:'+col+'"></div>'+
+        '</div></div>';
+    }).join('');
+    var extra=Object.keys(z.owners||{}).length>4?'<div style="font-size:10px;color:var(--tx3)">+'+(Object.keys(z.owners).length-4)+' more</div>':'';
+    html+='<div style="background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);overflow:hidden;box-shadow:var(--sh)">';
+    html+='<div style="background:'+col+'18;border-bottom:3px solid '+col+';padding:13px 16px;display:flex;align-items:center;justify-content:space-between">';
+    html+='<div><div style="font-size:15px;font-weight:900;color:'+col+'">'+z.name+' ('+z.code+')</div>';
+    html+='<div style="font-size:11px;color:var(--tx3);margin-top:2px">'+z.desc+' &middot; 1.2 CBM/loc</div></div>';
+    html+='<span style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;background:'+statusColor+'22;color:'+statusColor+';border:1px solid '+statusColor+'44">'+statusLabel+'</span></div>';
+    html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr">';
+    html+='<div style="padding:13px 8px;text-align:center;border-right:1px solid var(--bd)"><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Total CBM</div><div style="font-size:19px;font-weight:800;color:'+col+'">'+fD(z.cap)+'</div></div>';
+    html+='<div style="padding:13px 8px;text-align:center;border-right:1px solid var(--bd)"><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Occupied</div><div style="font-size:19px;font-weight:800;color:#ef4444">'+fD(z.occ)+'</div><div style="font-size:9px;color:#ef4444">'+usedPct.toFixed(1)+'%</div></div>';
+    html+='<div style="padding:13px 8px;text-align:center"><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Available</div><div style="font-size:19px;font-weight:800;color:#22c55e">'+fD(avail)+'</div><div style="font-size:9px;color:#22c55e">'+availPct.toFixed(1)+'%</div></div></div>';
+    html+='<div style="padding:10px 14px;border-top:1px solid var(--bd)">';
+    html+='<div style="height:10px;border-radius:5px;background:var(--sf3);overflow:hidden"><div style="height:100%;width:'+Math.min(100,usedPct)+'%;background:linear-gradient(90deg,'+col+','+statusColor+');border-radius:5px"></div></div>';
+    html+='<div style="display:flex;justify-content:space-between;font-size:10px;margin-top:4px"><span style="color:'+statusColor+';font-weight:600">Occ: '+fD(z.occ)+' CBM</span><span style="color:#22c55e;font-weight:600">Free: '+fD(avail)+' CBM</span></div></div>';
+    html+='<div style="padding:10px 14px;border-top:1px solid var(--bd)"><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px">Top Customers ('+Object.keys(z.owners||{}).length+' total)</div>'+ownerRows+extra+'</div></div>';
+  });
+  html+='</div>';
+  html+='<div class="cc full" style="margin-bottom:14px"><div class="ctit">TMM3 Zone Comparison</div><div class="csub">C1 (+18C) &middot; C2 Frozen &middot; C3 Frozen &middot; C4 Chiller</div><div class="cleg"><span class="lg"><span class="lb" style="background:#ef4444"></span>Occupied</span><span class="lg"><span class="lb" style="background:#22c55e"></span>Available</span></div><canvas id="tmm3ZoneChart"></canvas></div>';
+  el.innerHTML=html;
+  setTimeout(function(){drawTMM3ZoneChart(zones);},80);
+}
+
+function drawTMM3ZoneChart(zones){
+  var cv=document.getElementById('tmm3ZoneChart');if(!cv)return;
+  var W=Math.max(400,cv.parentElement.clientWidth-36);
+  var H=220;cv.width=W;cv.height=H;
+  var ctx=cv.getContext('2d');ctx.clearRect(0,0,W,H);
+  var pad={l:60,r:14,t:14,b:60};
+  var cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  var n=zones.length,gW=cW/n,bW=Math.max(20,gW*0.3),gap=gW*0.05;
+  var maxV=Math.max.apply(null,zones.map(function(z){return z.cap;}))*1.12||1;
+  ctx.strokeStyle='#334155';ctx.lineWidth=1;
+  for(var i=0;i<=4;i++){
+    var y=pad.t+cH*(1-i/4);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    ctx.fillStyle='#64748b';ctx.font='10px Inter,sans-serif';ctx.textAlign='right';
+    var v=maxV*i/4;ctx.fillText(v>=1000?(v/1000).toFixed(0)+'k':Math.round(v),pad.l-5,y+3);
+  }
+  zones.forEach(function(z,i){
+    var col=z.col||'#94a3b8',gx=pad.l+i*gW+gW/2;
+    var th=z.cap/maxV*cH;
+    ctx.strokeStyle=col;ctx.lineWidth=2;ctx.setLineDash([5,3]);
+    ctx.beginPath();ctx.moveTo(gx-bW*1.2,pad.t+cH-th);ctx.lineTo(gx+bW*1.2,pad.t+cH-th);ctx.stroke();ctx.setLineDash([]);
+    var oh=z.occ/maxV*cH;
+    var go=ctx.createLinearGradient(0,pad.t+cH-oh,0,pad.t+cH);go.addColorStop(0,'#ef4444');go.addColorStop(1,'rgba(239,68,68,.2)');
+    ctx.fillStyle=go;ctx.beginPath();ctx.roundRect(gx-bW-gap,pad.t+cH-oh,bW,oh,3);ctx.fill();
+    var avail=Math.max(0,z.cap-z.occ),ah=avail/maxV*cH;
+    var ga=ctx.createLinearGradient(0,pad.t+cH-ah,0,pad.t+cH);ga.addColorStop(0,'#22c55e');ga.addColorStop(1,'rgba(34,197,94,.2)');
+    ctx.fillStyle=ga;ctx.beginPath();ctx.roundRect(gx+gap,pad.t+cH-ah,bW,ah,3);ctx.fill();
+    ctx.fillStyle=col;ctx.font='bold 11px Inter,sans-serif';ctx.textAlign='center';ctx.fillText(z.name,gx,H-42);
+    ctx.fillStyle='#64748b';ctx.font='9px Inter,sans-serif';ctx.fillText(z.code,gx,H-28);ctx.fillText(z.desc.substring(0,12),gx,H-16);
+  });
+}
+
+function renderTMM3Breakdown(){
+  var el=document.getElementById('tmm3BreakdownSection');if(!el)return;
+  var ownerZoneMap={};
+  TMM3_ZONES.forEach(function(z){
+    Object.entries(z.owners||{}).forEach(function(e){
+      var owner=e[0],vol=e[1];
+      if(!ownerZoneMap[owner])ownerZoneMap[owner]={};
+      ownerZoneMap[owner][z.code]=vol;
+    });
+  });
+  var tmm3owners=Object.entries(TMM_OCC.TMM3||{}).sort(function(a,b){return b[1]-a[1];});
+  var total=tmm3owners.reduce(function(s,e){return s+e[1];},0)||1;
+  var html='<div style="background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);overflow:hidden;box-shadow:var(--sh);margin-bottom:14px">';
+  html+='<table class="tbl2" style="margin-bottom:0"><thead><tr>';
+  html+='<th>#</th><th>Customer</th>';
+  html+='<th style="color:#f59e0b">Total CBM</th>';
+  html+='<th style="color:#f59e0b">C1 T3R1</th>';
+  html+='<th style="color:#3b82f6">C2 T3C1</th>';
+  html+='<th style="color:#60a5fa">C3 T3C2</th>';
+  html+='<th style="color:#14b8a6">C4 T3C3</th>';
+  html+='<th>% Share</th>';
+  html+='</tr></thead><tbody>';
+  tmm3owners.forEach(function(e,i){
+    var code=e[0],vol=e[1];
+    var nm=OWNER_MAP[code]||code;
+    var pct=(vol/total*100).toFixed(1);
+    var oz=ownerZoneMap[code]||{};
+    var t1=oz.T3R1||0,t2=oz.T3C1||0,t3=oz.T3C2||0,t4=oz.T3C3||0;
+    html+='<tr>';
+    html+='<td style="color:var(--tx3);font-size:11px">'+(i+1)+'</td>';
+    html+='<td><div style="font-weight:700;color:var(--tx)">'+code+'</div><div style="font-size:10px;color:var(--tx3)">'+nm+'</div></td>';
+    html+='<td style="font-weight:800;color:#f59e0b">'+fD(vol)+'</td>';
+    html+='<td style="color:#f59e0b;font-weight:600">'+(t1>0?fD(t1):'-')+'</td>';
+    html+='<td style="color:#3b82f6;font-weight:600">'+(t2>0?fD(t2):'-')+'</td>';
+    html+='<td style="color:#60a5fa;font-weight:600">'+(t3>0?fD(t3):'-')+'</td>';
+    html+='<td style="color:#14b8a6;font-weight:600">'+(t4>0?fD(t4):'-')+'</td>';
+    html+='<td><span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(245,158,11,.15);color:#f59e0b">'+pct+'%</span></td>';
+    html+='</tr>';
+  });
+  var zones=TMM3_ZONES;
+  html+='<tr class="tot"><td></td><td>TOTAL</td>';
+  html+='<td style="color:#f59e0b">'+fD(tmm3owners.reduce(function(s,e){return s+e[1];},0))+'</td>';
+  html+='<td style="color:#f59e0b">'+fD(zones[0]?zones[0].occ:0)+'</td>';
+  html+='<td style="color:#3b82f6">'+fD(zones[1]?zones[1].occ:0)+'</td>';
+  html+='<td style="color:#60a5fa">'+fD(zones[2]?zones[2].occ:0)+'</td>';
+  html+='<td style="color:#14b8a6">'+fD(zones[3]?zones[3].occ:0)+'</td>';
+  html+='<td>100%</td></tr>';
+  html+='</tbody></table></div>';
+  el.innerHTML=html;
+}
+
 function renderOcc(){
   const cols={'TMM1':'#3b82f6','TMM2':'#22c55e','TMM3':'#f59e0b'};
   const tmms=['TMM1','TMM2','TMM3'];
   // Summary cards
   renderCapacity();
-  const gc2=document.getElementById('tmmcards');if(!gc2)return;gc2.innerHTML='';
+  const gc2=document.getElementById('tmmcards');if(gc2)gc2.innerHTML='';
   tmms.forEach(tmm=>{
     const data=TMM_OCC[tmm]||{};
     const ents=Object.entries(data).sort((a,b)=>b[1]-a[1]);
@@ -888,6 +1045,8 @@ function renderOcc(){
   });
   // Stacked chart
   drawStacked(cols);
+  renderTMM3Zones();
+  renderTMM3Breakdown();
 }
 
 function drawStacked(cols){
