@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TMM — Inbound &amp; Outbound Flow Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f172a;--sf:#1e293b;--sf2:#263248;--sf3:#2d3a52;
+  --bd:#334155;--bd2:#3f516b;
+  --tx:#f1f5f9;--tx2:#94a3b8;--tx3:#64748b;
+  --gr:#22c55e;--grm:#16a34a;--re:#ef4444;--rem:#dc2626;
+  --bl:#3b82f6;--blm:#2563eb;--pk:#f472b6;--gd:#fbbf24;
+  --tl:#14b8a6;--pu:#a78bfa;--am:#f59e0b;
+  --r:14px;--rs:8px;
+  --sh:0 4px 24px rgba(0,0,0,.4);--shm:0 8px 32px rgba(0,0,0,.5);
+}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:14px}
+/* TOPBAR */
+.topbar{background:linear-gradient(135deg,#0f172a,#1a2744,#1e293b);border-bottom:1px solid var(--bd);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 4px 24px rgba(0,0,0,.5);flex-wrap:wrap;gap:8px}
+.tbl{display:flex;align-items:center;gap:10px}
+.logo{width:40px;height:40px;border-radius:var(--rs);background:linear-gradient(135deg,#22c55e,#0d9488);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.ttl{font-size:14px;font-weight:800;background:linear-gradient(135deg,#f1f5f9,#94a3b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tsb{font-size:10px;color:var(--tx3);margin-top:1px}
+.tbr{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lbdg{display:flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;background:rgba(34,197,94,.12);color:var(--gr);font-size:11px;font-weight:700;border:1px solid rgba(34,197,94,.25)}
+.ldot{width:6px;height:6px;border-radius:50%;background:var(--gr);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.tspil{font-size:11px;color:var(--tx3);background:var(--sf2);padding:4px 11px;border-radius:20px;border:1px solid var(--bd)}
+.ntabs{display:flex;gap:2px;background:var(--sf2);padding:3px;border-radius:var(--rs);border:1px solid var(--bd)}
+.ntab{padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;color:var(--tx3);border:none;background:transparent;transition:all .2s;white-space:nowrap}
+.ntab.active{background:var(--blm);color:white}
+.ntab:hover:not(.active){color:var(--tx);background:var(--sf3)}
+/* MAIN */
+.main{max-width:1400px;margin:0 auto;padding:22px 24px 60px}
+.panel{display:none}.panel.active{display:block}
+/* UPLOAD */
+.upsec{background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);padding:16px 20px;margin-bottom:20px;box-shadow:var(--sh)}
+.uptit{font-size:13px;font-weight:700;margin-bottom:3px}
+.updsc{font-size:11px;color:var(--tx3);margin-bottom:13px}
+.upgrd{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.upgrd3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px}
+@media(max-width:900px){.upgrd3{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.upgrd{grid-template-columns:1fr}.upgrd3{grid-template-columns:1fr}}
+.upbox{border:2px dashed var(--bd2);border-radius:var(--r);padding:13px 15px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px}
+.upbox:hover,.upbox.drag{border-color:var(--gr);background:rgba(34,197,94,.04)}
+.upbox.loaded{border-color:var(--gr);border-style:solid}
+.upico{width:34px;height:34px;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.uplbl{font-size:11px;font-weight:700;margin-bottom:2px}
+.uphnt{font-size:10px;color:var(--tx3)}
+.upst{font-size:10px;margin-top:3px;font-weight:500}
+.upbtn{padding:7px 12px;border-radius:var(--rs);font-size:11px;font-weight:700;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.bnin{background:var(--grm);color:white}.bnout{background:var(--rem);color:white}
+.upnote{font-size:11px;color:var(--tx3);margin-top:10px;padding:8px 12px;background:var(--sf2);border-radius:var(--rs);border-left:3px solid var(--gd)}
+/* SEC LABEL */
+.sl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-bottom:12px;margin-top:22px;display:flex;align-items:center;gap:8px}
+.sl::after{content:'';flex:1;height:1px;background:var(--bd)}
+/* KPI */
+.kgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:11px}
+.kc{background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);padding:14px 16px;box-shadow:var(--sh);position:relative;overflow:hidden;transition:transform .2s}
+.kc:hover{transform:translateY(-2px)}
+.kglow{position:absolute;top:-15px;right:-15px;width:60px;height:60px;border-radius:50%;opacity:.1;filter:blur(15px)}
+.kico{font-size:18px;margin-bottom:8px;display:block}
+.klbl{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.kval{font-size:22px;font-weight:800;line-height:1;margin-bottom:3px}
+.ksub{font-size:11px;color:var(--tx3)}
+.ktag{display:inline-flex;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:5px}
+/* FILTER */
+.fbar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:16px;padding:9px 13px;background:var(--sf);border-radius:var(--r);border:1px solid var(--bd)}
+.flbl{font-size:11px;font-weight:700;color:var(--tx3);margin-right:3px}
+.fb{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--sf2);color:var(--tx3);transition:all .2s}
+.fb.active{background:var(--blm);color:white;border-color:var(--blm)}
+.fb:hover:not(.active){color:var(--tx);background:var(--sf3)}
+/* CHARTS */
+.cc{background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);box-shadow:var(--sh);padding:16px 18px}
+.ctit{font-size:12px;font-weight:700;margin-bottom:2px}
+.csub{font-size:11px;color:var(--tx3);margin-bottom:12px}
+.cleg{display:flex;gap:10px;margin-bottom:9px;flex-wrap:wrap}
+.lg{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--tx3);font-weight:500}
+.lb{width:9px;height:9px;border-radius:2px}.ld{width:7px;height:7px;border-radius:50%}
+.full{width:100%;margin-bottom:13px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:900px){.g2,.g3{grid-template-columns:1fr}}
+/* OWNER CARDS */
+.ogrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin-bottom:14px}
+.oc{background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);padding:13px 15px;box-shadow:var(--sh);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.oc:hover{transform:translateY(-2px);box-shadow:var(--shm);border-color:var(--bd2)}
+.oc.sel{border-color:var(--bl);box-shadow:0 0 0 2px rgba(59,130,246,.2)}
+.ocd{font-size:12px;font-weight:800;color:var(--tx)}
+.ocn{font-size:10px;color:var(--tx3);margin-top:1px;margin-bottom:8px;line-height:1.3}
+.ocv{font-size:19px;font-weight:800;margin-bottom:3px}
+.ocs{font-size:11px;color:var(--tx3)}
+.ocbar{height:3px;border-radius:2px;background:var(--bd);margin-top:9px;overflow:hidden}
+.ocbf{height:100%;border-radius:2px}
+.ocrnk{position:absolute;top:10px;right:10px;font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(251,191,36,.15);color:var(--gd)}
+/* OWNER DETAIL */
+.odet{background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);padding:16px 18px;margin-bottom:13px;display:none}
+.odet.show{display:block}
+.odh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.odtit{font-size:14px;font-weight:800}
+.odcls{padding:5px 11px;border-radius:var(--rs);background:var(--sf2);color:var(--tx2);border:1px solid var(--bd);cursor:pointer;font-size:11px}
+.odkpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:9px;margin-bottom:13px}
+.odk{background:var(--sf2);border-radius:var(--rs);padding:10px 12px;border:1px solid var(--bd)}
+.odkl{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px}
+.odkv{font-size:16px;font-weight:800}
+/* OWNER CONTROLS */
+.octrl{display:flex;align-items:center;gap:9px;margin-bottom:12px;flex-wrap:wrap}
+.srch{flex:1;min-width:160px;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:7px 11px;color:var(--tx);font-size:12px;font-family:inherit;outline:none}
+.srch:focus{border-color:var(--bl)}
+.srt{background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:7px 11px;color:var(--tx);font-size:12px;font-family:inherit;outline:none;cursor:pointer}
+/* TABLE */
+.tbl2{width:100%;border-collapse:collapse;background:var(--sf);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+.tbl2 th{background:var(--sf2);padding:9px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--bd)}
+.tbl2 td{padding:9px 12px;border-bottom:1px solid var(--bd);font-size:12px;vertical-align:middle}
+.tbl2 tr:last-child td{border-bottom:none}
+.tbl2 tr:hover td{background:rgba(255,255,255,.02)}
+.tbl2 .tot td{background:var(--sf2);font-weight:700;font-size:12px;border-top:2px solid var(--bd2)}
+.stag{display:inline-flex;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap}
+.shi{background:rgba(34,197,94,.15);color:var(--gr);border:1px solid rgba(34,197,94,.2)}
+.sho{background:rgba(239,68,68,.15);color:var(--re);border:1px solid rgba(239,68,68,.2)}
+.sbl{background:rgba(251,191,36,.15);color:var(--gd);border:1px solid rgba(251,191,36,.2)}
+.sin{background:rgba(59,130,246,.15);color:var(--bl);border:1px solid rgba(59,130,246,.2)}
+.sot{background:rgba(244,114,182,.15);color:var(--pk);border:1px solid rgba(244,114,182,.2)}
+/* PASSWORD */
+.pwrap{background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);padding:15px 18px;margin-bottom:18px;box-shadow:var(--sh)}
+/* OVERLAY */
+.ovl{display:none;position:fixed;inset:0;background:rgba(15,23,42,.88);z-index:300;align-items:center;justify-content:center;flex-direction:column;gap:13px}
+.ovl.show{display:flex}
+.spn{width:34px;height:34px;border:3px solid var(--bd);border-top-color:var(--gr);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+/* FOOTER */
+.footer{margin-top:28px;padding-top:12px;border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:11px;color:var(--tx3)}
+.fbdg{background:var(--sf);border:1px solid var(--bd);padding:3px 9px;border-radius:20px;color:var(--tx2);font-weight:500}
+@media(max-width:768px){.main{padding:14px 12px 40px}.topbar{padding:8px 14px}}
+</style>
+</head>
+<body>
+<div class="ovl" id="ovl"><div class="spn"></div><div style="font-size:12px;font-weight:600;color:var(--tx2)">Processing SAP files...</div></div>
+<!-- FULL SCREEN LOGIN -->
+<div id="loginPage" style="display:flex;position:fixed;inset:0;z-index:9999;background:var(--bg);align-items:center;justify-content:center;flex-direction:column">
+  <div style="width:100%;max-width:420px;padding:0 20px">
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="width:60px;height:60px;border-radius:14px;background:linear-gradient(135deg,#22c55e,#0d9488);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 12px">&#128260;</div>
+      <div style="font-size:22px;font-weight:800;color:#f1f5f9;margin-bottom:4px">TMM Warehouse</div>
+      <div style="font-size:13px;color:#64748b">Live Dashboard &mdash; Secure Access</div>
+    </div>
+    <div style="background:#1e293b;border-radius:16px;border:1px solid #334155;padding:28px;box-shadow:0 8px 32px rgba(0,0,0,.5)">
+      <div style="font-size:14px;font-weight:700;color:#f1f5f9;margin-bottom:18px;text-align:center">&#128272; Sign In</div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Email</div>
+        <input type="email" id="puni" placeholder="your@email.com" autocomplete="email"
+          style="width:100%;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px 14px;color:#f1f5f9;font-size:14px;font-family:inherit;outline:none"
+          onkeydown="if(event.key==='Enter')document.getElementById('pwi').focus()">
+      </div>
+      <div style="margin-bottom:18px">
+        <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Password</div>
+        <input type="password" id="pwi" placeholder="Enter password" autocomplete="current-password"
+          style="width:100%;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px 14px;color:#f1f5f9;font-size:14px;font-family:inherit;outline:none"
+          onkeydown="if(event.key==='Enter')chkPw()">
+      </div>
+      <div id="pwerr" style="font-size:12px;color:#ef4444;margin-bottom:12px;display:none;background:rgba(239,68,68,.1);padding:8px 12px;border-radius:8px">&#10060; Wrong email or password.</div>
+      <button onclick="chkPw()"
+        style="width:100%;padding:11px;border-radius:8px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;font-size:14px;font-weight:700;border:none;cursor:pointer">
+        Sign In &#8594;
+      </button>
+      <div style="text-align:center;margin-top:14px;font-size:11px;color:#475569">Contact admin for access</div>
+    </div>
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:#475569">TMM Cold Storage &middot; 3PL Warehouse Management</div>
+  </div>
+</div>
+
+<nav class="topbar">
+  <div class="tbl">
+    <div class="logo">&#128260;</div>
+    <div>
+      <div class="ttl">TMM &#8212; Inbound &amp; Outbound Flow Dashboard</div>
+      <div class="tsb">Cold Storage &middot; 3PL &middot; Daily &amp; Owner-wise CBM Analytics &middot; May 2026</div>
+    </div>
+  </div>
+  <div class="tbr">
+    <div class="ntabs">
+      <button class="ntab active" onclick="sw('flow',this)">&#128202; Daily Flow</button>
+      <button class="ntab" onclick="sw('inbound',this)">&#128229; Inbound</button>
+      <button class="ntab" onclick="sw('outbound',this)">&#128228; Outbound</button>
+      <button class="ntab" onclick="sw('occupancy',this)">&#127981; TMM Occupancy</button>
+      <button class="ntab" onclick="sw('kpi',this)">&#128200; Customer KPI</button>
+    </div>
+    <div class="lbdg"><span class="ldot"></span>Live</div>
+    <div class="tspil" id="tsLabel">May 2026</div>
+  </div>
+</nav>
+<div class="main" id="mainContent" style="display:none">
+
+<!-- UPLOAD / PASSWORD -->
+
+
+<!-- TAB: FLOW -->
+<div class="panel active" id="tab-flow">
+  <div class="fbar">
+    <span class="flbl">Filter:</span>
+    <button class="fb active" onclick="setF('all',this)">All Days</button>
+    <button class="fb" onclick="setF('w1',this)">Week 1</button>
+    <button class="fb" onclick="setF('w2',this)">Week 2</button>
+    <button class="fb" onclick="setF('w3',this)">Week 3+</button>
+    <button class="fb" onclick="setF('hi',this)">&#128229; Heavy IN</button>
+    <button class="fb" onclick="setF('ho',this)">&#128228; Heavy OUT</button>
+  </div>
+  <div class="sl">Monthly Flow Summary</div>
+  <div class="kgrid" id="kgrid"></div>
+  <div class="sl">Daily CBM Flow</div>
+  <div class="cc full">
+    <div class="ctit">Daily Inbound vs Outbound Volume (CBM)</div>
+    <div class="csub">Green = inbound received &middot; Red = outbound dispatched &middot; Gold line = net daily flow</div>
+    <div class="cleg">
+      <span class="lg"><span class="lb" style="background:#22c55e"></span>Inbound</span>
+      <span class="lg"><span class="lb" style="background:#ef4444"></span>Outbound</span>
+      <span class="lg"><span class="ld" style="background:#fbbf24"></span>Net</span>
+    </div>
+    <canvas id="mchart" height="230"></canvas>
+  </div>
+  <div class="g2">
+    <div class="cc">
+      <div class="ctit">Daily Document Count</div>
+      <div class="csub">Inbound &amp; outbound docs per day</div>
+      <div class="cleg">
+        <span class="lg"><span class="lb" style="background:#3b82f6"></span>Inbound</span>
+        <span class="lg"><span class="lb" style="background:#f472b6"></span>Outbound</span>
+      </div>
+      <canvas id="cchart" height="190"></canvas>
+    </div>
+    <div class="cc">
+      <div class="ctit">Net Flow per Day (CBM)</div>
+      <div class="csub">Positive = more in &middot; Negative = more out</div>
+      <canvas id="nchart" height="190"></canvas>
+    </div>
+  </div>
+  <div class="sl">Daily Detail</div>
+  <table class="tbl2"><thead><tr>
+    <th>#</th><th>Date</th><th>IN Docs</th><th>IN CBM</th><th>OUT Docs</th><th>OUT CBM</th><th>Net CBM</th><th>CBM/Doc IN</th><th>CBM/Doc OUT</th><th>Status</th>
+  </tr></thead><tbody id="ftbody"></tbody></table>
+</div>
+
+<!-- TAB: INBOUND -->
+<div class="panel" id="tab-inbound">
+  <div class="sl">Inbound Owner Analysis &#8212; May 2026</div>
+  <div class="g2">
+    <div class="cc"><div class="ctit">Top 10 Inbound by CBM</div><div class="csub">Total received this month</div><canvas id="ibbar" height="240"></canvas></div>
+    <div class="cc"><div class="ctit">Inbound CBM Share</div><div class="csub">Top owners % of total</div><canvas id="ibdnt" height="240"></canvas></div>
+  </div>
+  <div class="octrl">
+    <input class="srch" type="text" placeholder="Search owner code or name..." oninput="fowr('ib',this.value)">
+    <select class="srt" onchange="sowr('ib',this.value)">
+      <option value="vol">Sort by CBM</option><option value="docs">Sort by Docs</option>
+      <option value="days">Sort by Days</option><option value="name">Sort A-Z</option>
+    </select>
+    <span style="font-size:11px;color:var(--tx3)" id="ibcnt"></span>
+  </div>
+  <div id="ibdet" class="odet"></div>
+  <div class="ogrid" id="ibgrid"></div>
+  <div class="sl">Full Inbound Table</div>
+  <table class="tbl2"><thead><tr><th>#</th><th>Code</th><th>Customer Name</th><th>Total CBM</th><th>Docs</th><th>Days</th><th>Avg/Day</th><th>Avg/Doc</th><th>% Share</th></tr></thead>
+  <tbody id="ibtbl"></tbody></table>
+</div>
+
+<!-- TAB: OUTBOUND -->
+<div class="panel" id="tab-outbound">
+  <div class="sl">Outbound Owner Analysis &#8212; May 2026</div>
+  <div class="g2">
+    <div class="cc"><div class="ctit">Top 10 Outbound by CBM</div><div class="csub">Total dispatched this month</div><canvas id="obbar" height="240"></canvas></div>
+    <div class="cc"><div class="ctit">Outbound CBM Share</div><div class="csub">Top owners % of total</div><canvas id="obdnt" height="240"></canvas></div>
+  </div>
+  <div class="octrl">
+    <input class="srch" type="text" placeholder="Search owner code or name..." oninput="fowr('ob',this.value)">
+    <select class="srt" onchange="sowr('ob',this.value)">
+      <option value="vol">Sort by CBM</option><option value="docs">Sort by Docs</option>
+      <option value="days">Sort by Days</option><option value="name">Sort A-Z</option>
+    </select>
+    <span style="font-size:11px;color:var(--tx3)" id="obcnt"></span>
+  </div>
+  <div id="obdet" class="odet"></div>
+  <div class="ogrid" id="obgrid"></div>
+  <div class="sl">Full Outbound Table</div>
+  <table class="tbl2"><thead><tr><th>#</th><th>Code</th><th>Customer Name</th><th>Total CBM</th><th>Docs</th><th>Days</th><th>Avg/Day</th><th>Avg/Doc</th><th>% Share</th></tr></thead>
+  <tbody id="obtbl"></tbody></table>
+</div>
+
+<!-- TAB: TMM OCCUPANCY -->
+<div class="panel" id="tab-occupancy">
+  <div class="sl">Warehouse Occupancy by Customer &#8212; TMM1 &middot; TMM2 &middot; TMM3</div>
+
+  <!-- CAPACITY vs OCCUPANCY OVERVIEW -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px" id="capacitySection"></div>
+
+  <!-- CAPACITY OVERVIEW BAR CHART -->
+  <div class="cc full" style="margin-bottom:18px">
+    <div class="ctit">Warehouse Capacity vs Occupancy Overview</div>
+    <div class="csub">Total capacity, occupied CBM and available space for TMM1, TMM2 and TMM3</div>
+    <canvas id="capacityChart" height="200"></canvas>
+  </div>
+
+  <div class="sl">Customer Breakdown by Warehouse</div>
+  <div class="g3" id="tmmcards"></div>
+  <div class="g3">
+    <div class="cc"><div class="ctit">TMM1 &#8212; Top Customers</div><div class="csub">Current occupancy CBM</div><canvas id="tc1" height="300"></canvas></div>
+    <div class="cc"><div class="ctit">TMM2 &#8212; Top Customers</div><div class="csub">Current occupancy CBM</div><canvas id="tc2" height="300"></canvas></div>
+    <div class="cc"><div class="ctit">TMM3 &#8212; Top Customers</div><div class="csub">Current occupancy CBM</div><canvas id="tc3" height="300"></canvas></div>
+  </div>
+  <div class="cc full">
+    <div class="ctit">All Customers &#8212; CBM across TMM1 &middot; TMM2 &middot; TMM3</div>
+    <div class="csub">Top 20 customers stacked by warehouse</div>
+    <div class="cleg">
+      <span class="lg"><span class="lb" style="background:#3b82f6"></span>TMM1</span>
+      <span class="lg"><span class="lb" style="background:#22c55e"></span>TMM2</span>
+      <span class="lg"><span class="lb" style="background:#f59e0b"></span>TMM3</span>
+    </div>
+    <canvas id="tstack"></canvas>
+  </div>
+  <div class="g3">
+    <div>
+      <div class="sl">TMM1 Customers</div>
+      <table class="tbl2"><thead><tr><th>#</th><th>Code</th><th>Customer</th><th>CBM</th><th>%</th></tr></thead><tbody id="tt1"></tbody></table>
+    </div>
+    <div>
+      <div class="sl">TMM2 Customers</div>
+      <table class="tbl2"><thead><tr><th>#</th><th>Code</th><th>Customer</th><th>CBM</th><th>%</th></tr></thead><tbody id="tt2"></tbody></table>
+    </div>
+    <div>
+      <div class="sl">TMM3 Customers</div>
+      <table class="tbl2"><thead><tr><th>#</th><th>Code</th><th>Customer</th><th>CBM</th><th>%</th></tr></thead><tbody id="tt3"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: CUSTOMER KPI -->
+<div class="panel" id="tab-kpi">
+  <div class="sl">Customer KPI &#8212; Overview</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px" id="kpiCards"></div>
+  <div class="g3">
+    <div class="cc"><div class="ctit">Top 10 &#8212; Storage CBM</div><div class="csub">Current occupancy</div><canvas id="kpiStorageChart" height="280"></canvas></div>
+    <div class="cc"><div class="ctit">Top 10 &#8212; Inbound CBM</div><div class="csub">This month</div><canvas id="kpiInChart" height="280"></canvas></div>
+    <div class="cc"><div class="ctit">Top 10 &#8212; Outbound CBM</div><div class="csub">This month</div><canvas id="kpiOutChart" height="280"></canvas></div>
+  </div>
+  <div class="cc full" style="margin-bottom:18px">
+    <div class="ctit">Net Flow &#8212; Inbound vs Outbound</div>
+    <div class="csub">Top 15 active customers</div>
+    <div class="cleg">
+      <span class="lg"><span class="lb" style="background:#22c55e"></span>Inbound</span>
+      <span class="lg"><span class="lb" style="background:#ef4444"></span>Outbound</span>
+    </div>
+    <canvas id="kpiNetChart"></canvas>
+  </div>
+  <div class="sl">All Customers &#8212; Full KPI Table</div>
+  <div style="margin-bottom:12px;display:flex;gap:10px;flex-wrap:wrap">
+    <input type="text" id="kpiSearch" placeholder="Search customer..." oninput="filterKPI()"
+      style="flex:1;min-width:180px;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:8px 12px;color:var(--tx);font-family:inherit;font-size:13px;outline:none">
+    <select id="kpiSort" onchange="filterKPI()" style="background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:8px 12px;color:var(--tx);font-family:inherit;font-size:13px;outline:none">
+      <option value="storage">Sort by Storage</option>
+      <option value="inbound">Sort by Inbound</option>
+      <option value="outbound">Sort by Outbound</option>
+      <option value="net">Sort by Net Flow</option>
+    </select>
+  </div>
+  <div style="background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);overflow:hidden;box-shadow:var(--sh)">
+    <table class="tbl2"><thead><tr>
+      <th>#</th><th>Customer</th>
+      <th style="color:#a78bfa">Storage</th>
+      <th style="color:#3b82f6">TMM1</th>
+      <th style="color:#22c55e">TMM2</th>
+      <th style="color:#f59e0b">TMM3</th>
+      <th style="color:#22c55e">Inbound</th>
+      <th style="color:#ef4444">Outbound</th>
+      <th>Net Flow</th>
+      <th>% Share</th>
+    </tr></thead><tbody id="kpiTbody"></tbody></table>
+  </div>
+</div>
+
+<div class="footer">
+  <span>TMM Cold Storage &middot; SAP WM &middot; Document subtotal CBM &middot; May 2026</span>
+  <div style="display:flex;gap:7px;flex-wrap:wrap">
+    <span class="fbdg">TMM Warehouse</span>
+    <span class="fbdg" id="pbd">May 2026</span>
+    <span class="fbdg" id="dbd">19 days</span>
+  </div>
+</div>
+</div>
+
+<!-- Hidden file inputs always in DOM regardless of auth state -->
+<input type="file" id="ibin"  accept=".xlsx,.xls" style="display:none">
+<input type="file" id="obin"  accept=".xlsx,.xls" style="display:none">
+<input type="file" id="occin" accept=".xlsx,.xls" style="display:none">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>const SUPA_URL='https://gccbdujmfxkqpkzocliq.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjY2JkdWptZnhrcXBrem9jbGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTczMTEsImV4cCI6MjA5NTI3MzMxMX0.cosJ4LVExjDqV0bZZFF3ceqMNtlyUstz6-gNn6jvb9k';
+let supa=null;
+function initSupa(){if(typeof window.supabase!=='undefined'&&!supa)supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);}
+async function supaSignIn(e,p){initSupa();if(!supa)return{error:true};return supa.auth.signInWithPassword({email:e,password:p});}
+async function supaSignOut(){initSupa();if(supa)await supa.auth.signOut();}
+async function supaSession(){initSupa();if(!supa)return null;const r=await supa.auth.getSession();return r.data.session;}
+async function supaFetch(fn){initSupa();if(!supa)return null;try{const r=await supa.storage.from('warehouse-data').download(fn);if(r.error||!r.data)return null;return r.data.arrayBuffer();}catch(e){return null;}}
+async function supaUpload(fn,f){initSupa();if(!supa)return;try{await supa.storage.from('warehouse-data').upload(fn,f,{upsert:true});}catch(e){}}
+let CURRENT_USER=null;
+
+const DAILY_DATA=[{"date": "01 May", "cnt_in": 25, "vol_in": 929.03, "cnt_out": 16, "vol_out": 375.88}, {"date": "02 May", "cnt_in": 29, "vol_in": 546.04, "cnt_out": 25, "vol_out": 580.11}, {"date": "03 May", "cnt_in": 4, "vol_in": 267.58, "cnt_out": 0, "vol_out": 0}, {"date": "04 May", "cnt_in": 27, "vol_in": 816.31, "cnt_out": 40, "vol_out": 855.66}, {"date": "05 May", "cnt_in": 22, "vol_in": 504.22, "cnt_out": 37, "vol_out": 702.67}, {"date": "06 May", "cnt_in": 23, "vol_in": 392.94, "cnt_out": 28, "vol_out": 912.62}, {"date": "07 May", "cnt_in": 46, "vol_in": 223.45, "cnt_out": 46, "vol_out": 869.77}, {"date": "08 May", "cnt_in": 38, "vol_in": 916.29, "cnt_out": 39, "vol_out": 552.89}, {"date": "09 May", "cnt_in": 47, "vol_in": 1018.81, "cnt_out": 37, "vol_out": 719.47}, {"date": "10 May", "cnt_in": 9, "vol_in": 261.65, "cnt_out": 9, "vol_out": 257.07}, {"date": "11 May", "cnt_in": 33, "vol_in": 582.59, "cnt_out": 38, "vol_out": 747.15}, {"date": "12 May", "cnt_in": 30, "vol_in": 535.7, "cnt_out": 47, "vol_out": 779.23}, {"date": "13 May", "cnt_in": 29, "vol_in": 494.59, "cnt_out": 35, "vol_out": 829.8}, {"date": "14 May", "cnt_in": 31, "vol_in": 1104.64, "cnt_out": 39, "vol_out": 903.09}, {"date": "15 May", "cnt_in": 28, "vol_in": 795.65, "cnt_out": 39, "vol_out": 607.75}, {"date": "16 May", "cnt_in": 23, "vol_in": 370.95, "cnt_out": 21, "vol_out": 435.38}, {"date": "18 May", "cnt_in": 15, "vol_in": 259.11, "cnt_out": 50, "vol_out": 1139.72}, {"date": "19 May", "cnt_in": 29, "vol_in": 180.47, "cnt_out": 37, "vol_out": 612.72}, {"date": "20 May", "cnt_in": 19, "vol_in": 283.96, "cnt_out": 25, "vol_out": 802.92}];
+const IB_OWNERS=[{"owner": "T073", "vol": 1916.71, "docs": 31, "days": 10, "daily": {"01 May": {"vol": 396.98, "docs": 6}, "02 May": {"vol": 132.04, "docs": 2}, "03 May": {"vol": 66.02, "docs": 1}, "04 May": {"vol": 642.74, "docs": 10}, "05 May": {"vol": 158.76, "docs": 3}, "07 May": {"vol": 11.1, "docs": 1}, "12 May": {"vol": 62.57, "docs": 1}, "13 May": {"vol": 61.34, "docs": 1}, "14 May": {"vol": 190.71, "docs": 3}, "15 May": {"vol": 194.44, "docs": 3}}}, {"owner": "T108", "vol": 1475.73, "docs": 34, "days": 6, "daily": {"08 May": {"vol": 489.52, "docs": 10}, "09 May": {"vol": 153.82, "docs": 3}, "14 May": {"vol": 370.75, "docs": 9}, "15 May": {"vol": 248.62, "docs": 6}, "16 May": {"vol": 149.63, "docs": 4}, "18 May": {"vol": 63.38, "docs": 2}}}, {"owner": "T086", "vol": 1104.49, "docs": 27, "days": 16, "daily": {"01 May": {"vol": 186.31, "docs": 1}, "02 May": {"vol": 36.96, "docs": 1}, "03 May": {"vol": 98.95, "docs": 1}, "05 May": {"vol": 3.9, "docs": 1}, "06 May": {"vol": 168.52, "docs": 3}, "07 May": {"vol": 27.0, "docs": 1}, "08 May": {"vol": 8.54, "docs": 1}, "11 May": {"vol": 100.18, "docs": 4}, "12 May": {"vol": 35.42, "docs": 2}, "13 May": {"vol": 27.49, "docs": 2}, "14 May": {"vol": 95.97, "docs": 3}, "15 May": {"vol": 213.73, "docs": 2}, "16 May": {"vol": 26.57, "docs": 1}, "18 May": {"vol": 55.12, "docs": 1}, "19 May": {"vol": 5.69, "docs": 2}, "20 May": {"vol": 14.16, "docs": 1}}}, {"owner": "T223", "vol": 757.89, "docs": 23, "days": 11, "daily": {"01 May": {"vol": 135.91, "docs": 2}, "05 May": {"vol": 141.62, "docs": 2}, "06 May": {"vol": 33.51, "docs": 2}, "08 May": {"vol": 0.28, "docs": 1}, "09 May": {"vol": 8.53, "docs": 1}, "11 May": {"vol": 93.65, "docs": 4}, "12 May": {"vol": 35.42, "docs": 1}, "13 May": {"vol": 58.52, "docs": 3}, "14 May": {"vol": 188.81, "docs": 3}, "15 May": {"vol": 0.83, "docs": 1}, "19 May": {"vol": 60.81, "docs": 3}}}, {"owner": "T285", "vol": 704.05, "docs": 25, "days": 5, "daily": {"01 May": {"vol": 28.49, "docs": 1}, "02 May": {"vol": 113.96, "docs": 4}, "10 May": {"vol": 119.6, "docs": 4}, "11 May": {"vol": 270.37, "docs": 9}, "12 May": {"vol": 171.63, "docs": 7}}}, {"owner": "T315", "vol": 685.59, "docs": 28, "days": 16, "daily": {"01 May": {"vol": 34.0, "docs": 1}, "02 May": {"vol": 57.22, "docs": 2}, "04 May": {"vol": 13.1, "docs": 1}, "05 May": {"vol": 39.62, "docs": 2}, "06 May": {"vol": 76.53, "docs": 3}, "07 May": {"vol": 34.0, "docs": 1}, "08 May": {"vol": 56.11, "docs": 3}, "09 May": {"vol": 36.56, "docs": 1}, "11 May": {"vol": 21.47, "docs": 1}, "12 May": {"vol": 22.32, "docs": 1}, "13 May": {"vol": 43.6, "docs": 2}, "14 May": {"vol": 36.71, "docs": 2}, "16 May": {"vol": 34.0, "docs": 1}, "18 May": {"vol": 34.2, "docs": 1}, "19 May": {"vol": 44.32, "docs": 2}, "20 May": {"vol": 101.83, "docs": 4}}}, {"owner": "T314", "vol": 642.0, "docs": 27, "days": 14, "daily": {"01 May": {"vol": 84.31, "docs": 3}, "02 May": {"vol": 7.46, "docs": 1}, "04 May": {"vol": 62.32, "docs": 2}, "05 May": {"vol": 41.19, "docs": 1}, "06 May": {"vol": 21.25, "docs": 1}, "07 May": {"vol": 51.58, "docs": 2}, "08 May": {"vol": 61.6, "docs": 3}, "09 May": {"vol": 69.01, "docs": 4}, "11 May": {"vol": 48.34, "docs": 2}, "12 May": {"vol": 21.42, "docs": 1}, "14 May": {"vol": 20.05, "docs": 1}, "15 May": {"vol": 32.76, "docs": 1}, "16 May": {"vol": 66.97, "docs": 2}, "19 May": {"vol": 53.74, "docs": 3}}}, {"owner": "T091", "vol": 412.78, "docs": 10, "days": 8, "daily": {"02 May": {"vol": 128.35, "docs": 3}, "03 May": {"vol": 51.48, "docs": 1}, "04 May": {"vol": 32.3, "docs": 1}, "05 May": {"vol": 26.4, "docs": 1}, "14 May": {"vol": 48.38, "docs": 1}, "15 May": {"vol": 29.1, "docs": 1}, "16 May": {"vol": 48.4, "docs": 1}, "18 May": {"vol": 48.38, "docs": 1}}}, {"owner": "T351", "vol": 352.8, "docs": 7, "days": 1, "daily": {"09 May": {"vol": 352.8, "docs": 7}}}, {"owner": "T224", "vol": 332.72, "docs": 7, "days": 5, "daily": {"01 May": {"vol": 39.39, "docs": 1}, "08 May": {"vol": 36.9, "docs": 1}, "12 May": {"vol": 37.98, "docs": 1}, "13 May": {"vol": 183.0, "docs": 3}, "14 May": {"vol": 35.45, "docs": 1}}}, {"owner": "T087", "vol": 220.98, "docs": 13, "days": 2, "daily": {"08 May": {"vol": 19.18, "docs": 1}, "09 May": {"vol": 201.79, "docs": 12}}}, {"owner": "T293", "vol": 186.2, "docs": 5, "days": 3, "daily": {"08 May": {"vol": 40.88, "docs": 1}, "09 May": {"vol": 79.69, "docs": 2}, "15 May": {"vol": 65.62, "docs": 2}}}, {"owner": "T337", "vol": 167.69, "docs": 3, "days": 2, "daily": {"13 May": {"vol": 56.0, "docs": 1}, "14 May": {"vol": 111.69, "docs": 2}}}, {"owner": "T076", "vol": 154.62, "docs": 7, "days": 6, "daily": {"01 May": {"vol": 8.56, "docs": 1}, "04 May": {"vol": 5.23, "docs": 2}, "06 May": {"vol": 1.78, "docs": 1}, "07 May": {"vol": 0.41, "docs": 1}, "08 May": {"vol": 138.61, "docs": 1}, "12 May": {"vol": 0.03, "docs": 1}}}, {"owner": "T352", "vol": 141.57, "docs": 3, "days": 1, "daily": {"10 May": {"vol": 141.57, "docs": 3}}}, {"owner": "T316", "vol": 138.32, "docs": 3, "days": 3, "daily": {"04 May": {"vol": 56.39, "docs": 1}, "05 May": {"vol": 48.45, "docs": 1}, "18 May": {"vol": 33.48, "docs": 1}}}, {"owner": "T276", "vol": 110.97, "docs": 3, "days": 3, "daily": {"07 May": {"vol": 55.82, "docs": 1}, "12 May": {"vol": 2.07, "docs": 1}, "20 May": {"vol": 53.08, "docs": 1}}}, {"owner": "T082", "vol": 109.96, "docs": 9, "days": 6, "daily": {"02 May": {"vol": 0.03, "docs": 1}, "05 May": {"vol": 5.18, "docs": 1}, "11 May": {"vol": 0.12, "docs": 2}, "12 May": {"vol": 0.11, "docs": 1}, "16 May": {"vol": 19.02, "docs": 3}, "20 May": {"vol": 85.49, "docs": 1}}}, {"owner": "T297", "vol": 107.89, "docs": 3, "days": 2, "daily": {"09 May": {"vol": 65.12, "docs": 2}, "12 May": {"vol": 42.77, "docs": 1}}}, {"owner": "T053", "vol": 59.24, "docs": 16, "days": 8, "daily": {"04 May": {"vol": 0.51, "docs": 3}, "05 May": {"vol": 20.56, "docs": 3}, "09 May": {"vol": 4.4, "docs": 2}, "11 May": {"vol": 0.32, "docs": 1}, "13 May": {"vol": 14.28, "docs": 3}, "15 May": {"vol": 2.22, "docs": 2}, "18 May": {"vol": 0.03, "docs": 1}, "20 May": {"vol": 16.92, "docs": 1}}}, {"owner": "T342", "vol": 51.64, "docs": 1, "days": 1, "daily": {"06 May": {"vol": 51.64, "docs": 1}}}, {"owner": "T252", "vol": 51.14, "docs": 1, "days": 1, "daily": {"03 May": {"vol": 51.14, "docs": 1}}}, {"owner": "T001", "vol": 51.07, "docs": 34, "days": 15, "daily": {"01 May": {"vol": 2.84, "docs": 3}, "04 May": {"vol": 0.89, "docs": 2}, "05 May": {"vol": 4.17, "docs": 2}, "06 May": {"vol": 1.05, "docs": 2}, "07 May": {"vol": 1.02, "docs": 4}, "08 May": {"vol": 0.11, "docs": 1}, "09 May": {"vol": 0.0, "docs": 1}, "11 May": {"vol": 0.74, "docs": 1}, "12 May": {"vol": 36.14, "docs": 3}, "13 May": {"vol": 0.71, "docs": 3}, "14 May": {"vol": 0.04, "docs": 1}, "15 May": {"vol": 0.64, "docs": 2}, "18 May": {"vol": 0.82, "docs": 2}, "19 May": {"vol": 0.9, "docs": 5}, "20 May": {"vol": 1.0, "docs": 2}}}, {"owner": "T089", "vol": 47.67, "docs": 47, "days": 13, "daily": {"02 May": {"vol": 5.0, "docs": 6}, "05 May": {"vol": 14.38, "docs": 5}, "06 May": {"vol": 4.35, "docs": 3}, "07 May": {"vol": 5.18, "docs": 5}, "09 May": {"vol": 4.09, "docs": 3}, "11 May": {"vol": 0.61, "docs": 3}, "12 May": {"vol": 2.52, "docs": 1}, "13 May": {"vol": 0.84, "docs": 2}, "15 May": {"vol": 2.98, "docs": 4}, "16 May": {"vol": 5.67, "docs": 4}, "18 May": {"vol": 0.37, "docs": 2}, "19 May": {"vol": 1.68, "docs": 7}, "20 May": {"vol": 0.01, "docs": 2}}}, {"owner": "T030", "vol": 46.43, "docs": 1, "days": 1, "daily": {"08 May": {"vol": 46.43, "docs": 1}}}, {"owner": "T041", "vol": 39.0, "docs": 11, "days": 8, "daily": {"01 May": {"vol": 2.07, "docs": 1}, "02 May": {"vol": 16.78, "docs": 3}, "06 May": {"vol": 7.94, "docs": 1}, "07 May": {"vol": 0.97, "docs": 1}, "08 May": {"vol": 5.56, "docs": 1}, "09 May": {"vol": 1.28, "docs": 1}, "11 May": {"vol": 1.85, "docs": 1}, "15 May": {"vol": 2.55, "docs": 2}}}, {"owner": "T281", "vol": 38.06, "docs": 1, "days": 1, "daily": {"02 May": {"vol": 38.06, "docs": 1}}}, {"owner": "T110", "vol": 34.22, "docs": 37, "days": 4, "daily": {"07 May": {"vol": 10.98, "docs": 24}, "08 May": {"vol": 5.94, "docs": 9}, "10 May": {"vol": 0.48, "docs": 2}, "13 May": {"vol": 16.82, "docs": 2}}}, {"owner": "T242", "vol": 32.07, "docs": 17, "days": 6, "daily": {"07 May": {"vol": 0.36, "docs": 3}, "09 May": {"vol": 17.69, "docs": 4}, "12 May": {"vol": 0.01, "docs": 1}, "16 May": {"vol": 13.95, "docs": 4}, "19 May": {"vol": 0.0, "docs": 1}, "20 May": {"vol": 0.07, "docs": 4}}}, {"owner": "T260", "vol": 29.23, "docs": 4, "days": 4, "daily": {"01 May": {"vol": 0.04, "docs": 1}, "11 May": {"vol": 5.6, "docs": 1}, "12 May": {"vol": 21.2, "docs": 1}, "19 May": {"vol": 2.38, "docs": 1}}}, {"owner": "T353", "vol": 28.25, "docs": 1, "days": 1, "daily": {"13 May": {"vol": 28.25, "docs": 1}}}, {"owner": "T054", "vol": 27.39, "docs": 15, "days": 8, "daily": {"02 May": {"vol": 1.16, "docs": 3}, "04 May": {"vol": 0.68, "docs": 4}, "06 May": {"vol": 4.03, "docs": 3}, "11 May": {"vol": 0.0, "docs": 1}, "12 May": {"vol": 20.17, "docs": 1}, "13 May": {"vol": 0.0, "docs": 1}, "15 May": {"vol": 1.07, "docs": 1}, "19 May": {"vol": 0.27, "docs": 1}}}, {"owner": "T026", "vol": 26.81, "docs": 7, "days": 6, "daily": {"01 May": {"vol": 2.23, "docs": 1}, "09 May": {"vol": 4.02, "docs": 1}, "12 May": {"vol": 9.22, "docs": 1}, "14 May": {"vol": 2.99, "docs": 2}, "16 May": {"vol": 2.45, "docs": 1}, "19 May": {"vol": 5.91, "docs": 1}}}, {"owner": "T334", "vol": 26.4, "docs": 2, "days": 2, "daily": {"11 May": {"vol": 17.16, "docs": 1}, "12 May": {"vol": 9.24, "docs": 1}}}, {"owner": "T321", "vol": 22.97, "docs": 1, "days": 1, "daily": {"07 May": {"vol": 22.97, "docs": 1}}}, {"owner": "T329", "vol": 22.07, "docs": 1, "days": 1, "daily": {"11 May": {"vol": 22.07, "docs": 1}}}, {"owner": "T096", "vol": 21.16, "docs": 4, "days": 3, "daily": {"01 May": {"vol": 1.24, "docs": 1}, "09 May": {"vol": 17.51, "docs": 1}, "18 May": {"vol": 2.41, "docs": 2}}}, {"owner": "T039", "vol": 20.9, "docs": 1, "days": 1, "daily": {"18 May": {"vol": 20.9, "docs": 1}}}, {"owner": "T025", "vol": 19.51, "docs": 6, "days": 6, "daily": {"02 May": {"vol": 8.3, "docs": 1}, "08 May": {"vol": 2.29, "docs": 1}, "12 May": {"vol": 0.07, "docs": 1}, "14 May": {"vol": 0.7, "docs": 1}, "16 May": {"vol": 4.28, "docs": 1}, "19 May": {"vol": 3.87, "docs": 1}}}, {"owner": "T085", "vol": 15.5, "docs": 2, "days": 2, "daily": {"01 May": {"vol": 6.5, "docs": 1}, "06 May": {"vol": 9.0, "docs": 1}}}, {"owner": "T331", "vol": 13.33, "docs": 1, "days": 1, "daily": {"06 May": {"vol": 13.33, "docs": 1}}}, {"owner": "T028", "vol": 9.68, "docs": 4, "days": 3, "daily": {"08 May": {"vol": 3.64, "docs": 2}, "12 May": {"vol": 4.32, "docs": 1}, "13 May": {"vol": 1.73, "docs": 1}}}, {"owner": "T038", "vol": 8.47, "docs": 5, "days": 4, "daily": {"09 May": {"vol": 2.49, "docs": 2}, "12 May": {"vol": 1.08, "docs": 1}, "16 May": {"vol": 0.01, "docs": 1}, "20 May": {"vol": 4.89, "docs": 1}}}, {"owner": "T005", "vol": 7.83, "docs": 3, "days": 3, "daily": {"04 May": {"vol": 2.15, "docs": 1}, "14 May": {"vol": 2.35, "docs": 1}, "20 May": {"vol": 3.33, "docs": 1}}}, {"owner": "T037", "vol": 4.07, "docs": 2, "days": 2, "daily": {"19 May": {"vol": 0.9, "docs": 1}, "20 May": {"vol": 3.18, "docs": 1}}}, {"owner": "T165", "vol": 3.74, "docs": 5, "days": 5, "daily": {"01 May": {"vol": 0.17, "docs": 1}, "02 May": {"vol": 0.7, "docs": 1}, "07 May": {"vol": 2.07, "docs": 1}, "08 May": {"vol": 0.7, "docs": 1}, "11 May": {"vol": 0.1, "docs": 1}}}, {"owner": "T088", "vol": 3.1, "docs": 2, "days": 2, "daily": {"13 May": {"vol": 2.0, "docs": 1}, "15 May": {"vol": 1.1, "docs": 1}}}, {"owner": "T204", "vol": 0.06, "docs": 1, "days": 1, "daily": {"14 May": {"vol": 0.06, "docs": 1}}}, {"owner": "T273", "vol": 0.01, "docs": 1, "days": 1, "daily": {"06 May": {"vol": 0.01, "docs": 1}}}, {"owner": "T152", "vol": 0.01, "docs": 1, "days": 1, "daily": {"13 May": {"vol": 0.01, "docs": 1}}}, {"owner": "T153", "vol": 0.0, "docs": 4, "days": 3, "daily": {"13 May": {"vol": 0.0, "docs": 2}, "18 May": {"vol": 0.0, "docs": 1}, "19 May": {"vol": 0.0, "docs": 1}}}];
+const OB_OWNERS=[{"owner": "T322", "vol": 1359.37, "docs": 46, "days": 15, "daily": {"01 May": {"vol": 100.5, "docs": 1}, "02 May": {"vol": 63.35, "docs": 2}, "04 May": {"vol": 111.37, "docs": 4}, "05 May": {"vol": 93.11, "docs": 4}, "07 May": {"vol": 82.82, "docs": 2}, "08 May": {"vol": 0.46, "docs": 1}, "11 May": {"vol": 80.4, "docs": 1}, "12 May": {"vol": 181.83, "docs": 6}, "13 May": {"vol": 164.55, "docs": 3}, "14 May": {"vol": 164.97, "docs": 5}, "15 May": {"vol": 6.46, "docs": 3}, "16 May": {"vol": 127.8, "docs": 2}, "18 May": {"vol": 90.61, "docs": 6}, "19 May": {"vol": 86.31, "docs": 4}, "20 May": {"vol": 4.84, "docs": 2}}}, {"owner": "T285", "vol": 1330.98, "docs": 47, "days": 6, "daily": {"09 May": {"vol": 114.51, "docs": 5}, "10 May": {"vol": 257.07, "docs": 9}, "11 May": {"vol": 313.39, "docs": 11}, "12 May": {"vol": 106.33, "docs": 4}, "13 May": {"vol": 150.51, "docs": 5}, "14 May": {"vol": 389.17, "docs": 13}}}, {"owner": "T320", "vol": 1125.97, "docs": 14, "days": 8, "daily": {"05 May": {"vol": 44.64, "docs": 1}, "06 May": {"vol": 73.41, "docs": 1}, "09 May": {"vol": 36.86, "docs": 1}, "12 May": {"vol": 143.34, "docs": 2}, "13 May": {"vol": 98.77, "docs": 1}, "18 May": {"vol": 385.91, "docs": 6}, "19 May": {"vol": 35.46, "docs": 1}, "20 May": {"vol": 307.56, "docs": 1}}}, {"owner": "T087", "vol": 907.58, "docs": 47, "days": 17, "daily": {"01 May": {"vol": 1.15, "docs": 1}, "02 May": {"vol": 68.85, "docs": 1}, "04 May": {"vol": 75.26, "docs": 2}, "05 May": {"vol": 6.08, "docs": 2}, "06 May": {"vol": 11.56, "docs": 3}, "07 May": {"vol": 84.86, "docs": 3}, "08 May": {"vol": 31.98, "docs": 2}, "09 May": {"vol": 181.24, "docs": 6}, "11 May": {"vol": 17.41, "docs": 2}, "12 May": {"vol": 6.56, "docs": 2}, "13 May": {"vol": 5.49, "docs": 1}, "14 May": {"vol": 58.4, "docs": 3}, "15 May": {"vol": 13.75, "docs": 3}, "16 May": {"vol": 76.3, "docs": 6}, "18 May": {"vol": 4.9, "docs": 1}, "19 May": {"vol": 131.88, "docs": 6}, "20 May": {"vol": 131.91, "docs": 3}}}, {"owner": "T086", "vol": 822.4, "docs": 64, "days": 14, "daily": {"02 May": {"vol": 100.52, "docs": 7}, "04 May": {"vol": 128.96, "docs": 10}, "05 May": {"vol": 10.39, "docs": 1}, "06 May": {"vol": 19.38, "docs": 3}, "07 May": {"vol": 32.95, "docs": 2}, "08 May": {"vol": 105.9, "docs": 7}, "09 May": {"vol": 117.94, "docs": 8}, "12 May": {"vol": 38.48, "docs": 3}, "13 May": {"vol": 75.04, "docs": 7}, "14 May": {"vol": 0.46, "docs": 1}, "15 May": {"vol": 65.01, "docs": 6}, "16 May": {"vol": 38.92, "docs": 1}, "18 May": {"vol": 79.41, "docs": 5}, "19 May": {"vol": 9.02, "docs": 3}}}, {"owner": "T073", "vol": 775.63, "docs": 18, "days": 6, "daily": {"05 May": {"vol": 126.5, "docs": 2}, "06 May": {"vol": 183.28, "docs": 3}, "07 May": {"vol": 273.75, "docs": 8}, "12 May": {"vol": 4.64, "docs": 2}, "15 May": {"vol": 138.38, "docs": 2}, "20 May": {"vol": 49.07, "docs": 1}}}, {"owner": "T315", "vol": 655.44, "docs": 36, "days": 17, "daily": {"01 May": {"vol": 45.71, "docs": 3}, "02 May": {"vol": 62.62, "docs": 2}, "04 May": {"vol": 51.42, "docs": 2}, "05 May": {"vol": 26.33, "docs": 1}, "06 May": {"vol": 27.49, "docs": 1}, "07 May": {"vol": 28.59, "docs": 1}, "08 May": {"vol": 39.76, "docs": 2}, "09 May": {"vol": 10.69, "docs": 1}, "11 May": {"vol": 3.95, "docs": 2}, "12 May": {"vol": 4.76, "docs": 1}, "13 May": {"vol": 51.88, "docs": 2}, "14 May": {"vol": 41.12, "docs": 1}, "15 May": {"vol": 38.14, "docs": 1}, "16 May": {"vol": 28.27, "docs": 1}, "18 May": {"vol": 62.37, "docs": 5}, "19 May": {"vol": 87.59, "docs": 6}, "20 May": {"vol": 44.75, "docs": 4}}}, {"owner": "T035", "vol": 504.02, "docs": 20, "days": 10, "daily": {"01 May": {"vol": 120.26, "docs": 2}, "02 May": {"vol": 30.47, "docs": 1}, "04 May": {"vol": 252.7, "docs": 6}, "05 May": {"vol": 57.68, "docs": 2}, "06 May": {"vol": 7.04, "docs": 1}, "07 May": {"vol": 5.52, "docs": 1}, "08 May": {"vol": 21.36, "docs": 4}, "11 May": {"vol": 1.02, "docs": 1}, "12 May": {"vol": 1.02, "docs": 1}, "19 May": {"vol": 6.96, "docs": 1}}}, {"owner": "T314", "vol": 465.24, "docs": 21, "days": 11, "daily": {"01 May": {"vol": 31.18, "docs": 2}, "02 May": {"vol": 23.6, "docs": 1}, "05 May": {"vol": 32.0, "docs": 2}, "06 May": {"vol": 13.04, "docs": 2}, "07 May": {"vol": 119.3, "docs": 3}, "08 May": {"vol": 42.22, "docs": 1}, "12 May": {"vol": 72.01, "docs": 3}, "13 May": {"vol": 31.59, "docs": 2}, "15 May": {"vol": 28.82, "docs": 2}, "16 May": {"vol": 39.96, "docs": 1}, "18 May": {"vol": 31.51, "docs": 2}}}, {"owner": "T108", "vol": 441.57, "docs": 14, "days": 11, "daily": {"04 May": {"vol": 9.13, "docs": 1}, "05 May": {"vol": 16.03, "docs": 1}, "09 May": {"vol": 16.03, "docs": 1}, "11 May": {"vol": 52.77, "docs": 2}, "12 May": {"vol": 16.75, "docs": 1}, "13 May": {"vol": 16.75, "docs": 1}, "14 May": {"vol": 71.86, "docs": 1}, "15 May": {"vol": 53.49, "docs": 1}, "16 May": {"vol": 49.24, "docs": 1}, "18 May": {"vol": 102.78, "docs": 3}, "19 May": {"vol": 36.74, "docs": 1}}}, {"owner": "T117", "vol": 397.04, "docs": 6, "days": 4, "daily": {"09 May": {"vol": 67.8, "docs": 1}, "18 May": {"vol": 130.0, "docs": 2}, "19 May": {"vol": 65.0, "docs": 1}, "20 May": {"vol": 134.24, "docs": 2}}}, {"owner": "T276", "vol": 391.51, "docs": 26, "days": 11, "daily": {"02 May": {"vol": 2.11, "docs": 1}, "04 May": {"vol": 7.06, "docs": 3}, "06 May": {"vol": 18.09, "docs": 3}, "08 May": {"vol": 43.41, "docs": 2}, "11 May": {"vol": 30.69, "docs": 5}, "13 May": {"vol": 99.48, "docs": 3}, "14 May": {"vol": 11.34, "docs": 3}, "15 May": {"vol": 8.05, "docs": 2}, "18 May": {"vol": 86.38, "docs": 2}, "19 May": {"vol": 4.69, "docs": 1}, "20 May": {"vol": 80.22, "docs": 1}}}, {"owner": "T340", "vol": 372.78, "docs": 6, "days": 2, "daily": {"05 May": {"vol": 123.13, "docs": 2}, "06 May": {"vol": 249.65, "docs": 4}}}, {"owner": "T281", "vol": 353.84, "docs": 10, "days": 7, "daily": {"02 May": {"vol": 37.83, "docs": 1}, "08 May": {"vol": 76.12, "docs": 2}, "09 May": {"vol": 74.45, "docs": 2}, "13 May": {"vol": 38.06, "docs": 1}, "14 May": {"vol": 36.39, "docs": 1}, "16 May": {"vol": 36.39, "docs": 1}, "19 May": {"vol": 54.6, "docs": 2}}}, {"owner": "T330", "vol": 269.05, "docs": 12, "days": 7, "daily": {"02 May": {"vol": 25.15, "docs": 1}, "05 May": {"vol": 29.86, "docs": 2}, "08 May": {"vol": 21.6, "docs": 1}, "09 May": {"vol": 53.26, "docs": 3}, "11 May": {"vol": 40.32, "docs": 2}, "13 May": {"vol": 58.44, "docs": 1}, "15 May": {"vol": 40.41, "docs": 2}}}, {"owner": "T293", "vol": 220.8, "docs": 8, "days": 2, "daily": {"02 May": {"vol": 82.8, "docs": 3}, "04 May": {"vol": 138.0, "docs": 5}}}, {"owner": "T109", "vol": 216.23, "docs": 5, "days": 4, "daily": {"01 May": {"vol": 4.96, "docs": 1}, "06 May": {"vol": 93.45, "docs": 2}, "11 May": {"vol": 54.74, "docs": 1}, "14 May": {"vol": 63.08, "docs": 1}}}, {"owner": "T091", "vol": 216.04, "docs": 6, "days": 5, "daily": {"12 May": {"vol": 82.59, "docs": 2}, "14 May": {"vol": 30.23, "docs": 1}, "15 May": {"vol": 38.79, "docs": 1}, "16 May": {"vol": 30.23, "docs": 1}, "18 May": {"vol": 34.2, "docs": 1}}}, {"owner": "T337", "vol": 204.0, "docs": 5, "days": 4, "daily": {"02 May": {"vol": 59.68, "docs": 1}, "04 May": {"vol": 55.36, "docs": 1}, "05 May": {"vol": 0.1, "docs": 1}, "11 May": {"vol": 88.86, "docs": 2}}}, {"owner": "T307", "vol": 165.24, "docs": 1, "days": 1, "daily": {"06 May": {"vol": 165.24, "docs": 1}}}, {"owner": "T351", "vol": 158.33, "docs": 7, "days": 4, "daily": {"11 May": {"vol": 18.72, "docs": 2}, "12 May": {"vol": 61.2, "docs": 1}, "15 May": {"vol": 18.72, "docs": 2}, "19 May": {"vol": 59.69, "docs": 2}}}, {"owner": "T085", "vol": 120.21, "docs": 10, "days": 8, "daily": {"04 May": {"vol": 5.53, "docs": 1}, "05 May": {"vol": 36.02, "docs": 1}, "07 May": {"vol": 68.33, "docs": 2}, "08 May": {"vol": 0.32, "docs": 1}, "09 May": {"vol": 1.53, "docs": 2}, "13 May": {"vol": 1.38, "docs": 1}, "18 May": {"vol": 0.6, "docs": 1}, "19 May": {"vol": 6.5, "docs": 1}}}, {"owner": "T088", "vol": 111.99, "docs": 12, "days": 10, "daily": {"02 May": {"vol": 7.56, "docs": 1}, "04 May": {"vol": 2.08, "docs": 1}, "07 May": {"vol": 8.26, "docs": 1}, "08 May": {"vol": 6.61, "docs": 1}, "11 May": {"vol": 0.64, "docs": 1}, "13 May": {"vol": 14.35, "docs": 1}, "14 May": {"vol": 15.17, "docs": 1}, "15 May": {"vol": 13.55, "docs": 2}, "19 May": {"vol": 8.13, "docs": 1}, "20 May": {"vol": 35.64, "docs": 2}}}, {"owner": "T069", "vol": 110.0, "docs": 2, "days": 2, "daily": {"07 May": {"vol": 55.0, "docs": 1}, "18 May": {"vol": 55.0, "docs": 1}}}, {"owner": "T342", "vol": 103.28, "docs": 2, "days": 1, "daily": {"08 May": {"vol": 103.28, "docs": 2}}}, {"owner": "T304", "vol": 92.7, "docs": 3, "days": 3, "daily": {"01 May": {"vol": 46.25, "docs": 1}, "05 May": {"vol": 0.2, "docs": 1}, "15 May": {"vol": 46.25, "docs": 1}}}, {"owner": "T296", "vol": 88.8, "docs": 2, "days": 1, "daily": {"05 May": {"vol": 88.8, "docs": 2}}}, {"owner": "T331", "vol": 83.66, "docs": 5, "days": 3, "daily": {"07 May": {"vol": 47.51, "docs": 3}, "12 May": {"vol": 15.18, "docs": 1}, "15 May": {"vol": 20.97, "docs": 1}}}, {"owner": "T053", "vol": 83.56, "docs": 27, "days": 14, "daily": {"01 May": {"vol": 4.08, "docs": 1}, "02 May": {"vol": 1.07, "docs": 1}, "07 May": {"vol": 8.43, "docs": 6}, "08 May": {"vol": 0.04, "docs": 1}, "09 May": {"vol": 6.53, "docs": 1}, "11 May": {"vol": 13.41, "docs": 1}, "12 May": {"vol": 7.93, "docs": 8}, "13 May": {"vol": 11.5, "docs": 1}, "14 May": {"vol": 2.87, "docs": 1}, "15 May": {"vol": 1.0, "docs": 1}, "16 May": {"vol": 1.72, "docs": 1}, "18 May": {"vol": 13.91, "docs": 1}, "19 May": {"vol": 8.73, "docs": 2}, "20 May": {"vol": 2.33, "docs": 1}}}, {"owner": "T041", "vol": 66.46, "docs": 11, "days": 6, "daily": {"04 May": {"vol": 3.81, "docs": 1}, "09 May": {"vol": 32.21, "docs": 2}, "11 May": {"vol": 15.73, "docs": 2}, "13 May": {"vol": 5.2, "docs": 2}, "18 May": {"vol": 4.27, "docs": 2}, "20 May": {"vol": 5.25, "docs": 2}}}, {"owner": "T316", "vol": 53.65, "docs": 8, "days": 7, "daily": {"02 May": {"vol": 6.75, "docs": 1}, "04 May": {"vol": 10.8, "docs": 1}, "06 May": {"vol": 6.75, "docs": 1}, "08 May": {"vol": 11.94, "docs": 2}, "09 May": {"vol": 2.41, "docs": 1}, "11 May": {"vol": 10.08, "docs": 1}, "12 May": {"vol": 4.92, "docs": 1}}}, {"owner": "T297", "vol": 43.98, "docs": 4, "days": 4, "daily": {"07 May": {"vol": 29.18, "docs": 1}, "08 May": {"vol": 4.44, "docs": 1}, "11 May": {"vol": 4.44, "docs": 1}, "15 May": {"vol": 5.92, "docs": 1}}}, {"owner": "T090", "vol": 43.57, "docs": 4, "days": 4, "daily": {"06 May": {"vol": 9.6, "docs": 1}, "08 May": {"vol": 26.86, "docs": 1}, "15 May": {"vol": 1.04, "docs": 1}, "19 May": {"vol": 6.07, "docs": 1}}}, {"owner": "T030", "vol": 40.21, "docs": 3, "days": 2, "daily": {"08 May": {"vol": 1.62, "docs": 1}, "18 May": {"vol": 38.6, "docs": 2}}}, {"owner": "T326", "vol": 33.63, "docs": 1, "days": 1, "daily": {"06 May": {"vol": 33.63, "docs": 1}}}, {"owner": "T089", "vol": 31.19, "docs": 35, "days": 13, "daily": {"05 May": {"vol": 5.2, "docs": 4}, "06 May": {"vol": 1.01, "docs": 1}, "07 May": {"vol": 2.96, "docs": 5}, "08 May": {"vol": 0.84, "docs": 2}, "09 May": {"vol": 2.23, "docs": 2}, "12 May": {"vol": 4.5, "docs": 6}, "13 May": {"vol": 0.0, "docs": 1}, "14 May": {"vol": 6.61, "docs": 4}, "15 May": {"vol": 0.76, "docs": 2}, "16 May": {"vol": 1.09, "docs": 1}, "18 May": {"vol": 4.01, "docs": 2}, "19 May": {"vol": 0.65, "docs": 2}, "20 May": {"vol": 1.32, "docs": 3}}}, {"owner": "T054", "vol": 29.05, "docs": 8, "days": 4, "daily": {"05 May": {"vol": 1.84, "docs": 4}, "12 May": {"vol": 24.16, "docs": 2}, "16 May": {"vol": 0.04, "docs": 1}, "20 May": {"vol": 3.0, "docs": 1}}}, {"owner": "T017", "vol": 26.75, "docs": 3, "days": 3, "daily": {"13 May": {"vol": 4.8, "docs": 1}, "14 May": {"vol": 4.08, "docs": 1}, "15 May": {"vol": 17.87, "docs": 1}}}, {"owner": "T115", "vol": 24.07, "docs": 1, "days": 1, "daily": {"15 May": {"vol": 24.07, "docs": 1}}}, {"owner": "T005", "vol": 22.6, "docs": 4, "days": 4, "daily": {"07 May": {"vol": 10.56, "docs": 1}, "08 May": {"vol": 6.69, "docs": 1}, "12 May": {"vol": 3.0, "docs": 1}, "18 May": {"vol": 2.35, "docs": 1}}}, {"owner": "T273", "vol": 22.26, "docs": 2, "days": 2, "daily": {"07 May": {"vol": 0.63, "docs": 1}, "15 May": {"vol": 21.63, "docs": 1}}}, {"owner": "T334", "vol": 16.35, "docs": 3, "days": 2, "daily": {"01 May": {"vol": 12.0, "docs": 1}, "07 May": {"vol": 4.35, "docs": 2}}}, {"owner": "T260", "vol": 13.48, "docs": 8, "days": 6, "daily": {"04 May": {"vol": 1.5, "docs": 1}, "05 May": {"vol": 2.2, "docs": 1}, "14 May": {"vol": 6.96, "docs": 1}, "15 May": {"vol": 1.5, "docs": 1}, "16 May": {"vol": 0.57, "docs": 3}, "18 May": {"vol": 0.74, "docs": 1}}}, {"owner": "T321", "vol": 13.13, "docs": 7, "days": 6, "daily": {"01 May": {"vol": 6.14, "docs": 1}, "04 May": {"vol": 2.67, "docs": 1}, "05 May": {"vol": 2.49, "docs": 2}, "07 May": {"vol": 0.35, "docs": 1}, "08 May": {"vol": 1.09, "docs": 1}, "14 May": {"vol": 0.39, "docs": 1}}}, {"owner": "T007", "vol": 12.73, "docs": 5, "days": 4, "daily": {"01 May": {"vol": 3.65, "docs": 2}, "18 May": {"vol": 5.9, "docs": 1}, "19 May": {"vol": 2.86, "docs": 1}, "20 May": {"vol": 0.33, "docs": 1}}}, {"owner": "T082", "vol": 12.59, "docs": 2, "days": 2, "daily": {"02 May": {"vol": 7.74, "docs": 1}, "16 May": {"vol": 4.85, "docs": 1}}}, {"owner": "T026", "vol": 9.33, "docs": 2, "days": 2, "daily": {"07 May": {"vol": 6.16, "docs": 1}, "15 May": {"vol": 3.17, "docs": 1}}}, {"owner": "T038", "vol": 3.4, "docs": 3, "days": 1, "daily": {"18 May": {"vol": 3.4, "docs": 3}}}, {"owner": "T287", "vol": 3.22, "docs": 1, "days": 1, "daily": {"08 May": {"vol": 3.22, "docs": 1}}}, {"owner": "T042", "vol": 2.81, "docs": 3, "days": 3, "daily": {"11 May": {"vol": 0.59, "docs": 1}, "13 May": {"vol": 1.99, "docs": 1}, "18 May": {"vol": 0.23, "docs": 1}}}, {"owner": "T028", "vol": 2.72, "docs": 1, "days": 1, "daily": {"08 May": {"vol": 2.72, "docs": 1}}}, {"owner": "T033", "vol": 2.65, "docs": 1, "days": 1, "daily": {"18 May": {"vol": 2.65, "docs": 1}}}, {"owner": "T037", "vol": 2.44, "docs": 1, "days": 1, "daily": {"20 May": {"vol": 2.44, "docs": 1}}}, {"owner": "T076", "vol": 2.19, "docs": 2, "days": 2, "daily": {"08 May": {"vol": 0.41, "docs": 1}, "09 May": {"vol": 1.78, "docs": 1}}}, {"owner": "T150", "vol": 1.85, "docs": 1, "days": 1, "daily": {"19 May": {"vol": 1.85, "docs": 1}}}, {"owner": "T044", "vol": 0.26, "docs": 1, "days": 1, "daily": {"07 May": {"vol": 0.26, "docs": 1}}}, {"owner": "T348", "vol": 0.06, "docs": 1, "days": 1, "daily": {"05 May": {"vol": 0.06, "docs": 1}}}];
+const OWNER_MAP={"T001": "AL FUTTAIM TRADING (L.L.C)", "T003": "AL YOUSUF ELECTRONICS LLC", "T005": "MATRIX FZCO", "T007": "SPIDERNET TECHNOLOGY FZE", "T008": "BLUE CONTAINERS INTERNATIONAL", "T012": "CLARION LOGISTICS MIDDLE EAST", "T017": "CMC MAGNETICS CORPORATION - W/H", "T019": "EZRA SHIPPING LLC - STAR W/H", "T021": "EZRA SHIPPING LLC-W/H", "T022": "EZRA SHIPPING LLC - ETI", "T025": "HELLMANN WORLD WIDE LOGISTICS", "T026": "HELLMANN WORLDWIDE LOGISTICS", "T031": "NAVIGATORS SHIPPING & LOGISTICA FZE", "T032": "NAVIGATORS SHIPPING AND LOGISTICA", "T033": "Navigators Shipping And Logistica LLC", "T035": "PROCONNECT SUPPLY CHAIN LOGISTICS", "T037": "CRANE WORLDWIDE LOGISTICS L.L.C", "T038": "CRANE WORLDWIDE LOGISTICS L.L.C", "T039": "JOINT LINE SHIPPING AND FORWARDING", "T040": "IOR GLOBAL CARGO SERVICES LLC", "T041": "IOR GLOBAL CARGO SERVICES LLC -", "T042": "IOR SIGNAUX GLOBAL (WH)", "T043": "INTEX TECHNOLOGIES LLC- W/H", "T044": "MIG INFORMATION SYSTEMS - WH", "T045": "I LIFE DIGITAL TECHNOLOGY LLC- W/H", "T046": "TEKNODOME FZE", "T047": "JASPA GENERAL TRADING CO. (LLC)", "T049": "AL MAJID DIGITAL SOLUTIONS LLC", "T051": "ORBITE SKY TRADING LLC - W/H", "T053": "THOMSUN -MASTERPIECE LLC -W/H", "T055": "AQUA COOL TECHNICAL TRADING", "T056": "AVIENTEK FZCO - W/H", "T064": "EZRA SHIPPING LLC - AND -W/H", "T065": "EZRA SHIPPING LLC - IFL", "T066": "AVIENTEK FZCO", "T070": "HARIB EXPORT & IMPORT  CO. LLC \u2013WH", "T073": "HISENSE MIDDLE EAST FZE (WH)", "T075": "KLM MIDDLE EAST GENERAL TRADING LLC", "T076": "AL MATEEN EXPRESS LLC", "T080": "OCTAGON INTERNATIONAL FZCO - W/H", "T082": "R&M SN ELECTRICAL FZCO", "T084": "SAEED MUQADAS", "T085": "SIMBA GULF FZCO / CANON (WH)", "T086": "SIMBA GULF FZCO / ELECTRONICS (WH)", "T087": "SIMBA GULF FZCO / FMCG (WH)", "T088": "SIN LASER & PRINT FZE", "T089": "STARLINK DMCC (INV)", "T090": "TECHMAY INTERNATIONAL FZE", "T091": "THE INDEPENDENT TOBACCO FZE", "T095": "WORLDWIDE DISTRIBUTION CENTER", "T096": "THOMSUN TRADING EST", "T108": "EZRA SHIIPPING- ALLIANCE - 2", "T109": "AW ROSTAMANI LOGISTICS LLC", "T110": "CRANE WORLDWIDE LOGISTICS (CHEVRON)", "T112": "HISENSE MIDDLE EAST FZE-ACTIF", "T115": "HISENSE MIDDLE EAST FZE-WEJA", "T116": "HISENSE MIDDLE EAST FZE-AVATAR", "T117": "HISENSE MIDDLE EAST FZE-RPK", "T118": "HISENSE MIDDLE EAST FZE-EITHER", "T120": "HISENSE MIDDLE EAST FZE-TRISTAR", "T133": "AL MAJID DIGITAL SOLUTIONS LLC", "T155": "DATAM TRADING FZE", "T252": "WORLD WATERWAY SEA SHIPPING CO LLC", "T260": "THOMSUN TRADING EST W/H", "T273": "IOR GLOBAL -INFRA", "T276": "WELLNESS FIRST MIDDLE EAST SPORT", "T277": "CORNERSTONE SHIPPING & LOGISTICS L.L.C", "T281": "Ezra Shipping LLC - InterTabasc", "T285": "ABRECO FREIGHT L.L.C", "T291": "DAWNTAINERS MARITIME SERVICES L.L.C", "T293": "DP World Logistics UAE FZE", "T296": "Mass Allied Freighters LLC", "T297": "Universal Islamic Meat FZCO", "T301": "Gulf Evergreen Food Trading LLC", "T304": "M O T Shipping & Trading LLC", "T314": "C K F INTERNATIONAL SHIPPING &", "T315": "C K F INTERNATIONAL SHIPPING &", "T316": "C K F INTERNATIONAL SHIPPING &", "T320": "VIVA ENTERPRISE HOLDINGS LIMITED", "T321": "Cleantech Gulf FZCO", "T322": "A W ROSTAMANI LOGISTICS LLC-GP", "T323": "GLOBAL FOOD & DAIRY INGREDIENTS", "T329": "GENTCO L.L.C-FZ", "T330": "UNIKAI FOODS P.J.S.C", "T334": "HELLMANN WORLDWIDE LOGISTICS LLC", "T337": "Transworld Logistics FZE", "T339": "CORVETTE SHIPPING L.L.C", "T342": "BELLOMASSI FOODSTUFF TRADING L.L.C", "T348": "MOSACO SHIPPING & FORWARDING(L.L.C)", "T351": "FAISAL AL NUSIF TRADING CO. (L.L.C)", "T352": "MM GLOBAL LOGISTICS L.L.C", "T353": "DUEEFFE AFADO General Trading", "T355": "TRANS FREIGHT (L.L.C.)"};
+const TMM_OCC={"TMM1": {"T001": 6300.0, "T003": 92.038, "T007": 218.081, "T017": 100.173, "T022": 71.133, "T035": 586.694, "T037": 43.263, "T038": 6.865, "T040": 57.588, "T041": 474.365, "T042": 36.77, "T043": 45.784, "T046": 211.975, "T047": 33.152, "T051": 13.935, "T053": 1525.042, "T056": 0.014, "T064": 122.76, "T065": 1.354, "T066": 1.002, "T070": 3.61, "T073": 2407.44, "T075": 3.127, "T080": 3.434, "T085": 19.399, "T086": 2765.239, "T087": 2981.238, "T089": 67.59, "T090": 217.91, "T091": 2474.33, "T095": 169.208, "T096": 0.067, "T109": 5305.787, "T110": 39.964, "T112": 73.365, "T115": 0.84, "T116": 0.724, "T117": 960.401, "T118": 0.219, "T120": 2.968, "T260": 120.65, "T273": 10.015, "T277": 67.735, "T285": 1.508, "T296": 139.2, "T301": 21.723, "T316": 10.805, "T322": 352.621, "T329": 70.878}, "TMM2": {"T005": 26.476, "T019": 18.976, "T025": 138.725, "T026": 38.668, "T031": 3.375, "T032": 0.119, "T033": 0.488, "T035": 250.816, "T044": 0.843, "T045": 9.556, "T049": 2.0, "T053": 30.635, "T055": 2.717, "T076": 2.888, "T082": 145.658, "T088": 327.074, "T108": 4748.345, "T110": 16.818, "T276": 2517.296, "T321": 108.817}, "TMM3": {"T012": 224.904, "T021": 86.376, "T039": 20.904, "T073": 135.539, "T109": 266.28, "T117": 597.036, "T252": 417.214, "T281": 102.584, "T285": 1075.123, "T291": 679.823, "T293": 1385.269, "T296": 12.672, "T297": 125.648, "T304": 188.612, "T314": 579.082, "T315": 1711.229, "T316": 381.527, "T320": 7342.992, "T322": 110.731, "T323": 25.238, "T330": 167.85, "T334": 89.193, "T337": 1009.482, "T339": 214.02, "T342": 487.8, "T348": 131.91, "T351": 185.112, "T352": 106.626, "T353": 28.252, "T355": 47.966}};
+
+let DAILY=[...DAILY_DATA],FILT=[...DAILY];
+let IB=[...IB_OWNERS],OB=[...OB_OWNERS];
+let IBF=[...IB],OBF=[...OB];
+let PIB=null,POB=null,POCC=null;
+
+const fD=n=>Number(n).toFixed(1);
+const fD2=n=>Number(n).toFixed(2);
+const fN=n=>Number(Math.round(n)).toLocaleString();
+const now=()=>new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+const oname=c=>OWNER_MAP[c]||c;
+const sname=c=>{const n=OWNER_MAP[c]||c;return n;}; // full name always
+const TMM3_ZONES=[{"code": "T3R1", "name": "C1", "desc": "+18C Temp Control", "cap": 28670.4, "col": "#f59e0b", "occ": 13965.32, "avail": 14705.08, "pct": 48.7, "owners": {}}, {"code": "T3C1", "name": "C2", "desc": "Frozen", "cap": 2755.2, "col": "#3b82f6", "occ": 532.43, "avail": 2222.77, "pct": 19.3, "owners": {}}, {"code": "T3C2", "name": "C3", "desc": "Frozen", "cap": 2889.6, "col": "#3b82f6", "occ": 1656.2, "avail": 1233.4, "pct": 57.3, "owners": {}}, {"code": "T3C3", "name": "C4", "desc": "Chiller", "cap": 3192.0, "col": "#14b8a6", "occ": 1783.05, "avail": 1408.95, "pct": 55.9, "owners": {}}];
+const KPI_DATA_BAKED=[{"code": "T320", "name": "VIVA ENTERPRISE HOLDINGS LIMITED", "t1": 0.0, "t2": 0.0, "t3": 7342.99, "storage": 7342.99, "ib": 0, "ob": 1125.97, "net": -1125.97, "pct": 13.5, "wh": ["TMM3"]}, {"code": "T001", "name": "AL FUTTAIM TRADING (L.L.C)", "t1": 6300.0, "t2": 0.0, "t3": 0.0, "storage": 6300.0, "ib": 51.07, "ob": 0, "net": 51.07, "pct": 11.5, "wh": ["TMM1"]}, {"code": "T109", "name": "AW ROSTAMANI LOGISTICS LLC", "t1": 5305.79, "t2": 0.0, "t3": 266.28, "storage": 5572.07, "ib": 0, "ob": 216.23, "net": -216.23, "pct": 10.2, "wh": ["TMM1", "TMM3"]}, {"code": "T108", "name": "EZRA SHIIPPING- ALLIANCE - 2", "t1": 0.0, "t2": 4748.35, "t3": 0.0, "storage": 4748.35, "ib": 1456.19, "ob": 441.57, "net": 1014.62, "pct": 8.7, "wh": ["TMM2"]}, {"code": "T087", "name": "SIMBA GULF FZCO / FMCG (WH)", "t1": 2981.24, "t2": 0.0, "t3": 0.0, "storage": 2981.24, "ib": 220.97, "ob": 907.58, "net": -686.61, "pct": 5.5, "wh": ["TMM1"]}, {"code": "T086", "name": "SIMBA GULF FZCO / ELECTRONICS (WH)", "t1": 2765.24, "t2": 0.0, "t3": 0.0, "storage": 2765.24, "ib": 1104.49, "ob": 822.4, "net": 282.09, "pct": 5.1, "wh": ["TMM1"]}, {"code": "T073", "name": "HISENSE MIDDLE EAST FZE (WH)", "t1": 2407.44, "t2": 0.0, "t3": 135.54, "storage": 2542.98, "ib": 1916.71, "ob": 775.63, "net": 1141.08, "pct": 4.7, "wh": ["TMM1", "TMM3"]}, {"code": "T276", "name": "WELLNESS FIRST MIDDLE EAST SPORT", "t1": 0.0, "t2": 2517.3, "t3": 0.0, "storage": 2517.3, "ib": 110.97, "ob": 391.51, "net": -280.54, "pct": 4.6, "wh": ["TMM2"]}, {"code": "T091", "name": "THE INDEPENDENT TOBACCO FZE", "t1": 2474.33, "t2": 0.0, "t3": 0.0, "storage": 2474.33, "ib": 412.78, "ob": 216.04, "net": 196.74, "pct": 4.5, "wh": ["TMM1"]}, {"code": "T315", "name": "C K F INTERNATIONAL SHIPPING &", "t1": 0.0, "t2": 0.0, "t3": 1711.23, "storage": 1711.23, "ib": 672.49, "ob": 655.44, "net": 17.05, "pct": 3.1, "wh": ["TMM3"]}, {"code": "T117", "name": "HISENSE MIDDLE EAST FZE-RPK", "t1": 960.4, "t2": 0.0, "t3": 597.04, "storage": 1557.44, "ib": 0, "ob": 397.04, "net": -397.04, "pct": 2.9, "wh": ["TMM1", "TMM3"]}, {"code": "T053", "name": "THOMSUN -MASTERPIECE LLC -W/H", "t1": 1525.04, "t2": 30.63, "t3": 0.0, "storage": 1555.67, "ib": 59.24, "ob": 83.56, "net": -24.32, "pct": 2.9, "wh": ["TMM1", "TMM2"]}, {"code": "T293", "name": "DP World Logistics UAE FZE", "t1": 0.0, "t2": 0.0, "t3": 1385.27, "storage": 1385.27, "ib": 186.2, "ob": 220.8, "net": -34.6, "pct": 2.5, "wh": ["TMM3"]}, {"code": "T285", "name": "ABRECO FREIGHT L.L.C", "t1": 1.51, "t2": 0.0, "t3": 1075.12, "storage": 1076.63, "ib": 674.18, "ob": 1330.98, "net": -656.8, "pct": 2.0, "wh": ["TMM1", "TMM3"]}, {"code": "T337", "name": "Transworld Logistics FZE", "t1": 0.0, "t2": 0.0, "t3": 1009.48, "storage": 1009.48, "ib": 167.69, "ob": 204.0, "net": -36.31, "pct": 1.9, "wh": ["TMM3"]}, {"code": "T035", "name": "PROCONNECT SUPPLY CHAIN LOGISTICS", "t1": 586.69, "t2": 250.82, "t3": 0.0, "storage": 837.51, "ib": 0, "ob": 504.02, "net": -504.02, "pct": 1.5, "wh": ["TMM1", "TMM2"]}, {"code": "T291", "name": "DAWNTAINERS MARITIME SERVICES L.L.C", "t1": 0.0, "t2": 0.0, "t3": 679.82, "storage": 679.82, "ib": 0, "ob": 0, "net": 0, "pct": 1.2, "wh": ["TMM3"]}, {"code": "T314", "name": "C K F INTERNATIONAL SHIPPING &", "t1": 0.0, "t2": 0.0, "t3": 579.08, "storage": 579.08, "ib": 634.54, "ob": 465.24, "net": 169.3, "pct": 1.1, "wh": ["TMM3"]}, {"code": "T342", "name": "BELLOMASSI FOODSTUFF TRADING L.L.C", "t1": 0.0, "t2": 0.0, "t3": 487.8, "storage": 487.8, "ib": 51.64, "ob": 103.28, "net": -51.64, "pct": 0.9, "wh": ["TMM3"]}, {"code": "T041", "name": "IOR GLOBAL CARGO SERVICES LLC -", "t1": 474.37, "t2": 0.0, "t3": 0.0, "storage": 474.37, "ib": 39.0, "ob": 66.46, "net": -27.46, "pct": 0.9, "wh": ["TMM1"]}, {"code": "T322", "name": "A W ROSTAMANI LOGISTICS LLC-GP", "t1": 352.62, "t2": 0.0, "t3": 110.73, "storage": 463.35, "ib": 0, "ob": 1359.37, "net": -1359.37, "pct": 0.8, "wh": ["TMM1", "TMM3"]}, {"code": "T252", "name": "WORLD WATERWAY SEA SHIPPING CO LLC", "t1": 0.0, "t2": 0.0, "t3": 417.21, "storage": 417.21, "ib": 51.14, "ob": 0, "net": 51.14, "pct": 0.8, "wh": ["TMM3"]}, {"code": "T316", "name": "C K F INTERNATIONAL SHIPPING &", "t1": 10.8, "t2": 0.0, "t3": 381.53, "storage": 392.33, "ib": 138.32, "ob": 53.65, "net": 84.67, "pct": 0.7, "wh": ["TMM1", "TMM3"]}, {"code": "T088", "name": "SIN LASER & PRINT FZE", "t1": 0.0, "t2": 327.07, "t3": 0.0, "storage": 327.07, "ib": 3.1, "ob": 112.0, "net": -108.9, "pct": 0.6, "wh": ["TMM2"]}, {"code": "T012", "name": "CLARION LOGISTICS MIDDLE EAST", "t1": 0.0, "t2": 0.0, "t3": 224.9, "storage": 224.9, "ib": 0, "ob": 0, "net": 0, "pct": 0.4, "wh": ["TMM3"]}, {"code": "T007", "name": "SPIDERNET TECHNOLOGY FZE", "t1": 218.08, "t2": 0.0, "t3": 0.0, "storage": 218.08, "ib": 0, "ob": 12.73, "net": -12.73, "pct": 0.4, "wh": ["TMM1"]}, {"code": "T090", "name": "TECHMAY INTERNATIONAL FZE", "t1": 217.91, "t2": 0.0, "t3": 0.0, "storage": 217.91, "ib": 0, "ob": 43.57, "net": -43.57, "pct": 0.4, "wh": ["TMM1"]}, {"code": "T339", "name": "CORVETTE SHIPPING L.L.C", "t1": 0.0, "t2": 0.0, "t3": 214.02, "storage": 214.02, "ib": 0, "ob": 0, "net": 0, "pct": 0.4, "wh": ["TMM3"]}, {"code": "T046", "name": "TEKNODOME FZE", "t1": 211.98, "t2": 0.0, "t3": 0.0, "storage": 211.98, "ib": 0, "ob": 0, "net": 0, "pct": 0.4, "wh": ["TMM1"]}, {"code": "T304", "name": "M O T Shipping & Trading LLC", "t1": 0.0, "t2": 0.0, "t3": 188.61, "storage": 188.61, "ib": 0, "ob": 92.7, "net": -92.7, "pct": 0.3, "wh": ["TMM3"]}, {"code": "T351", "name": "FAISAL AL NUSIF TRADING CO. (L.L.C)", "t1": 0.0, "t2": 0.0, "t3": 185.11, "storage": 185.11, "ib": 352.8, "ob": 158.33, "net": 194.47, "pct": 0.3, "wh": ["TMM3"]}, {"code": "T095", "name": "WORLDWIDE DISTRIBUTION CENTER", "t1": 169.21, "t2": 0.0, "t3": 0.0, "storage": 169.21, "ib": 0, "ob": 0, "net": 0, "pct": 0.3, "wh": ["TMM1"]}, {"code": "T330", "name": "UNIKAI FOODS P.J.S.C", "t1": 0.0, "t2": 0.0, "t3": 167.85, "storage": 167.85, "ib": 0, "ob": 269.05, "net": -269.05, "pct": 0.3, "wh": ["TMM3"]}, {"code": "T296", "name": "Mass Allied Freighters LLC", "t1": 139.2, "t2": 0.0, "t3": 12.67, "storage": 151.87, "ib": 0, "ob": 88.8, "net": -88.8, "pct": 0.3, "wh": ["TMM1", "TMM3"]}, {"code": "T082", "name": "R&M SN ELECTRICAL FZCO", "t1": 0.0, "t2": 145.66, "t3": 0.0, "storage": 145.66, "ib": 109.96, "ob": 12.59, "net": 97.37, "pct": 0.3, "wh": ["TMM2"]}, {"code": "T025", "name": "HELLMANN WORLD WIDE LOGISTICS", "t1": 0.0, "t2": 138.72, "t3": 0.0, "storage": 138.72, "ib": 19.51, "ob": 0, "net": 19.51, "pct": 0.3, "wh": ["TMM2"]}, {"code": "T348", "name": "MOSACO SHIPPING & FORWARDING(L.L.C)", "t1": 0.0, "t2": 0.0, "t3": 131.91, "storage": 131.91, "ib": 0, "ob": 0.06, "net": -0.06, "pct": 0.2, "wh": ["TMM3"]}, {"code": "T297", "name": "Universal Islamic Meat FZCO", "t1": 0.0, "t2": 0.0, "t3": 125.65, "storage": 125.65, "ib": 107.89, "ob": 43.98, "net": 63.91, "pct": 0.2, "wh": ["TMM3"]}, {"code": "T064", "name": "EZRA SHIPPING LLC - AND -W/H", "t1": 122.76, "t2": 0.0, "t3": 0.0, "storage": 122.76, "ib": 0, "ob": 0, "net": 0, "pct": 0.2, "wh": ["TMM1"]}, {"code": "T260", "name": "THOMSUN TRADING EST W/H", "t1": 120.65, "t2": 0.0, "t3": 0.0, "storage": 120.65, "ib": 23.63, "ob": 13.48, "net": 10.15, "pct": 0.2, "wh": ["TMM1"]}, {"code": "T321", "name": "Cleantech Gulf FZCO", "t1": 0.0, "t2": 108.82, "t3": 0.0, "storage": 108.82, "ib": 22.97, "ob": 13.13, "net": 9.84, "pct": 0.2, "wh": ["TMM2"]}, {"code": "T352", "name": "MM GLOBAL LOGISTICS L.L.C", "t1": 0.0, "t2": 0.0, "t3": 106.63, "storage": 106.63, "ib": 141.57, "ob": 0, "net": 141.57, "pct": 0.2, "wh": ["TMM3"]}, {"code": "T281", "name": "Ezra Shipping LLC - InterTabasc", "t1": 0.0, "t2": 0.0, "t3": 102.58, "storage": 102.58, "ib": 38.06, "ob": 353.84, "net": -315.78, "pct": 0.2, "wh": ["TMM3"]}, {"code": "T017", "name": "CMC MAGNETICS CORPORATION - W/H", "t1": 100.17, "t2": 0.0, "t3": 0.0, "storage": 100.17, "ib": 0, "ob": 26.75, "net": -26.75, "pct": 0.2, "wh": ["TMM1"]}, {"code": "T003", "name": "AL YOUSUF ELECTRONICS LLC", "t1": 92.04, "t2": 0.0, "t3": 0.0, "storage": 92.04, "ib": 0, "ob": 0, "net": 0, "pct": 0.2, "wh": ["TMM1"]}, {"code": "T334", "name": "HELLMANN WORLDWIDE LOGISTICS LLC", "t1": 0.0, "t2": 0.0, "t3": 89.19, "storage": 89.19, "ib": 9.24, "ob": 16.35, "net": -7.11, "pct": 0.2, "wh": ["TMM3"]}, {"code": "T021", "name": "EZRA SHIPPING LLC-W/H", "t1": 0.0, "t2": 0.0, "t3": 86.38, "storage": 86.38, "ib": 0, "ob": 0, "net": 0, "pct": 0.2, "wh": ["TMM3"]}, {"code": "T112", "name": "HISENSE MIDDLE EAST FZE-ACTIF", "t1": 73.37, "t2": 0.0, "t3": 0.0, "storage": 73.37, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T022", "name": "EZRA SHIPPING LLC - ETI", "t1": 71.13, "t2": 0.0, "t3": 0.0, "storage": 71.13, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T329", "name": "GENTCO L.L.C-FZ", "t1": 70.88, "t2": 0.0, "t3": 0.0, "storage": 70.88, "ib": 22.07, "ob": 0, "net": 22.07, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T277", "name": "CORNERSTONE SHIPPING & LOGISTICS L.L.C", "t1": 67.73, "t2": 0.0, "t3": 0.0, "storage": 67.73, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T089", "name": "STARLINK DMCC (INV)", "t1": 67.59, "t2": 0.0, "t3": 0.0, "storage": 67.59, "ib": 47.67, "ob": 31.19, "net": 16.48, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T040", "name": "IOR GLOBAL CARGO SERVICES LLC", "t1": 57.59, "t2": 0.0, "t3": 0.0, "storage": 57.59, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T110", "name": "CRANE WORLDWIDE LOGISTICS (CHEVRON)", "t1": 39.96, "t2": 16.82, "t3": 0.0, "storage": 56.78, "ib": 34.22, "ob": 0, "net": 34.22, "pct": 0.1, "wh": ["TMM1", "TMM2"]}, {"code": "T355", "name": "TRANS FREIGHT (L.L.C.)", "t1": 0.0, "t2": 0.0, "t3": 47.97, "storage": 47.97, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM3"]}, {"code": "T043", "name": "INTEX TECHNOLOGIES LLC- W/H", "t1": 45.78, "t2": 0.0, "t3": 0.0, "storage": 45.78, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T037", "name": "CRANE WORLDWIDE LOGISTICS L.L.C", "t1": 43.26, "t2": 0.0, "t3": 0.0, "storage": 43.26, "ib": 4.07, "ob": 2.44, "net": 1.63, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T026", "name": "HELLMANN WORLDWIDE LOGISTICS", "t1": 0.0, "t2": 38.67, "t3": 0.0, "storage": 38.67, "ib": 26.81, "ob": 9.33, "net": 17.48, "pct": 0.1, "wh": ["TMM2"]}, {"code": "T042", "name": "IOR SIGNAUX GLOBAL (WH)", "t1": 36.77, "t2": 0.0, "t3": 0.0, "storage": 36.77, "ib": 0, "ob": 2.81, "net": -2.81, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T047", "name": "JASPA GENERAL TRADING CO. (LLC)", "t1": 33.15, "t2": 0.0, "t3": 0.0, "storage": 33.15, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T353", "name": "DUEEFFE AFADO General Trading", "t1": 0.0, "t2": 0.0, "t3": 28.25, "storage": 28.25, "ib": 28.25, "ob": 0, "net": 28.25, "pct": 0.1, "wh": ["TMM3"]}, {"code": "T005", "name": "MATRIX FZCO", "t1": 0.0, "t2": 26.48, "t3": 0.0, "storage": 26.48, "ib": 7.83, "ob": 22.6, "net": -14.77, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T323", "name": "GLOBAL FOOD & DAIRY INGREDIENTS", "t1": 0.0, "t2": 0.0, "t3": 25.24, "storage": 25.24, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM3"]}, {"code": "T301", "name": "Gulf Evergreen Food Trading LLC", "t1": 21.72, "t2": 0.0, "t3": 0.0, "storage": 21.72, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T039", "name": "JOINT LINE SHIPPING AND FORWARDING", "t1": 0.0, "t2": 0.0, "t3": 20.9, "storage": 20.9, "ib": 20.9, "ob": 0, "net": 20.9, "pct": 0.0, "wh": ["TMM3"]}, {"code": "T085", "name": "SIMBA GULF FZCO / CANON (WH)", "t1": 19.4, "t2": 0.0, "t3": 0.0, "storage": 19.4, "ib": 15.5, "ob": 120.21, "net": -104.71, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T019", "name": "EZRA SHIPPING LLC - STAR W/H", "t1": 0.0, "t2": 18.98, "t3": 0.0, "storage": 18.98, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T051", "name": "ORBITE SKY TRADING LLC - W/H", "t1": 13.94, "t2": 0.0, "t3": 0.0, "storage": 13.94, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T273", "name": "IOR GLOBAL -INFRA", "t1": 10.02, "t2": 0.0, "t3": 0.0, "storage": 10.02, "ib": 0.01, "ob": 22.26, "net": -22.25, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T045", "name": "I LIFE DIGITAL TECHNOLOGY LLC- W/H", "t1": 0.0, "t2": 9.56, "t3": 0.0, "storage": 9.56, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T038", "name": "CRANE WORLDWIDE LOGISTICS L.L.C", "t1": 6.87, "t2": 0.0, "t3": 0.0, "storage": 6.87, "ib": 8.47, "ob": 3.4, "net": 5.07, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T070", "name": "HARIB EXPORT & IMPORT  CO. LLC \u2013WH", "t1": 3.61, "t2": 0.0, "t3": 0.0, "storage": 3.61, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T080", "name": "OCTAGON INTERNATIONAL FZCO - W/H", "t1": 3.43, "t2": 0.0, "t3": 0.0, "storage": 3.43, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T031", "name": "NAVIGATORS SHIPPING & LOGISTICA FZE", "t1": 0.0, "t2": 3.38, "t3": 0.0, "storage": 3.38, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T075", "name": "KLM MIDDLE EAST GENERAL TRADING LLC", "t1": 3.13, "t2": 0.0, "t3": 0.0, "storage": 3.13, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T120", "name": "HISENSE MIDDLE EAST FZE-TRISTAR", "t1": 2.97, "t2": 0.0, "t3": 0.0, "storage": 2.97, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T076", "name": "AL MATEEN EXPRESS LLC", "t1": 0.0, "t2": 2.89, "t3": 0.0, "storage": 2.89, "ib": 154.62, "ob": 2.19, "net": 152.43, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T055", "name": "AQUA COOL TECHNICAL TRADING", "t1": 0.0, "t2": 2.72, "t3": 0.0, "storage": 2.72, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T049", "name": "AL MAJID DIGITAL SOLUTIONS LLC", "t1": 0.0, "t2": 2.0, "t3": 0.0, "storage": 2.0, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T065", "name": "EZRA SHIPPING LLC - IFL", "t1": 1.35, "t2": 0.0, "t3": 0.0, "storage": 1.35, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T066", "name": "AVIENTEK FZCO", "t1": 1.0, "t2": 0.0, "t3": 0.0, "storage": 1.0, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T044", "name": "MIG INFORMATION SYSTEMS - WH", "t1": 0.0, "t2": 0.84, "t3": 0.0, "storage": 0.84, "ib": 0, "ob": 0.26, "net": -0.26, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T115", "name": "HISENSE MIDDLE EAST FZE-WEJA", "t1": 0.84, "t2": 0.0, "t3": 0.0, "storage": 0.84, "ib": 0, "ob": 24.07, "net": -24.07, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T116", "name": "HISENSE MIDDLE EAST FZE-AVATAR", "t1": 0.72, "t2": 0.0, "t3": 0.0, "storage": 0.72, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T033", "name": "Navigators Shipping And Logistica LLC", "t1": 0.0, "t2": 0.49, "t3": 0.0, "storage": 0.49, "ib": 0, "ob": 2.65, "net": -2.65, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T118", "name": "HISENSE MIDDLE EAST FZE-EITHER", "t1": 0.22, "t2": 0.0, "t3": 0.0, "storage": 0.22, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T032", "name": "NAVIGATORS SHIPPING AND LOGISTICA", "t1": 0.0, "t2": 0.12, "t3": 0.0, "storage": 0.12, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T096", "name": "THOMSUN TRADING EST", "t1": 0.07, "t2": 0.0, "t3": 0.0, "storage": 0.07, "ib": 21.16, "ob": 0, "net": 21.16, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T056", "name": "AVIENTEK FZCO - W/H", "t1": 0.01, "t2": 0.0, "t3": 0.0, "storage": 0.01, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T008", "name": "BLUE CONTAINERS INTERNATIONAL", "t1": 0.0, "t2": 0.0, "t3": 0.0, "storage": 0.0, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": []}, {"code": "T084", "name": "SAEED MUQADAS", "t1": 0.0, "t2": 0.0, "t3": 0.0, "storage": 0.0, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": []}, {"code": "T133", "name": "AL MAJID DIGITAL SOLUTIONS LLC", "t1": 0.0, "t2": 0.0, "t3": 0.0, "storage": 0.0, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": []}, {"code": "T155", "name": "DATAM TRADING FZE", "t1": 0.0, "t2": 0.0, "t3": 0.0, "storage": 0.0, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": []}, {"code": "T150", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 0, "ob": 1.85, "net": -1.85, "pct": 0, "wh": []}, {"code": "T054", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 27.39, "ob": 29.05, "net": -1.66, "pct": 0, "wh": []}, {"code": "T030", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 46.43, "ob": 40.21, "net": 6.22, "pct": 0, "wh": []}, {"code": "T224", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 332.72, "ob": 0, "net": 332.72, "pct": 0, "wh": []}, {"code": "T331", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 13.33, "ob": 83.66, "net": -70.33, "pct": 0, "wh": []}, {"code": "T069", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 0, "ob": 110.0, "net": -110.0, "pct": 0, "wh": []}, {"code": "T223", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 757.89, "ob": 0, "net": 757.89, "pct": 0, "wh": []}, {"code": "T153", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 0.0, "ob": 0, "net": 0.0, "pct": 0, "wh": []}, {"code": "T165", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 3.74, "ob": 0, "net": 3.74, "pct": 0, "wh": []}, {"code": "T028", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 9.68, "ob": 2.72, "net": 6.96, "pct": 0, "wh": []}, {"code": "T242", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 32.07, "ob": 0, "net": 32.07, "pct": 0, "wh": []}, {"code": "T340", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 0, "ob": 372.78, "net": -372.78, "pct": 0, "wh": []}, {"code": "T307", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 0, "ob": 165.24, "net": -165.24, "pct": 0, "wh": []}, {"code": "T152", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 0.01, "ob": 0, "net": 0.01, "pct": 0, "wh": []}, {"code": "T204", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 0.06, "ob": 0, "net": 0.06, "pct": 0, "wh": []}, {"code": "T326", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 0, "ob": 33.63, "net": -33.63, "pct": 0, "wh": []}, {"code": "T287", "name": "", "t1": 0, "t2": 0, "t3": 0, "storage": 0, "ib": 0, "ob": 3.22, "net": -3.22, "pct": 0, "wh": []}];
+var KPI_DATA=[];
+const COLS=['#3b82f6','#22c55e','#f59e0b','#ef4444','#a78bfa','#f472b6','#14b8a6','#fbbf24','#60a5fa','#34d399','#fb923c','#f87171','#c084fc','#2dd4bf'];
+
+// Warehouse total capacities (CBM)
+const WH_CAPACITY = {
+  TMM1: {
+    total: 36998.24,
+    sites: [
+      {name:'S1 (AA-AV)', locations:8466, cbm_per_loc:1.44, total:12191.04},
+      {name:'S2 (BI-CQ)', locations:13755, cbm_per_loc:1.44, total:19807.20},
+      {name:'MZ',         locations:3348,  cbm_per_loc:2.40, total:5000.00},
+    ]
+  },
+  TMM2: {
+    total: 11000,
+    sites: [
+      {name:'Bulk & Location', locations:null, cbm_per_loc:null, total:11000},
+    ]
+  },
+  TMM3: {
+    total: 37507.2,
+    sites: [
+      {name:'C1 (AA-BH)', locations:23892, cbm_per_loc:1.20, total:28670.40},
+      {name:'C2 (CA-CR)', locations:2296,  cbm_per_loc:1.20, total:2755.20},
+      {name:'C3 (CS-DK)', locations:2408,  cbm_per_loc:1.20, total:2889.60},
+      {name:'C4 (DL-EC)', locations:2660,  cbm_per_loc:1.20, total:3192.00},
+    ]
+  }
+};
+
+function stag(net){
+  if(net>200)return{l:'📥 Heavy IN',c:'shi'};
+  if(net<-200)return{l:'📤 Heavy OUT',c:'sho'};
+  if(Math.abs(net)<60)return{l:'⚖ Balanced',c:'sbl'};
+  if(net>0)return{l:'📥 Inbound',c:'sin'};
+  return{l:'📤 Outbound',c:'sot'};
+}
+
+// TAB SWITCH
+function sw(n,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+n).classList.add('active');
+  el.classList.add('active');
+  setTimeout(()=>{
+    if(n==='flow'){dm();dc();dn();}
+    if(n==='inbound'){owbar('ib');owdnt('ib');}
+    if(n==='outbound'){owbar('ob');owdnt('ob');}
+    if(n==='occupancy'){renderOcc();renderCapacity();}
+  },60);
+}
+
+// FILTER
+function setF(t,el){
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  const dy=d=>parseInt(d.date);
+  switch(t){
+    case 'all':FILT=[...DAILY];break;
+    case 'w1':FILT=DAILY.filter(d=>dy(d)<=7);break;
+    case 'w2':FILT=DAILY.filter(d=>dy(d)>7&&dy(d)<=14);break;
+    case 'w3':FILT=DAILY.filter(d=>dy(d)>14);break;
+    case 'hi':FILT=DAILY.filter(d=>(d.vol_in-d.vol_out)>200);break;
+    case 'ho':FILT=DAILY.filter(d=>(d.vol_out-d.vol_in)>200);break;
+  }
+  renderFlow();
+}
+function fowr(t,q){
+  const src=t==='ib'?IB:OB;
+  const f=q?src.filter(o=>o.owner.toLowerCase().includes(q.toLowerCase())||oname(o.owner).toLowerCase().includes(q.toLowerCase())):src;
+  if(t==='ib'){IBF=f;owgrid('ib');owtbl('ib');}else{OBF=f;owgrid('ob');owtbl('ob');}
+}
+function sowr(t,by){
+  const a=t==='ib'?IBF:OBF;
+  if(by==='vol')a.sort((x,y)=>y.vol-x.vol);
+  else if(by==='docs')a.sort((x,y)=>y.docs-x.docs);
+  else if(by==='days')a.sort((x,y)=>y.days-x.days);
+  else a.sort((x,y)=>oname(x.owner).localeCompare(oname(y.owner)));
+  if(t==='ib'){owgrid('ib');owtbl('ib');}else{owgrid('ob');owtbl('ob');}
+}
+
+// FLOW KPIs
+function renderFlow(){
+  const d=FILT;
+  const tI=d.reduce((s,r)=>s+r.vol_in,0),tO=d.reduce((s,r)=>s+r.vol_out,0);
+  const tCI=d.reduce((s,r)=>s+r.cnt_in,0),tCO=d.reduce((s,r)=>s+r.cnt_out,0);
+  const net=tI-tO;
+  const pk=d.length?d.reduce((a,b)=>(b.vol_in+b.vol_out)>(a.vol_in+a.vol_out)?b:a):null;
+  const pI=d.length?d.reduce((a,b)=>b.vol_in>a.vol_in?b:a):null;
+  const pO=d.length?d.reduce((a,b)=>b.vol_out>a.vol_out?b:a):null;
+  document.getElementById('kgrid').innerHTML=`
+    <div class="kc"><div class="kglow" style="background:#22c55e"></div><span class="kico">📥</span>
+      <div class="klbl">Total Inbound CBM</div><div class="kval" style="color:#22c55e">${fD(tI)}</div>
+      <div class="ksub">${fN(tCI)} docs</div><div class="ktag" style="background:rgba(34,197,94,.15);color:#22c55e">Avg ${fD(d.length?tI/d.length:0)}/day</div></div>
+    <div class="kc"><div class="kglow" style="background:#ef4444"></div><span class="kico">📤</span>
+      <div class="klbl">Total Outbound CBM</div><div class="kval" style="color:#ef4444">${fD(tO)}</div>
+      <div class="ksub">${fN(tCO)} docs</div><div class="ktag" style="background:rgba(239,68,68,.15);color:#ef4444">Avg ${fD(d.length?tO/d.length:0)}/day</div></div>
+    <div class="kc"><div class="kglow" style="background:${net>=0?'#22c55e':'#ef4444'}"></div><span class="kico">⚖</span>
+      <div class="klbl">Net Flow</div><div class="kval" style="color:${net>=0?'#22c55e':'#ef4444'}">${net>=0?'+':''}${fD(net)}</div>
+      <div class="ksub">${net>=0?'Building up':'Reducing'}</div></div>
+    <div class="kc"><div class="kglow" style="background:#fbbf24"></div><span class="kico">🔥</span>
+      <div class="klbl">Busiest Day</div><div class="kval" style="color:#fbbf24;font-size:18px">${pk?pk.date:'—'}</div>
+      <div class="ksub">${pk?fD(pk.vol_in+pk.vol_out)+' CBM':''}</div></div>
+    <div class="kc"><div class="kglow" style="background:#3b82f6"></div><span class="kico">📈</span>
+      <div class="klbl">Peak Inbound</div><div class="kval" style="color:#3b82f6;font-size:18px">${pI?pI.date:'—'}</div>
+      <div class="ksub">${pI?fD(pI.vol_in)+' CBM':''}</div></div>
+    <div class="kc"><div class="kglow" style="background:#f472b6"></div><span class="kico">📉</span>
+      <div class="klbl">Peak Outbound</div><div class="kval" style="color:#f472b6;font-size:18px">${pO?pO.date:'—'}</div>
+      <div class="ksub">${pO?fD(pO.vol_out)+' CBM':''}</div></div>`;
+  rftbl();dm();dc();dn();
+  document.getElementById('dbd').textContent=d.length+' days';
+}
+
+// FLOW TABLE
+function rftbl(){
+  const b=document.getElementById('ftbody');b.innerHTML='';
+  let tCI=0,tVI=0,tCO=0,tVO=0;
+  FILT.forEach((r,i)=>{
+    const net=r.vol_in-r.vol_out,st=stag(net);
+    tCI+=r.cnt_in;tVI+=r.vol_in;tCO+=r.cnt_out;tVO+=r.vol_out;
+    b.innerHTML+=`<tr>
+      <td style="color:var(--tx3);font-size:11px">${i+1}</td>
+      <td style="font-weight:700">${r.date}</td>
+      <td style="color:#3b82f6;font-weight:600">${r.cnt_in}</td>
+      <td style="color:#22c55e;font-weight:700">${fD(r.vol_in)}</td>
+      <td style="color:#f472b6;font-weight:600">${r.cnt_out}</td>
+      <td style="color:#ef4444;font-weight:700">${fD(r.vol_out)}</td>
+      <td style="font-weight:800;color:${net>=0?'#22c55e':'#ef4444'}">${net>=0?'+':''}${fD(net)}</td>
+      <td style="color:var(--tx2)">${fD2(r.cnt_in?r.vol_in/r.cnt_in:0)}</td>
+      <td style="color:var(--tx2)">${fD2(r.cnt_out?r.vol_out/r.cnt_out:0)}</td>
+      <td><span class="stag ${st.c}">${st.l}</span></td>
+    </tr>`;
+  });
+  const nt=tVI-tVO;
+  b.innerHTML+=`<tr class="tot"><td></td><td>TOTAL</td>
+    <td style="color:#3b82f6">${fN(tCI)}</td><td style="color:#22c55e">${fD(tVI)}</td>
+    <td style="color:#f472b6">${fN(tCO)}</td><td style="color:#ef4444">${fD(tVO)}</td>
+    <td style="color:${nt>=0?'#22c55e':'#ef4444'}">${nt>=0?'+':''}${fD(nt)}</td>
+    <td style="color:var(--tx2)">${fD2(tCI?tVI/tCI:0)}</td>
+    <td style="color:var(--tx2)">${fD2(tCO?tVO/tCO:0)}</td><td></td></tr>`;
+}
+
+// OWNER GRID
+function owgrid(t){
+  const data=t==='ib'?IBF:OBF;
+  const tot=data.reduce((s,o)=>s+o.vol,0)||1;
+  const col=t==='ib'?'#22c55e':'#ef4444';
+  const g=document.getElementById(t+'grid');g.innerHTML='';
+  document.getElementById(t+'cnt').textContent=data.length+' customers';
+  data.forEach((o,i)=>{
+    const pct=Math.round(o.vol/tot*100);
+    const el=document.createElement('div');el.className='oc';
+    el.onclick=()=>owdet(t,o);
+    el.innerHTML=`<div class="ocrnk">#${i+1}</div>
+      <div class="ocd">${o.owner}</div>
+      <div class="ocn">${oname(o.owner)}</div>
+      <div class="ocv" style="color:${col}">${fD(o.vol)} <span style="font-size:11px;font-weight:500;color:var(--tx3)">CBM</span></div>
+      <div class="ocs">${fN(o.docs)} docs · ${o.days} days · ${pct}%</div>
+      <div class="ocbar"><div class="ocbf" style="width:${pct}%;background:${col}"></div></div>`;
+    g.appendChild(el);
+  });
+}
+
+// OWNER DETAIL
+function owdet(t,o){
+  const id=t+'det';const col=t==='ib'?'#22c55e':'#ef4444';const lbl=t==='ib'?'Inbound':'Outbound';
+  const tot=(t==='ib'?IB:OB).reduce((s,x)=>s+x.vol,0)||1;
+  const pct=Math.round(o.vol/tot*100);
+  const drows=Object.entries(o.daily||{}).sort((a,b)=>parseInt(a[0])-parseInt(b[0])).map(([dt,info])=>`<tr>
+    <td style="font-weight:600">${dt}</td>
+    <td style="color:${col};font-weight:700">${fD(info.vol)} CBM</td>
+    <td style="color:var(--tx2)">${info.docs} docs</td>
+    <td style="color:var(--tx2)">${fD2(info.docs?info.vol/info.docs:0)}</td></tr>`).join('');
+  const el=document.getElementById(id);el.classList.add('show');
+  el.innerHTML=`<div class="odh">
+    <div><div class="odtit">${o.owner} — ${oname(o.owner)}</div><div style="font-size:11px;color:var(--tx3);margin-top:3px">${lbl} Detail</div></div>
+    <button class="odcls" onclick="document.getElementById('${id}').classList.remove('show')">✕ Close</button>
+  </div>
+  <div class="odkpis">
+    <div class="odk"><div class="odkl">Total CBM</div><div class="odkv" style="color:${col}">${fD(o.vol)}</div></div>
+    <div class="odk"><div class="odkl">Documents</div><div class="odkv" style="color:#3b82f6">${fN(o.docs)}</div></div>
+    <div class="odk"><div class="odkl">Active Days</div><div class="odkv" style="color:#a78bfa">${o.days}</div></div>
+    <div class="odk"><div class="odkl">Avg CBM/Day</div><div class="odkv" style="color:#fbbf24">${fD(o.days?o.vol/o.days:0)}</div></div>
+    <div class="odk"><div class="odkl">Avg CBM/Doc</div><div class="odkv" style="color:#14b8a6">${fD2(o.docs?o.vol/o.docs:0)}</div></div>
+    <div class="odk"><div class="odkl">% of Total</div><div class="odkv" style="color:#f59e0b">${pct}%</div></div>
+  </div>
+  <div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px">Daily Breakdown</div>
+  <table class="tbl2"><thead><tr><th>Date</th><th>CBM</th><th>Docs</th><th>CBM/Doc</th></tr></thead>
+  <tbody>${drows}</tbody></table>`;
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// OWNER TABLE
+function owtbl(t){
+  const data=t==='ib'?IBF:OBF;
+  const tot=data.reduce((s,o)=>s+o.vol,0)||1;
+  const col=t==='ib'?'#22c55e':'#ef4444';
+  const b=document.getElementById(t+'tbl');b.innerHTML='';
+  let tv=0,td=0;
+  data.forEach((o,i)=>{
+    const pct=(o.vol/tot*100).toFixed(1);
+    const aday=o.days?o.vol/o.days:0,adoc=o.docs?o.vol/o.docs:0;
+    tv+=o.vol;td+=o.docs;
+    b.innerHTML+=`<tr>
+      <td style="color:var(--tx3);font-size:11px">${i+1}</td>
+      <td style="font-weight:700;color:${col}">${o.owner}</td>
+      <td style="font-size:11px;color:var(--tx2)">${oname(o.owner)}</td>
+      <td style="font-weight:700;color:${col}">${fD(o.vol)}</td>
+      <td style="color:#3b82f6;font-weight:600">${fN(o.docs)}</td>
+      <td style="color:#a78bfa">${o.days}</td>
+      <td style="color:#fbbf24">${fD(aday)}</td>
+      <td style="color:#14b8a6">${fD2(adoc)}</td>
+      <td><span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;background:${col}22;color:${col}">${pct}%</span></td>
+    </tr>`;
+  });
+  b.innerHTML+=`<tr class="tot"><td></td><td colspan="2">TOTAL</td><td style="color:${col}">${fD(tv)}</td><td style="color:#3b82f6">${fN(td)}</td><td colspan="4"></td></tr>`;
+}
+
+// TMM OCCUPANCY
+function renderCapacity(){
+  const tmms=['TMM1','TMM2','TMM3'];
+  const cols={'TMM1':'#3b82f6','TMM2':'#22c55e','TMM3':'#f59e0b'};
+  const el=document.getElementById('capacitySection');
+  if(!el)return;
+
+  let html='';
+  tmms.forEach(tmm=>{
+    const cap=WH_CAPACITY[tmm];
+    const occ=Object.values(TMM_OCC[tmm]||{}).reduce((s,v)=>s+v,0);
+    const avail=Math.max(0,cap.total-occ);
+    const usedPct=Math.min(100,Math.round(occ/cap.total*100));
+    const availPct=100-usedPct;
+    const col=cols[tmm];
+    const statusColor=usedPct>=90?'#ef4444':usedPct>=70?'#f59e0b':'#22c55e';
+    const statusText=usedPct>=90?'Critical':usedPct>=70?'Moderate':'Available';
+    const statusLabel=usedPct>=90?'🔴 Critical':usedPct>=70?'🟡 Moderate':'🟢 Available';
+
+    // Site breakdown rows
+    let sitesHtml='';
+    cap.sites.forEach(site=>{
+      sitesHtml+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--bd)">
+        <span style="font-size:11px;color:var(--tx3)">${site.name}</span>
+        <span style="font-size:11px;font-weight:600;color:var(--tx2)">${fD(site.total)} CBM${site.cbm_per_loc?` (${site.cbm_per_loc} CBM/loc)`:''}</span>
+      </div>`;
+    });
+
+    html+=`<div style="background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);overflow:hidden;box-shadow:var(--sh)">
+      <!-- Header -->
+      <div style="background:${col}22;border-bottom:2px solid ${col};padding:14px 18px;display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:16px;font-weight:800;color:${col}">${tmm} Warehouse</div>
+          <div style="font-size:11px;color:var(--tx3);margin-top:2px">Total Capacity: ${fD(cap.total)} CBM</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;background:${statusColor}22;color:${statusColor};border:1px solid ${statusColor}44">${statusLabel}</div>
+          <div style="font-size:11px;color:var(--tx3);margin-top:4px">${usedPct}% occupied</div>
+        </div>
+      </div>
+
+      <!-- Big Numbers -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--bd)">
+        <div style="padding:16px;text-align:center;border-right:1px solid var(--bd)">
+          <div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Total Capacity</div>
+          <div style="font-size:22px;font-weight:800;color:${col}">${fD(cap.total)}</div>
+          <div style="font-size:11px;color:var(--tx3)">CBM</div>
+        </div>
+        <div style="padding:16px;text-align:center;border-right:1px solid var(--bd)">
+          <div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Occupied</div>
+          <div style="font-size:22px;font-weight:800;color:#ef4444">${fD(occ)}</div>
+          <div style="font-size:11px;color:var(--tx3)">${usedPct}% of total</div>
+        </div>
+        <div style="padding:16px;text-align:center">
+          <div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Available</div>
+          <div style="font-size:22px;font-weight:800;color:#22c55e">${fD(avail)}</div>
+          <div style="font-size:11px;color:var(--tx3)">${availPct}% free</div>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div style="padding:14px 18px;border-bottom:1px solid var(--bd)">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--tx3);margin-bottom:6px">
+          <span>Occupancy Level</span>
+          <span>${usedPct}% used · ${availPct}% free</span>
+        </div>
+        <div style="height:14px;border-radius:7px;background:var(--sf3);overflow:hidden;position:relative">
+          <div style="height:100%;width:${usedPct}%;background:linear-gradient(90deg,${col},${statusColor});border-radius:7px;transition:width 1s ease"></div>
+          <!-- Available marker -->
+          <div style="position:absolute;top:0;left:${usedPct}%;height:100%;background:rgba(34,197,94,.25);right:0;border-radius:0 7px 7px 0"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;margin-top:4px">
+          <span style="color:${statusColor};font-weight:600">Occupied: ${fD(occ)} CBM</span>
+          <span style="color:#22c55e;font-weight:600">Available: ${fD(avail)} CBM</span>
+        </div>
+      </div>
+
+      <!-- Site Breakdown -->
+      <div style="padding:12px 18px">
+        <div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Site Breakdown</div>
+        ${sitesHtml}
+      </div>
+    </div>`;
+  });
+
+  el.innerHTML=html;
+
+  // Also update capacity summary bar chart
+  drawCapacityChart(tmms,cols);
+}
+
+function drawCapacityChart(tmms,cols){
+  const cv=document.getElementById('capacityChart');if(!cv)return;
+  const W=Math.max(400,cv.parentElement.clientWidth-20);
+  const H=200;
+  cv.width=W;cv.height=H;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,W,H);
+
+  const pad={l:80,r:120,t:20,b:20};
+  const cH=H-pad.t-pad.b;
+  const rowH=cH/tmms.length;
+  const barH=rowH*0.45;
+  const barMaxW=W-pad.l-pad.r;
+
+  tmms.forEach((tmm,i)=>{
+    const cap=WH_CAPACITY[tmm];
+    const occ=Object.values(TMM_OCC[tmm]||{}).reduce((s,v)=>s+v,0);
+    const avail=Math.max(0,cap.total-occ);
+    const usedPct=Math.min(100,occ/cap.total);
+    const col=cols[tmm];
+    const statusColor=usedPct>=0.9?'#ef4444':usedPct>=0.7?'#f59e0b':'#22c55e';
+
+    const y=pad.t+i*rowH;
+    const midY=y+rowH/2;
+
+    // Label
+    ctx.fillStyle='#f1f5f9';ctx.font='bold 12px Inter,sans-serif';ctx.textAlign='right';
+    ctx.fillText(tmm,pad.l-8,midY+4);
+
+    // Background track
+    ctx.fillStyle='var(--sf3)';
+    ctx.beginPath();ctx.roundRect(pad.l,midY-barH/2,barMaxW,barH,4);
+    ctx.fillStyle='#2d3a52';ctx.fill();
+
+    // Occupied bar
+    const occW=usedPct*barMaxW;
+    const grad=ctx.createLinearGradient(pad.l,0,pad.l+occW,0);
+    grad.addColorStop(0,col);grad.addColorStop(1,statusColor);
+    ctx.fillStyle=grad;
+    ctx.beginPath();ctx.roundRect(pad.l,midY-barH/2,occW,barH,4);ctx.fill();
+
+    // Available bar
+    ctx.fillStyle='rgba(34,197,94,0.2)';
+    ctx.beginPath();ctx.roundRect(pad.l+occW,midY-barH/2,barMaxW-occW,barH,[0,4,4,0]);ctx.fill();
+
+    // Values
+    ctx.fillStyle='#ef4444';ctx.font='bold 10px Inter,sans-serif';ctx.textAlign='left';
+    ctx.fillText('Occ: '+fD(occ)+' CBM ('+Math.round(usedPct*100)+'%)',pad.l+barMaxW+8,midY-2);
+    ctx.fillStyle='#22c55e';ctx.font='10px Inter,sans-serif';
+    ctx.fillText('Free: '+fD(avail)+' CBM',pad.l+barMaxW+8,midY+12);
+  });
+}
+
+function renderOcc(){
+  const cols={'TMM1':'#3b82f6','TMM2':'#22c55e','TMM3':'#f59e0b'};
+  const tmms=['TMM1','TMM2','TMM3'];
+  // Summary cards
+  renderCapacity();
+  const gc2=document.getElementById('tmmcards');if(!gc2)return;gc2.innerHTML='';
+  tmms.forEach(tmm=>{
+    const data=TMM_OCC[tmm]||{};
+    const ents=Object.entries(data).sort((a,b)=>b[1]-a[1]);
+    const tot=ents.reduce((s,[,v])=>s+v,0);
+    const top=ents[0];const col=cols[tmm];
+    gc2.innerHTML+=`<div class="kc">
+      <div class="kglow" style="background:${col}"></div>
+      <span class="kico">🏭</span>
+      <div class="klbl">${tmm} Warehouse</div>
+      <div class="kval" style="color:${col}">${fD(tot)} CBM</div>
+      <div class="ksub">${ents.length} customers</div>
+      <div class="ktag" style="background:${col}22;color:${col};margin-top:6px">★ ${top?sname(top[0]):'—'}</div>
+    </div>`;
+  });
+  // Charts + tables
+  tmms.forEach((tmm,ti)=>{
+    const data=TMM_OCC[tmm]||{};
+    const ents=Object.entries(data).sort((a,b)=>b[1]-a[1]);
+    const tot=ents.reduce((s,[,v])=>s+v,0)||1;
+    const col=cols[tmm];
+    const top12=ents.slice(0,12);
+    // Horiz bar chart
+    const cid='tc'+(ti+1);
+    const cv=document.getElementById(cid);if(!cv)return;
+    const W=Math.max(300,cv.parentElement.clientWidth-20||400);
+    const rowH2=28;
+    const H=Math.max(300, top12.length*rowH2+50);
+    cv.width=W;cv.height=H;
+    const ctx=cv.getContext('2d');ctx.clearRect(0,0,W,H);
+    const valW=52,barStart=8,barEnd=W-valW-10;
+    const maxV=Math.max(...top12.map(([,v])=>v))*1.05||1;
+    const barH2=rowH2*0.48;
+    top12.forEach(([code,vol],i)=>{
+      const y=10+i*rowH2;
+      // full name label above bar
+      const nm=oname(code);
+      ctx.fillStyle='#94a3b8';ctx.font='9px Inter,sans-serif';ctx.textAlign='left';
+      ctx.fillText(code+': '+nm,barStart,y+10);
+      // bar
+      const bw=Math.max(2,vol/maxV*(barEnd-barStart));
+      const grad=ctx.createLinearGradient(barStart,0,barStart+bw,0);
+      grad.addColorStop(0,col);grad.addColorStop(1,col+'55');
+      ctx.fillStyle=grad;ctx.beginPath();ctx.roundRect(barStart,y+13,bw,barH2,3);ctx.fill();
+      // value
+      ctx.fillStyle='#f1f5f9';ctx.font='bold 10px Inter,sans-serif';ctx.textAlign='left';
+      ctx.fillText(fD(vol)+' CBM',barStart+bw+4,y+13+barH2/2+4);
+    });
+    // Table
+    const tb=document.getElementById('tt'+(ti+1));if(!tb)return;
+    tb.innerHTML='';
+    let tv=0;
+    ents.forEach(([code,vol],i)=>{
+      const pct=(vol/tot*100).toFixed(1);tv+=vol;
+      tb.innerHTML+=`<tr>
+        <td style="color:var(--tx3);font-size:11px">${i+1}</td>
+        <td style="font-weight:700;color:${col};white-space:nowrap">${code}</td>
+        <td style="font-size:11px;color:var(--tx2)">${oname(code)}</td>
+        <td style="font-weight:700;color:${col}">${fD(vol)}</td>
+        <td><span style="font-size:10px;font-weight:700;padding:2px 5px;border-radius:7px;background:${col}22;color:${col}">${pct}%</span></td>
+      </tr>`;
+    });
+    tb.innerHTML+=`<tr class="tot"><td></td><td colspan="2">TOTAL</td><td style="color:${col}">${fD(tv)}</td><td>100%</td></tr>`;
+  });
+  // Stacked chart
+  drawStacked(cols);
+}
+
+function drawStacked(cols){
+  const all=new Set([...Object.keys(TMM_OCC.TMM1||{}),...Object.keys(TMM_OCC.TMM2||{}),...Object.keys(TMM_OCC.TMM3||{})]);
+  const sorted=[...all].map(c=>({c,t1:TMM_OCC.TMM1[c]||0,t2:TMM_OCC.TMM2[c]||0,t3:TMM_OCC.TMM3[c]||0}))
+    .map(o=>({...o,tot:o.t1+o.t2+o.t3})).sort((a,b)=>b.tot-a.tot).slice(0,20);
+  const cv=document.getElementById('tstack');if(!cv)return;
+
+  const ROW_H=40;
+  const NAME_W=270;
+  const VAL_W=70;
+  const PAD={t:14,b:14,l:8,r:8};
+  const H=sorted.length*ROW_H+PAD.t+PAD.b+30;
+  const W=Math.max(500,cv.parentElement.clientWidth-20);
+  cv.width=W;cv.height=H;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  const barStart=PAD.l+NAME_W+10;
+  const barMaxW=W-barStart-VAL_W-PAD.r;
+  const maxV=Math.max(...sorted.map(o=>o.tot))*1.05||1;
+
+  // Header row
+  ctx.fillStyle='#64748b';ctx.font='bold 10px Inter,sans-serif';ctx.textAlign='left';
+  ctx.fillText('Customer',PAD.l,PAD.t-2);
+  ctx.fillText('CBM breakdown per warehouse',barStart,PAD.t-2);
+
+  // Separator line under header
+  ctx.strokeStyle='#334155';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,PAD.t+4);ctx.lineTo(W,PAD.t+4);ctx.stroke();
+
+  sorted.forEach((o,i)=>{
+    const y=PAD.t+16+i*ROW_H;
+    const midY=y+ROW_H/2;
+    const barH=ROW_H*0.5;
+    const barY=midY-barH/2;
+
+    // Alternating row bg
+    if(i%2===0){
+      ctx.fillStyle='rgba(255,255,255,0.03)';
+      ctx.fillRect(0,y,W,ROW_H);
+    }
+
+    // Owner code — bold coloured
+    ctx.fillStyle='#f1f5f9';
+    ctx.font='bold 11px Inter,sans-serif';
+    ctx.textAlign='left';
+    ctx.fillText(o.c, PAD.l, midY-3);
+
+    // Full name below code
+    const nm=oname(o.c);
+    const displayName=nm.length>38?nm.substring(0,36)+'…':nm;
+    ctx.fillStyle='#64748b';
+    ctx.font='9px Inter,sans-serif';
+    ctx.fillText(displayName, PAD.l, midY+9);
+
+    // Warehouse tags — show which TMMs this customer is in
+    const tags=[];
+    if(o.t1>0)tags.push({label:'TMM1',col:cols.TMM1,val:o.t1});
+    if(o.t2>0)tags.push({label:'TMM2',col:cols.TMM2,val:o.t2});
+    if(o.t3>0)tags.push({label:'TMM3',col:cols.TMM3,val:o.t3});
+
+    // Show warehouse tag(s) right of owner code
+    let tagX = PAD.l + 36;
+    tags.forEach(tag=>{
+      ctx.fillStyle=tag.col+'33';
+      ctx.beginPath();
+      ctx.roundRect(tagX, midY-10, 36, 12, 3);
+      ctx.fill();
+      ctx.fillStyle=tag.col;
+      ctx.font='bold 8px Inter,sans-serif';
+      ctx.textAlign='center';
+      ctx.fillText(tag.label, tagX+18, midY-1);
+      tagX+=40;
+    });
+
+    // Stacked horizontal bars
+    let x=barStart;
+    [['t1',cols.TMM1,'TMM1'],['t2',cols.TMM2,'TMM2'],['t3',cols.TMM3,'TMM3']].forEach(([k,col,lbl])=>{
+      const bw=Math.max(0,o[k]/maxV*barMaxW);
+      if(bw>0.5){
+        const grad=ctx.createLinearGradient(x,0,x+bw,0);
+        grad.addColorStop(0,col);grad.addColorStop(1,col+'88');
+        ctx.fillStyle=grad;
+        ctx.beginPath();ctx.roundRect(x,barY,bw,barH,3);ctx.fill();
+        // Label inside bar if wide enough
+        if(bw>50){
+          ctx.fillStyle='rgba(255,255,255,0.95)';
+          ctx.font='bold 9px Inter,sans-serif';
+          ctx.textAlign='center';
+          ctx.fillText(lbl+': '+fD(o[k]),x+bw/2,midY+3);
+        } else if(bw>22){
+          ctx.fillStyle='rgba(255,255,255,0.9)';
+          ctx.font='bold 8px Inter,sans-serif';
+          ctx.textAlign='center';
+          ctx.fillText(fD(o[k]),x+bw/2,midY+3);
+        }
+        x+=bw;
+      }
+    });
+
+    // Total CBM after bar
+    ctx.fillStyle='#f1f5f9';
+    ctx.font='bold 10px Inter,sans-serif';
+    ctx.textAlign='left';
+    ctx.fillText(fD(o.tot),barStart+o.tot/maxV*barMaxW+6,midY+4);
+
+    // Row separator
+    ctx.strokeStyle='rgba(255,255,255,0.04)';
+    ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(0,y+ROW_H);ctx.lineTo(W,y+ROW_H);ctx.stroke();
+  });
+}
+
+function gctx(id,h){
+  const c=document.getElementById(id);if(!c)return null;
+  const W=Math.max(200, c.parentElement.clientWidth-36||500);
+  c.width=W;c.height=h;c.getContext('2d').clearRect(0,0,W,h);
+  return{ctx:c.getContext('2d'),W,H:h};
+}
+function safeArc(ctx,x,y,r,s,e){if(r>0)ctx.arc(x,y,r,s,e);}
+function gridL(ctx,pad,W,H,maxV,st=5){
+  ctx.strokeStyle='#334155';ctx.lineWidth=1;
+  for(let i=0;i<=st;i++){
+    const y=pad.t+(H-pad.t-pad.b)*(1-i/st);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    ctx.fillStyle='#64748b';ctx.font='10px Inter,sans-serif';ctx.textAlign='right';
+    const v=maxV*i/st;ctx.fillText(v>=1000?(v/1000).toFixed(0)+'k':Math.round(v),pad.l-5,y+3);
+  }
+}
+function xlbl(ctx,d,pad,H,gW){
+  ctx.fillStyle='#64748b';ctx.font='9px Inter,sans-serif';ctx.textAlign='center';
+  d.forEach((r,i)=>{if(d.length<=10||i%Math.ceil(d.length/10)===0)ctx.fillText(r.date,pad.l+i*gW+gW/2,H-6);});
+}
+
+// MAIN FLOW CHART
+function dm(){
+  const r=gctx('mchart',230);if(!r)return;
+  const{ctx,W,H}=r,d=FILT;if(!d.length)return;
+  const pad={l:56,r:14,t:12,b:44};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const maxV=Math.max(...d.map(x=>Math.max(x.vol_in,x.vol_out)))*1.18||1;
+  const n=d.length,gW=cW/n,bW=Math.max(5,gW*0.33),gap=gW*0.05;
+  gridL(ctx,pad,W,H,maxV);
+  d.forEach((row,i)=>{
+    const gx=pad.l+i*gW+gW/2;
+    const ih=row.vol_in/maxV*cH;
+    const gi=ctx.createLinearGradient(0,pad.t+cH-ih,0,pad.t+cH);gi.addColorStop(0,'#22c55e');gi.addColorStop(1,'rgba(34,197,94,.15)');
+    ctx.fillStyle=gi;ctx.beginPath();ctx.roundRect(gx-bW-gap,pad.t+cH-ih,bW,ih,3);ctx.fill();
+    const oh=row.vol_out/maxV*cH;
+    const go=ctx.createLinearGradient(0,pad.t+cH-oh,0,pad.t+cH);go.addColorStop(0,'#ef4444');go.addColorStop(1,'rgba(239,68,68,.15)');
+    ctx.fillStyle=go;ctx.beginPath();ctx.roundRect(gx+gap,pad.t+cH-oh,bW,oh,3);ctx.fill();
+  });
+  if(d.length>1){
+    ctx.beginPath();ctx.strokeStyle='#fbbf24';ctx.lineWidth=2.5;ctx.setLineDash([5,3]);
+    d.forEach((row,i)=>{
+      const gx=pad.l+i*gW+gW/2,net=row.vol_in-row.vol_out;
+      const ny=pad.t+cH-(((net/maxV)*0.38+0.5)*cH);
+      i===0?ctx.moveTo(gx,ny):ctx.lineTo(gx,ny);
+    });
+    ctx.stroke();ctx.setLineDash([]);
+    d.forEach((row,i)=>{
+      const gx=pad.l+i*gW+gW/2,net=row.vol_in-row.vol_out;
+      const ny=pad.t+cH-(((net/maxV)*0.38+0.5)*cH);
+      ctx.fillStyle=net>=0?'#22c55e':'#ef4444';
+      ctx.beginPath();if(true)ctx.arc(gx,ny,3.5,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle='#0f172a';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(gx,ny,3.5,0,Math.PI*2);ctx.stroke();
+    });
+  }
+  xlbl(ctx,d,pad,H,gW);
+}
+
+function dc(){
+  const r=gctx('cchart',190);if(!r)return;
+  const{ctx,W,H}=r,d=FILT;if(!d.length)return;
+  const pad={l:42,r:12,t:10,b:42};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const maxV=Math.max(...d.map(x=>Math.max(x.cnt_in,x.cnt_out)))*1.18||1;
+  const n=d.length,gW=cW/n,bW=Math.max(4,gW*0.3),gap=gW*0.04;
+  gridL(ctx,pad,W,H,maxV,4);
+  d.forEach((row,i)=>{
+    const gx=pad.l+i*gW+gW/2;
+    const ih=row.cnt_in/maxV*cH;ctx.fillStyle='#3b82f6';ctx.beginPath();ctx.roundRect(gx-bW-gap,pad.t+cH-ih,bW,ih,2);ctx.fill();
+    const oh=row.cnt_out/maxV*cH;ctx.fillStyle='#f472b6';ctx.beginPath();ctx.roundRect(gx+gap,pad.t+cH-oh,bW,oh,2);ctx.fill();
+  });
+  xlbl(ctx,d,pad,H,gW);
+}
+
+function dn(){
+  const r=gctx('nchart',190);if(!r)return;
+  const{ctx,W,H}=r,d=FILT;if(!d.length)return;
+  const pad={l:56,r:12,t:10,b:42};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const nets=d.map(x=>x.vol_in-x.vol_out);
+  const maxA=Math.max(...nets.map(Math.abs))*1.2||1;
+  const cH2=Math.max(10,cH);
+  const midY=pad.t+cH2/2;
+  ctx.strokeStyle='#334155';ctx.lineWidth=1;
+  [-1,-.5,0,.5,1].forEach(f=>{
+    const y=midY-f*(cH/2);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    ctx.fillStyle='#64748b';ctx.font='10px Inter,sans-serif';ctx.textAlign='right';
+    const v=Math.round(maxA*f);ctx.fillText(v>=1000?(v/1000).toFixed(0)+'k':v,pad.l-5,y+3);
+  });
+  ctx.strokeStyle='rgba(59,130,246,.3)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(pad.l,midY);ctx.lineTo(W-pad.r,midY);ctx.stroke();ctx.setLineDash([]);
+  const n=nets.length,gW=cW/n,bW=Math.max(5,gW*0.6);
+  nets.forEach((net,i)=>{
+    const gx=pad.l+i*gW+gW/2,h=Math.abs(net)/maxA*(cH/2);
+    if(net>=0){const g=ctx.createLinearGradient(0,midY-h,0,midY);g.addColorStop(0,'#22c55e');g.addColorStop(1,'rgba(34,197,94,.2)');ctx.fillStyle=g;ctx.beginPath();ctx.roundRect(gx-bW/2,midY-h,bW,h,2);ctx.fill();}
+    else{const g=ctx.createLinearGradient(0,midY,0,midY+h);g.addColorStop(0,'rgba(239,68,68,.2)');g.addColorStop(1,'#ef4444');ctx.fillStyle=g;ctx.beginPath();ctx.roundRect(gx-bW/2,midY,bW,h,2);ctx.fill();}
+  });
+  xlbl(ctx,d,pad,H,gW);
+}
+
+// OWNER BAR & DONUT
+function owbar(t){
+  const data=(t==='ib'?IB:OB).slice(0,10);
+  const col=t==='ib'?'#22c55e':'#ef4444';
+  const rowH=30;
+  const H=Math.max(240, data.length*rowH+20);
+  const r=gctx(t+'bar',H);if(!r)return;
+  const{ctx,W}=r;if(!data.length)return;
+  const valW=55,barStart=8,barEnd=W-valW-10;
+  const maxV=Math.max(...data.map(d=>d.vol))*1.05||1;
+  const barH=rowH*0.45;
+  data.forEach((o,i)=>{
+    const y=6+i*rowH;
+    // code + full name label
+    const nm=oname(o.owner);
+    ctx.fillStyle='#94a3b8';ctx.font='9px Inter,sans-serif';ctx.textAlign='left';
+    ctx.fillText(o.owner+': '+nm,barStart,y+10);
+    // bar
+    const bw=Math.max(2,o.vol/maxV*(barEnd-barStart));
+    const grad=ctx.createLinearGradient(barStart,0,barStart+bw,0);grad.addColorStop(0,col);grad.addColorStop(1,col+'55');
+    ctx.fillStyle=grad;ctx.beginPath();ctx.roundRect(barStart,y+13,bw,barH,3);ctx.fill();
+    // value
+    ctx.fillStyle='#f1f5f9';ctx.font='bold 10px Inter,sans-serif';ctx.textAlign='left';
+    ctx.fillText(fD(o.vol)+' CBM',barStart+bw+4,y+13+barH/2+4);
+  });
+}
+function owdnt(t){
+  const data=(t==='ib'?IB:OB).slice(0,8);
+  const r=gctx(t+'dnt',240);if(!r)return;
+  const{ctx,W,H}=r;if(!data.length)return;
+  const tot=data.reduce((s,d)=>s+d.vol,0)||1;
+  const cx=W/2,cy=H/2-14;
+  const rad=Math.max(10, Math.min(cx,cy)-26);
+  const inner=Math.max(5, rad*0.54);
+  let ang=-Math.PI/2;
+  data.forEach((o,i)=>{
+    const sl=o.vol/tot*Math.PI*2;
+    ctx.beginPath();ctx.moveTo(cx,cy);if(rad>0)ctx.arc(cx,cy,rad,ang,ang+sl);ctx.closePath();ctx.fillStyle=COLS[i%COLS.length];ctx.fill();ang+=sl;
+  });
+  ctx.beginPath();if(inner>0)ctx.arc(cx,cy,inner,0,Math.PI*2);ctx.fillStyle='#1e293b';ctx.fill();
+  ctx.fillStyle='#f1f5f9';ctx.font='bold 12px Inter,sans-serif';ctx.textAlign='center';ctx.fillText('Top '+data.length,cx,cy+2);
+  ctx.fillStyle='#94a3b8';ctx.font='10px Inter,sans-serif';ctx.fillText('owners',cx,cy+14);
+  data.forEach((o,i)=>{
+    const lx=6+(i%3)*((W-12)/3),ly=H-36+Math.floor(i/3)*14;
+    ctx.fillStyle=COLS[i%COLS.length];ctx.fillRect(lx,ly,7,7);
+    ctx.fillStyle='#94a3b8';ctx.font='9px Inter,sans-serif';ctx.textAlign='left';
+    ctx.fillText(o.owner+' '+Math.round(o.vol/tot*100)+'%',lx+10,ly+7);
+  });
+}
+
+
+
+
+// PARSE OCCUPANCY XLSX
+function parseOccXL(buf){
+  const wb=XLSX.read(buf,{type:'array'});
+  // Try Sheet1 first, then any sheet with Principle/TMM columns
+  let ws=null;
+  for(const name of wb.SheetNames){
+    const s=wb.Sheets[name];
+    const rows=XLSX.utils.sheet_to_json(s,{header:1,defval:null});
+    if(rows[0]&&String(rows[0][0]||'').toLowerCase().includes('principle')){ws=s;break;}
+    if(rows[0]&&String(rows[0][0]||'').toLowerCase().includes('princip')){ws=s;break;}
+  }
+  if(!ws)return null;
+  const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null});
+  // Find header row
+  let hRow=0;
+  for(let i=0;i<Math.min(5,rows.length);i++){
+    if(rows[i]&&String(rows[i][0]||'').toLowerCase().includes('princip')){hRow=i;break;}
+  }
+  const headers=rows[hRow].map(h=>String(h||'').toUpperCase().trim());
+  const tmm1Idx=headers.findIndex(h=>h==='TMM1');
+  const tmm2Idx=headers.findIndex(h=>h==='TMM2');
+  const tmm3Idx=headers.findIndex(h=>h==='TMM3');
+  const codeIdx=0,nameIdx=1;
+  const occ={TMM1:{},TMM2:{},TMM3:{}};
+  for(let i=hRow+1;i<rows.length;i++){
+    const r=rows[i];
+    if(!r||!r[codeIdx])continue;
+    const code=String(r[codeIdx]).trim();
+    const name=String(r[nameIdx]||'').trim();
+    if(!code||code===''||code==='Total')continue;
+    // Update owner map if new name found
+    if(name&&!OWNER_MAP[code])OWNER_MAP[code]=name;
+    if(tmm1Idx>=0&&r[tmm1Idx]&&parseFloat(r[tmm1Idx])>0)occ.TMM1[code]=Math.round(parseFloat(r[tmm1Idx])*100)/100;
+    if(tmm2Idx>=0&&r[tmm2Idx]&&parseFloat(r[tmm2Idx])>0)occ.TMM2[code]=Math.round(parseFloat(r[tmm2Idx])*100)/100;
+    if(tmm3Idx>=0&&r[tmm3Idx]&&parseFloat(r[tmm3Idx])>0)occ.TMM3[code]=Math.round(parseFloat(r[tmm3Idx])*100)/100;
+  }
+  return occ;
+}
+
+
+function chkPw(){
+  var email=(document.getElementById('puni')||{value:''}).value.trim();
+  var pwd=(document.getElementById('pwi')||{value:''}).value.trim();
+  var err=document.getElementById('pwerr');
+  if(!email||!pwd){if(err){err.textContent='Enter email and password.';err.style.display='block';}return;}
+  if(err)err.style.display='none';
+
+  // User list — checked locally first (works without Supabase)
+  var users=[
+    {e:'it@tmm.ae',        p:'Admin@2026'},
+    {e:'biju@thomsun.ae',  p:'Biju@2026'},
+    {e:'inventory@tmm.ae', p:'inv@2026'},
+    {e:'jubi@tmm.ae',      p:'Jubi@2026'},
+    {e:'thomasmani@tmm.ae',p:'Thomas@2026'},
+  ];
+
+  // Step 1: Check local credentials first
+  var localUser=users.find(function(x){return x.e===email&&x.p===pwd;});
+  if(!localUser){
+    if(err){err.textContent='Wrong email or password. Please try again.';err.style.display='block';}
+    if(document.getElementById('pwi'))document.getElementById('pwi').value='';
+    return;
+  }
+
+  // Step 2: Try Supabase auth (for session persistence)
+  initSupa();
+  if(supa){
+    supaSignIn(email,pwd).then(function(res){
+      if(res&&res.data&&res.data.user){
+        doLogin(res.data.user);
+      } else {
+        // Supabase failed but local auth passed — login anyway
+        doLogin({email:email});
+      }
+    }).catch(function(){
+      // Network error — use local auth
+      doLogin({email:email});
+    });
+  } else {
+    // Supabase not loaded — use local auth
+    doLogin({email:email});
+  }
+}
+function lockUp(){
+  supaSignOut().then(function(){
+    CURRENT_USER=null;
+    var mc=document.getElementById('mainContent');if(mc)mc.style.display='none';
+    var lp=document.getElementById('loginPage');if(lp)lp.style.display='flex';
+    if(document.getElementById('puni'))document.getElementById('puni').value='';
+    if(document.getElementById('pwi'))document.getElementById('pwi').value='';
+  });
+}
+document.addEventListener('DOMContentLoaded',function(){
+  initSupa();
+  var lp=document.getElementById('loginPage');
+  var mc=document.getElementById('mainContent');
+  if(!supa){if(lp)lp.style.display='flex';if(mc)mc.style.display='none';return;}
+  supaSession().then(function(s){
+    if(s&&s.user){doLogin(s.user);}
+    else{if(lp)lp.style.display='flex';if(mc)mc.style.display='none';}
+  });
+});
+function doLogin(user){
+  CURRENT_USER=user;
+  var lp=document.getElementById('loginPage');if(lp)lp.style.display='none';
+  var mc=document.getElementById('mainContent');if(mc)mc.style.display='block';
+  if(document.getElementById('puni'))document.getElementById('puni').value='';
+  if(document.getElementById('pwi'))document.getElementById('pwi').value='';
+  var ub=document.getElementById('userBadge');
+  if(ub){ub.textContent=user.email||'User';ub.style.display='';}
+  var lb=document.getElementById('lockBtn');
+  if(lb)lb.textContent='Logout ('+( user.email||'User')+')';
+  autoFetch();
+}
+
+// Check Supabase session on page load
+document.addEventListener('DOMContentLoaded',function(){
+  initSupa();
+  var lp=document.getElementById('loginPage');
+  var mc=document.getElementById('mainContent');
+  if(!supa){
+    if(lp)lp.style.display='flex';
+    if(mc)mc.style.display='none';
+    setTimeout(function(){if(document.getElementById('puni'))document.getElementById('puni').focus();},300);
+    return;
+  }
+  supaSession().then(function(s){
+    if(s&&s.user){doLogin(s.user);}
+    else{
+      if(lp)lp.style.display='flex';
+      if(mc)mc.style.display='none';
+      setTimeout(function(){if(document.getElementById('puni'))document.getElementById('puni').focus();},300);
+    }
+  });
+});
+
+function buildKPI(){
+  KPI_DATA=[];
+  var ibByOwner={},obByOwner={},hasLive=false;
+  if(typeof PIB!=='undefined'&&PIB&&PIB.ownerD){
+    hasLive=true;
+    Object.entries(PIB.ownerD).forEach(function(e){
+      var owner=e[0],dates=e[1];ibByOwner[owner]=0;
+      Object.values(dates).forEach(function(d){ibByOwner[owner]+=d.vol||0;});
+    });
+  }
+  if(typeof POB!=='undefined'&&POB&&POB.ownerD){
+    hasLive=true;
+    Object.entries(POB.ownerD).forEach(function(e){
+      var owner=e[0],dates=e[1];obByOwner[owner]=0;
+      Object.values(dates).forEach(function(d){obByOwner[owner]+=d.vol||0;});
+    });
+  }
+  if(hasLive){
+    var allOwners=new Set([...Object.keys(TMM_OCC.TMM1||{}),...Object.keys(TMM_OCC.TMM2||{}),...Object.keys(TMM_OCC.TMM3||{}),...Object.keys(ibByOwner),...Object.keys(obByOwner)]);
+    var ts=0;allOwners.forEach(function(c){ts+=(TMM_OCC.TMM1[c]||0)+(TMM_OCC.TMM2[c]||0)+(TMM_OCC.TMM3[c]||0);});
+    allOwners.forEach(function(code){
+      var t1=Math.round((TMM_OCC.TMM1[code]||0)*100)/100;
+      var t2=Math.round((TMM_OCC.TMM2[code]||0)*100)/100;
+      var t3=Math.round((TMM_OCC.TMM3[code]||0)*100)/100;
+      var storage=Math.round((t1+t2+t3)*100)/100;
+      var ib=Math.round((ibByOwner[code]||0)*100)/100;
+      var ob=Math.round((obByOwner[code]||0)*100)/100;
+      var wh=[];if(t1>0)wh.push('TMM1');if(t2>0)wh.push('TMM2');if(t3>0)wh.push('TMM3');
+      KPI_DATA.push({code:code,name:OWNER_MAP[code]||code,t1:t1,t2:t2,t3:t3,storage:storage,
+        ib:ib,ob:ob,net:Math.round((ib-ob)*100)/100,pct:ts>0?Math.round(storage/ts*1000)/10:0,wh:wh});
+    });
+  } else {
+    KPI_DATA_BAKED.forEach(function(d){
+      KPI_DATA.push({code:d.code,name:d.name||(OWNER_MAP[d.code]||d.code),
+        t1:d.t1,t2:d.t2,t3:d.t3,storage:d.storage,ib:d.ib,ob:d.ob,net:d.net,pct:d.pct,wh:d.wh});
+    });
+  }
+  KPI_DATA.sort(function(a,b){return b.storage-a.storage;});
+}
+
+function renderKPI(){
+  buildKPI();
+  var data=KPI_DATA;
+  var ts=data.reduce(function(s,d){return s+d.storage;},0);
+  var ti=data.reduce(function(s,d){return s+d.ib;},0);
+  var to=data.reduce(function(s,d){return s+d.ob;},0);
+  var net=Math.round((ti-to)*100)/100;
+  var totalCap=36998.24+11000+37507.2;
+  var cards=[
+    {label:'Total Customers',val:data.length,sub:'with storage',col:'#a78bfa',icon:'&#128101;'},
+    {label:'Total Storage',val:fD(ts)+' CBM',sub:'TMM1+TMM2+TMM3',col:'#f59e0b',icon:'&#127981;'},
+    {label:'Total Inbound',val:fD(ti)+' CBM',sub:data.filter(function(d){return d.ib>0;}).length+' customers',col:'#22c55e',icon:'&#128229;'},
+    {label:'Total Outbound',val:fD(to)+' CBM',sub:data.filter(function(d){return d.ob>0;}).length+' customers',col:'#ef4444',icon:'&#128228;'},
+    {label:'Net Flow',val:(net>=0?'+':'')+fD(net)+' CBM',sub:net>=0?'Net Inbound':'Net Outbound',col:net>=0?'#22c55e':'#ef4444',icon:'&#8644;'},
+    {label:'Utilization',val:Math.round(ts/totalCap*100)+'%',sub:'of total capacity',col:'#3b82f6',icon:'&#128202;'},
+  ];
+  var ce=document.getElementById('kpiCards');
+  if(ce)ce.innerHTML=cards.map(function(c){
+    return '<div style="background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);padding:14px 16px;box-shadow:var(--sh)">'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'+
+        '<div style="width:30px;height:30px;border-radius:8px;background:'+c.col+'22;display:flex;align-items:center;justify-content:center;font-size:15px">'+c.icon+'</div>'+
+        '<div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase">'+c.label+'</div>'+
+      '</div>'+
+      '<div style="font-size:20px;font-weight:800;color:'+c.col+'">'+c.val+'</div>'+
+      '<div style="font-size:10px;color:var(--tx3);margin-top:2px">'+c.sub+'</div>'+
+    '</div>';
+  }).join('');
+  drawKPIHBar('kpiStorageChart',data.slice(0,10),'storage','#a78bfa');
+  drawKPIHBar('kpiInChart',data.slice().sort(function(a,b){return b.ib-a.ib;}).slice(0,10),'ib','#22c55e');
+  drawKPIHBar('kpiOutChart',data.slice().sort(function(a,b){return b.ob-a.ob;}).slice(0,10),'ob','#ef4444');
+  drawNetFlowChart(data.filter(function(d){return d.ib>0||d.ob>0;}).slice(0,15));
+  filterKPI();
+}
+
+function drawKPIHBar(cid,data,field,col){
+  var cv=document.getElementById(cid);if(!cv)return;
+  var W=Math.max(300,cv.parentElement.clientWidth-20);
+  var ROW_H=26,PAD_T=8,PAD_B=8,NAME_W=160,VAL_W=70;
+  var H=data.length*ROW_H+PAD_T+PAD_B;
+  cv.width=W;cv.height=H;
+  var ctx=cv.getContext('2d');ctx.clearRect(0,0,W,H);
+  var bs=NAME_W+8,bw=W-bs-VAL_W-8;
+  var maxV=Math.max.apply(null,data.map(function(d){return d[field]||0;}))||1;
+  data.forEach(function(d,i){
+    var y=PAD_T+i*ROW_H,midY=y+ROW_H/2,val=d[field]||0;
+    if(i%2===0){ctx.fillStyle='rgba(255,255,255,0.03)';ctx.fillRect(0,y,W,ROW_H);}
+    ctx.fillStyle='#f1f5f9';ctx.font='bold 10px Inter,sans-serif';ctx.textAlign='left';
+    ctx.fillText(d.code,8,midY-2);
+    ctx.fillStyle='#64748b';ctx.font='9px Inter,sans-serif';
+    ctx.fillText((d.name||'').substring(0,20),8,midY+9);
+    if(val>0){
+      var barW=val/maxV*bw;
+      var g=ctx.createLinearGradient(bs,0,bs+barW,0);g.addColorStop(0,col);g.addColorStop(1,col+'66');
+      ctx.fillStyle=g;ctx.beginPath();ctx.roundRect(bs,midY-6,barW,12,2);ctx.fill();
+      if(barW>35){ctx.fillStyle='rgba(255,255,255,.9)';ctx.font='bold 8px Inter,sans-serif';ctx.textAlign='center';ctx.fillText(fD(val),bs+barW/2,midY+3);}
+    }
+    ctx.fillStyle='#f1f5f9';ctx.font='bold 10px Inter,sans-serif';ctx.textAlign='left';
+    ctx.fillText(fD(val)+' CBM',bs+(val>0?val/maxV*bw:0)+5,midY+3);
+    ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(0,y+ROW_H);ctx.lineTo(W,y+ROW_H);ctx.stroke();
+  });
+}
+
+function drawNetFlowChart(data){
+  var cv=document.getElementById('kpiNetChart');if(!cv)return;
+  var W=Math.max(500,cv.parentElement.clientWidth-20);
+  var ROW_H=30,PAD_T=10,NAME_W=170,VAL_W=80;
+  var H=data.length*ROW_H+PAD_T+10;
+  cv.width=W;cv.height=H;
+  var ctx=cv.getContext('2d');ctx.clearRect(0,0,W,H);
+  var bs=NAME_W+8,bw=W-bs-VAL_W-8;
+  var maxV=Math.max.apply(null,data.map(function(d){return Math.max(d.ib,d.ob);}))*1.05||1;
+  data.forEach(function(d,i){
+    var y=PAD_T+i*ROW_H,midY=y+ROW_H/2;
+    if(i%2===0){ctx.fillStyle='rgba(255,255,255,0.03)';ctx.fillRect(0,y,W,ROW_H);}
+    ctx.fillStyle='#f1f5f9';ctx.font='bold 10px Inter,sans-serif';ctx.textAlign='left';
+    ctx.fillText(d.code,8,midY-2);
+    ctx.fillStyle='#64748b';ctx.font='9px Inter,sans-serif';
+    ctx.fillText((d.name||'').substring(0,22),8,midY+9);
+    var bh=ROW_H*0.28;
+    if(d.ib>0){var ibw=d.ib/maxV*bw;ctx.fillStyle='#22c55e';ctx.beginPath();ctx.roundRect(bs,midY-bh-1,ibw,bh,2);ctx.fill();}
+    if(d.ob>0){var obw=d.ob/maxV*bw;ctx.fillStyle='#ef4444';ctx.beginPath();ctx.roundRect(bs,midY+1,obw,bh,2);ctx.fill();}
+    var nc=d.net>=0?'#22c55e':'#ef4444';
+    var mx=Math.max(d.ib,d.ob)/maxV*bw;
+    ctx.fillStyle=nc;ctx.font='bold 10px Inter,sans-serif';ctx.textAlign='left';
+    ctx.fillText((d.net>=0?'+':'')+fD(d.net),bs+mx+5,midY+3);
+    ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(0,y+ROW_H);ctx.lineTo(W,y+ROW_H);ctx.stroke();
+  });
+}
+
+function filterKPI(){
+  var search=(document.getElementById('kpiSearch')&&document.getElementById('kpiSearch').value||'').toLowerCase();
+  var sort=document.getElementById('kpiSort')&&document.getElementById('kpiSort').value||'storage';
+  var data=KPI_DATA.filter(function(d){return !search||d.code.toLowerCase().includes(search)||(d.name||'').toLowerCase().includes(search);});
+  data=data.slice().sort(function(a,b){return sort==='inbound'?b.ib-a.ib:sort==='outbound'?b.ob-a.ob:sort==='net'?b.net-a.net:b.storage-a.storage;});
+  var tbody=document.getElementById('kpiTbody');if(!tbody)return;
+  tbody.innerHTML=data.map(function(d,i){
+    var nc=d.net>0?'#22c55e':d.net<0?'#ef4444':'#64748b';
+    var wh=(d.wh||[]).map(function(w){var c=w==='TMM1'?'#3b82f6':w==='TMM2'?'#22c55e':'#f59e0b';return '<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:5px;background:'+c+'22;color:'+c+';margin-right:2px">'+w+'</span>';}).join('');
+    return '<tr>'+
+      '<td style="color:var(--tx3);font-size:11px">'+(i+1)+'</td>'+
+      '<td><div style="font-weight:700;color:var(--tx)">'+d.code+'</div><div style="font-size:10px;color:var(--tx3)">'+(d.name||'')+'</div><div style="margin-top:2px">'+wh+'</div></td>'+
+      '<td style="font-weight:800;color:#a78bfa">'+fD(d.storage)+'</td>'+
+      '<td style="color:#3b82f6">'+(d.t1>0?fD(d.t1):'-')+'</td>'+
+      '<td style="color:#22c55e">'+(d.t2>0?fD(d.t2):'-')+'</td>'+
+      '<td style="color:#f59e0b">'+(d.t3>0?fD(d.t3):'-')+'</td>'+
+      '<td style="color:#22c55e;font-weight:600">'+(d.ib>0?fD(d.ib):'-')+'</td>'+
+      '<td style="color:#ef4444;font-weight:600">'+(d.ob>0?fD(d.ob):'-')+'</td>'+
+      '<td style="font-weight:700;color:'+nc+'">'+(d.net>0?'+':'')+fD(d.net)+'</td>'+
+      '<td><span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(167,139,250,.15);color:#a78bfa">'+d.pct+'%</span></td>'+
+    '</tr>';
+  }).join('');
+}
+// PARSE XLSX
+function parseXL(buf){
+  const wb=XLSX.read(buf,{type:'array'});
+  const ws=wb.Sheets['Data']||wb.Sheets[wb.SheetNames[0]];
+  const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null});
+  const daily={},ownerD={};
+  let pO=null,pDoc=null,pDate=null,pVol=null;
+  for(let i=1;i<rows.length;i++){
+    const r=rows[i];
+    const owner=r[0],date=r[1],doc=r[2],vol=r[3];
+    if(!date||typeof vol!=='number'||!doc)continue;
+    let dt=date;
+    if(typeof dt==='number')dt=new Date(Math.round((dt-25569)*86400000));
+    if(!(dt instanceof Date)||isNaN(dt))continue;
+    const key=dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}).replace(/ /,' ');
+    const ds=String(doc);
+    if(owner&&String(owner).trim()!==''){pO=String(owner).trim();pDoc=ds;pDate=key;pVol=vol;}
+    else{
+      if(!daily[key])daily[key]={docs:new Set(),vol:0};
+      daily[key].docs.add(ds);daily[key].vol+=vol;
+      if(pO&&pDoc===ds){
+        if(!ownerD[pO])ownerD[pO]={};
+        if(!ownerD[pO][key])ownerD[pO][key]={docs:new Set(),vol:0};
+        ownerD[pO][key].docs.add(ds);ownerD[pO][key].vol+=pVol;
+      }
+    }
+  }
+  return{daily,ownerD};
+}
+function applyParsed(){
+  const ad=new Set([...Object.keys((PIB||{daily:{}}).daily),...Object.keys((POB||{daily:{}}).daily)]);
+  const srt=[...ad].sort((a,b)=>{const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];const pa=a.split(' '),pb=b.split(' ');return(m.indexOf(pa[1])*31+parseInt(pa[0]))-(m.indexOf(pb[1])*31+parseInt(pb[0]));});
+  DAILY=srt.map(date=>{
+    const ib=(PIB||{daily:{}}).daily[date]||{docs:new Set(),vol:0};
+    const ob=(POB||{daily:{}}).daily[date]||{docs:new Set(),vol:0};
+    return{date,cnt_in:ib.docs.size,vol_in:Math.round(ib.vol*100)/100,cnt_out:ob.docs.size,vol_out:Math.round(ob.vol*100)/100};
+  });
+  FILT=[...DAILY];
+  function bld(od){return Object.entries(od).map(([owner,dates])=>{const vol=Math.round(Object.values(dates).reduce((s,d)=>s+d.vol,0)*100)/100;const docs=Object.values(dates).reduce((s,d)=>s+d.docs.size,0);const days=Object.keys(dates).length;const daily={};Object.entries(dates).forEach(([d,info])=>{daily[d]={vol:Math.round(info.vol*100)/100,docs:info.docs.size};});return{owner,vol,docs,days,daily};}).sort((a,b)=>b.vol-a.vol);}
+  if(PIB)IB=bld(PIB.ownerD);
+  if(POB)OB=bld(POB.ownerD);
+  IBF=[...IB];OBF=[...OB];
+  document.getElementById('tsLabel').textContent='Updated: '+now();
+}
+function hfile(file,t){
+  if(!file)return;
+  document.getElementById('ovl').classList.add('show');
+  const rd=new FileReader();
+  rd.onload=ev=>{
+    try{
+      if(t==='occ'){
+        // Parse occupancy file
+        const occ=parseOccXL(ev.target.result);
+        if(!occ){alert('Could not parse TMM Occupancy file. Make sure it has columns: Principle, Description, TMM1, TMM2, TMM3');document.getElementById('ovl').classList.remove('show');return;}
+        // Update TMM_OCC
+        Object.assign(TMM_OCC.TMM1,occ.TMM1);
+        Object.assign(TMM_OCC.TMM2,occ.TMM2);
+        Object.assign(TMM_OCC.TMM3,occ.TMM3);
+        // Clear old data and replace
+        Object.keys(TMM_OCC.TMM1).forEach(k=>{if(!occ.TMM1[k])delete TMM_OCC.TMM1[k];});
+        Object.keys(TMM_OCC.TMM2).forEach(k=>{if(!occ.TMM2[k])delete TMM_OCC.TMM2[k];});
+        Object.keys(TMM_OCC.TMM3).forEach(k=>{if(!occ.TMM3[k])delete TMM_OCC.TMM3[k];});
+        TMM_OCC.TMM1=occ.TMM1;TMM_OCC.TMM2=occ.TMM2;TMM_OCC.TMM3=occ.TMM3;
+        POCC=occ;
+        document.getElementById('occst').textContent='✅ '+file.name;
+        document.getElementById('occst').style.color='#f59e0b';
+        document.getElementById('occbox').classList.add('loaded');
+        document.getElementById('tsLabel').textContent='Updated: '+now();
+        renderOcc();
+      } else {
+        const p=parseXL(ev.target.result);
+        if(t==='ib'){PIB=p;supaUpload('inbound.xlsx',file);document.getElementById('ibst').textContent='✅ '+file.name;document.getElementById('ibst').style.color='#22c55e';document.getElementById('ibbox').classList.add('loaded');}
+        else{POB=p;supaUpload('outbound.xlsx',file);document.getElementById('obst').textContent='✅ '+file.name;document.getElementById('obst').style.color='#ef4444';document.getElementById('obbox').classList.add('loaded');}
+        applyParsed();
+        document.querySelectorAll('.fb').forEach((b,i)=>b.classList.toggle('active',i===0));
+        renderFlow();owgrid('ib');owtbl('ib');owgrid('ob');owtbl('ob');owbar('ib');owdnt('ib');owbar('ob');owdnt('ob');
+      }
+    }catch(e){alert('Error: '+e.message);}
+    document.getElementById('ovl').classList.remove('show');
+  };
+  rd.readAsArrayBuffer(file);
+}
+// AUTO FETCH from GitHub repository files
+async function autoFetch(){
+  var ovl=document.getElementById('ovl');if(ovl)ovl.classList.add('show');
+  var ibOk=false,obOk=false;
+  try{var b=await supaFetch('inbound.xlsx');if(b){PIB=parseXL(b);if(PIB){ibOk=true;var s=document.getElementById('ibst');if(s){s.textContent='inbound.xlsx loaded';s.style.color='#22c55e';}var bx=document.getElementById('ibbox');if(bx)bx.classList.add('loaded');}}}catch(e){}
+  try{var b=await supaFetch('outbound.xlsx');if(b){POB=parseXL(b);if(POB){obOk=true;var s=document.getElementById('obst');if(s){s.textContent='outbound.xlsx loaded';s.style.color='#ef4444';}var bx=document.getElementById('obbox');if(bx)bx.classList.add('loaded');}}}catch(e){}
+  try{var b=await supaFetch('occupancy.xlsx');if(b){var oc=parseOccXL(b);if(oc){TMM_OCC.TMM1=oc.TMM1;TMM_OCC.TMM2=oc.TMM2;TMM_OCC.TMM3=oc.TMM3;POCC=oc;var s=document.getElementById('occst');if(s){s.textContent='occupancy.xlsx loaded';s.style.color='#f59e0b';}var bx=document.getElementById('occbox');if(bx)bx.classList.add('loaded');}}}catch(e){}
+  try{var b=await supaFetch('tmm3zone.xlsx');if(b){var zd=parseTMM3ZoneXL(b);if(zd){window.LIVE_TMM3_ZONES=zd;var s=document.getElementById('zonest');if(s){s.textContent='tmm3zone.xlsx loaded';s.style.color='#f59e0b';}var bx=document.getElementById('zonebox');if(bx)bx.classList.add('loaded');}}}catch(e){}
+  if(ibOk||obOk){applyParsed();document.querySelectorAll('.fb').forEach(function(btn,i){btn.classList.toggle('active',i===0);});}
+  var ts=document.getElementById('tsLabel');if(ts)ts.textContent='Updated: '+now();
+  renderFlow();owgrid('ib');owtbl('ib');owgrid('ob');owtbl('ob');owbar('ib');owdnt('ib');owbar('ob');owdnt('ob');
+  renderOcc();KPI_DATA=[];
+  if(ovl)ovl.classList.remove('show');
+  setTimeout(function(){renderOcc();renderKPI();},400);
+}
+
+function setLoadingMsg(msg){
+  const el=document.querySelector('#ovl div:last-child');
+  if(el)el.textContent=msg;
+}
+
+// File input listeners — safe init after DOM ready
+function initListeners(){
+  ['ibin','obin','occin','zonein'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el)return;
+    var type=id==='ibin'?'ib':id==='obin'?'ob':id==='occin'?'occ':'zone';
+    el.addEventListener('change',function(e){hfile(e.target.files[0],type);e.target.value='';});
+  });
+  const ibin=document.getElementById('ibin');
+  const obin=document.getElementById('obin');
+  const occin=document.getElementById('occin');
+  if(ibin)ibin.addEventListener('change',e=>{hfile(e.target.files[0],'ib');e.target.value='';});
+  if(obin)obin.addEventListener('change',e=>{hfile(e.target.files[0],'ob');e.target.value='';});
+  if(occin)occin.addEventListener('change',e=>{hfile(e.target.files[0],'occ');e.target.value='';});
+}
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',initListeners);
+} else {
+  initListeners();
+}
+function dg(e,id,on){e.preventDefault();const el=document.getElementById(id);if(el)el.classList.toggle('drag',on);}
+function dp(e,t){e.preventDefault();document.getElementById(t==='ib'?'ibbox':t==='ob'?'obbox':'occbox').classList.remove('drag');hfile(e.dataTransfer.files[0],t);}
+window.addEventListener('resize',()=>{dm();dc();dn();owbar('ib');owdnt('ib');owbar('ob');owdnt('ob');});
+
+// INIT — auto fetch GitHub files first, fallback to baked data
+renderFlow();
+owgrid('ib');owtbl('ib');
+owgrid('ob');owtbl('ob');
+owbar('ib');owdnt('ib');
+owbar('ob');owdnt('ob');
+renderOcc();
+document.getElementById('dbd').textContent=DAILY.length+' days';
+
+// Auto-fetch live data from GitHub (inbound.xlsx, outbound.xlsx, occupancy.xlsx)
+autoFetch();
+
+// Auto-refresh every 10 minutes
+setInterval(autoFetch, 10*60*1000);
+</script>
+<input type="file" id="ibin"  accept=".xlsx,.xls" style="display:none">
+<input type="file" id="obin"  accept=".xlsx,.xls" style="display:none">
+<input type="file" id="occin" accept=".xlsx,.xls" style="display:none">
+<input type="file" id="zonein" accept=".xlsx,.xls" style="display:none">
+</body>
+</html>
