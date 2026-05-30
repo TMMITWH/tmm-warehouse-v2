@@ -139,36 +139,30 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 </head>
 <body>
 <div class="ovl" id="ovl"><div class="spn"></div><div style="font-size:12px;font-weight:600;color:var(--tx2)">Processing SAP files...</div></div>
-<!-- FULL SCREEN LOGIN -->
+<!-- LOGIN -->
 <div id="loginPage" style="display:flex;position:fixed;inset:0;z-index:9999;background:var(--bg);align-items:center;justify-content:center;flex-direction:column">
   <div style="width:100%;max-width:420px;padding:0 20px">
     <div style="text-align:center;margin-bottom:28px">
-      <div style="width:60px;height:60px;border-radius:14px;background:linear-gradient(135deg,#22c55e,#0d9488);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 12px">&#128260;</div>
-      <div style="font-size:22px;font-weight:800;color:#f1f5f9;margin-bottom:4px">TMM Warehouse</div>
-      <div style="font-size:13px;color:#64748b">Live Dashboard &mdash; Secure Access</div>
+      <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#22c55e,#0d9488);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 12px">&#128260;</div>
+      <div style="font-size:22px;font-weight:800;color:var(--tx);margin-bottom:4px">TMM Warehouse</div>
+      <div style="font-size:13px;color:var(--tx3)">Cold Storage &middot; 3PL &middot; Secure Access</div>
     </div>
-    <div style="background:#1e293b;border-radius:16px;border:1px solid #334155;padding:28px;box-shadow:0 8px 32px rgba(0,0,0,.5)">
-      <div style="font-size:14px;font-weight:700;color:#f1f5f9;margin-bottom:18px;text-align:center">&#128272; Sign In</div>
-      <div style="margin-bottom:12px">
-        <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Email</div>
-        <input type="email" id="puni" placeholder="your@email.com" autocomplete="email"
-          style="width:100%;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px 14px;color:#f1f5f9;font-size:14px;font-family:inherit;outline:none"
-          onkeydown="if(event.key==='Enter')document.getElementById('pwi').focus()">
-      </div>
-      <div style="margin-bottom:18px">
-        <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Password</div>
-        <input type="password" id="pwi" placeholder="Enter password" autocomplete="current-password"
-          style="width:100%;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px 14px;color:#f1f5f9;font-size:14px;font-family:inherit;outline:none"
-          onkeydown="if(event.key==='Enter')chkPw()">
-      </div>
+    <div style="background:var(--sf);border-radius:16px;border:1px solid var(--bd);padding:28px;box-shadow:var(--sh)">
+      <div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Email</div>
+      <input type="email" id="puni" placeholder="your@email.com"
+        style="width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;color:var(--tx);font-size:14px;font-family:inherit;outline:none;margin-bottom:12px"
+        onkeydown="if(event.key==='Enter')document.getElementById('pwi').focus()">
+      <div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Password</div>
+      <input type="password" id="pwi" placeholder="Enter password"
+        style="width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;color:var(--tx);font-size:14px;font-family:inherit;outline:none;margin-bottom:16px"
+        onkeydown="if(event.key==='Enter')chkPw()">
       <div id="pwerr" style="font-size:12px;color:#ef4444;margin-bottom:12px;display:none;background:rgba(239,68,68,.1);padding:8px 12px;border-radius:8px">&#10060; Wrong email or password.</div>
       <button onclick="chkPw()"
         style="width:100%;padding:11px;border-radius:8px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;font-size:14px;font-weight:700;border:none;cursor:pointer">
         Sign In &#8594;
       </button>
-      <div style="text-align:center;margin-top:14px;font-size:11px;color:#475569">Contact admin for access</div>
     </div>
-    <div style="text-align:center;margin-top:14px;font-size:11px;color:#475569">TMM Cold Storage &middot; 3PL Warehouse Management</div>
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--tx3)">TMM Cold Storage &middot; 3PL Warehouse Management</div>
   </div>
 </div>
 
@@ -190,6 +184,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     </div>
     <div class="lbdg"><span class="ldot"></span>Live</div>
     <div class="tspil" id="tsLabel">May 2026</div>
+    <span id="userBadge" style="font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.2);margin-left:8px;display:none"></span>
+    <button id="lockBtn" onclick="lockUp()" style="display:none;font-size:11px;font-weight:700;padding:5px 13px;border-radius:8px;background:rgba(239,68,68,.12);color:#ef4444;border:1px solid rgba(239,68,68,.25);cursor:pointer;margin-left:6px">&#128274; Logout</button>
   </div>
 </nav>
 <div class="main" id="mainContent" style="display:none">
@@ -301,14 +297,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <canvas id="capacityChart" height="200"></canvas>
   </div>
 
-  <!-- TMM3 ZONE BREAKDOWN -->
-  <div class="sl">TMM3 Warehouse &#8212; Zone Breakdown (C1 &middot; C2 &middot; C3 &middot; C4)</div>
-  <div id="tmm3ZoneSection"></div>
-
-  <!-- TMM3 CUSTOMER BREAKDOWN -->
-  <div class="sl">TMM3 &#8212; Customer Breakdown by Zone</div>
-  <div id="tmm3BreakdownSection"></div>
-
+  <div class="sl">TMM3 &#8212; Zone Breakdown</div><div id="tmm3ZoneSection"></div>
+  <div class="sl">TMM3 &#8212; Customer by Zone</div><div id="tmm3BreakdownSection"></div>
   <div class="sl">Customer Breakdown by Warehouse</div>
   <div class="g3" id="tmmcards"></div>
   <div class="g3">
@@ -342,7 +332,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   </div>
 </div>
 
-<!-- TAB: CUSTOMER KPI -->
+<!-- KPI TAB -->
 <div class="panel" id="tab-kpi">
   <div class="sl">Customer KPI &#8212; Overview</div>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px" id="kpiCards"></div>
@@ -352,12 +342,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="cc"><div class="ctit">Top 10 &#8212; Outbound CBM</div><div class="csub">This month</div><canvas id="kpiOutChart" height="280"></canvas></div>
   </div>
   <div class="cc full" style="margin-bottom:18px">
-    <div class="ctit">Net Flow &#8212; Inbound vs Outbound</div>
-    <div class="csub">Top 15 active customers</div>
-    <div class="cleg">
-      <span class="lg"><span class="lb" style="background:#22c55e"></span>Inbound</span>
-      <span class="lg"><span class="lb" style="background:#ef4444"></span>Outbound</span>
-    </div>
+    <div class="ctit">Net Flow &#8212; Inbound vs Outbound</div><div class="csub">Top 15 active customers</div>
+    <div class="cleg"><span class="lg"><span class="lb" style="background:#22c55e"></span>Inbound</span><span class="lg"><span class="lb" style="background:#ef4444"></span>Outbound</span></div>
     <canvas id="kpiNetChart"></canvas>
   </div>
   <div class="sl">All Customers &#8212; Full KPI Table</div>
@@ -374,18 +360,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   <div style="background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);overflow:hidden;box-shadow:var(--sh)">
     <table class="tbl2"><thead><tr>
       <th>#</th><th>Customer</th>
-      <th style="color:#a78bfa">Storage</th>
-      <th style="color:#3b82f6">TMM1</th>
-      <th style="color:#22c55e">TMM2</th>
-      <th style="color:#f59e0b">TMM3</th>
-      <th style="color:#22c55e">Inbound</th>
-      <th style="color:#ef4444">Outbound</th>
-      <th>Net Flow</th>
-      <th>% Share</th>
+      <th style="color:#a78bfa">Storage</th><th style="color:#3b82f6">TMM1</th>
+      <th style="color:#22c55e">TMM2</th><th style="color:#f59e0b">TMM3</th>
+      <th style="color:#22c55e">Inbound</th><th style="color:#ef4444">Outbound</th>
+      <th>Net Flow</th><th>% Share</th>
     </tr></thead><tbody id="kpiTbody"></tbody></table>
   </div>
 </div>
-
 <div class="footer">
   <span>TMM Cold Storage &middot; SAP WM &middot; Document subtotal CBM &middot; May 2026</span>
   <div style="display:flex;gap:7px;flex-wrap:wrap">
@@ -404,46 +385,25 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>const SUPA_URL='https://gccbdujmfxkqpkzocliq.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjY2JkdWptZnhrcXBrem9jbGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTczMTEsImV4cCI6MjA5NTI3MzMxMX0.cosJ4LVExjDqV0bZZFF3ceqMNtlyUstz6-gNn6jvb9k';
-let supa=null;
+let supa=null;let SESSION_TOKEN=null;let CURRENT_USER=null;
 function initSupa(){if(typeof window.supabase!=='undefined'&&!supa)supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);}
 async function supaSignIn(e,p){initSupa();if(!supa)return{error:true};return supa.auth.signInWithPassword({email:e,password:p});}
 async function supaSignOut(){initSupa();if(supa)await supa.auth.signOut();}
 async function supaSession(){initSupa();if(!supa)return null;const r=await supa.auth.getSession();return r.data.session;}
 async function supaFetch(fn){
-  var url='https://gccbdujmfxkqpkzocliq.supabase.co/storage/v1/object/warehouse-data/'+fn;
+  var url=SUPA_URL+'/storage/v1/object/warehouse-data/'+fn;
   try{
-    // Use stored session token (set on login)
-    var token=SESSION_TOKEN||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjY2JkdWptZnhrcXBrem9jbGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTczMTEsImV4cCI6MjA5NTI3MzMxMX0.cosJ4LVExjDqV0bZZFF3ceqMNtlyUstz6-gNn6jvb9k';
-    var res=await fetch(url,{
-      headers:{'Authorization':'Bearer '+token}
-    });
-    if(!res.ok){
-      // Try with anon key as fallback
-      res=await fetch(url,{
-        headers:{'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjY2JkdWptZnhrcXBrem9jbGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTczMTEsImV4cCI6MjA5NTI3MzMxMX0.cosJ4LVExjDqV0bZZFF3ceqMNtlyUstz6-gNn6jvb9k'}
-      });
-    }
+    var token=SESSION_TOKEN||SUPA_KEY;
+    var res=await fetch(url,{headers:{'Authorization':'Bearer '+token}});
+    if(!res.ok)res=await fetch(url,{headers:{'Authorization':'Bearer '+SUPA_KEY}});
     if(!res.ok)return null;
     return res.arrayBuffer();
-  }catch(e){
-    console.log('supaFetch error:',e.message);
-    return null;
-  }
+  }catch(e){return null;}
 }
 async function supaUpload(fn,f){
-  var url='https://gccbdujmfxkqpkzocliq.supabase.co/storage/v1/object/warehouse-data/'+fn;
-  try{
-    var token=SESSION_TOKEN||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjY2JkdWptZnhrcXBrem9jbGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTczMTEsImV4cCI6MjA5NTI3MzMxMX0.cosJ4LVExjDqV0bZZFF3ceqMNtlyUstz6-gNn6jvb9k';
-    var res=await fetch(url,{
-      method:'POST',
-      headers:{'Authorization':'Bearer '+token,'x-upsert':'true','Content-Type':'application/octet-stream'},
-      body:f
-    });
-    if(!res.ok)console.log('supaUpload failed:',res.status);
-    else console.log('supaUpload: uploaded',fn);
-  }catch(e){console.log('supaUpload error:',e.message);}
+  var url=SUPA_URL+'/storage/v1/object/warehouse-data/'+fn;
+  try{await fetch(url,{method:'POST',headers:{'Authorization':'Bearer '+(SESSION_TOKEN||SUPA_KEY),'x-upsert':'true','Content-Type':'application/octet-stream'},body:f});}catch(e){}
 }
-let CURRENT_USER=null;
 
 const DAILY_DATA=[{"date": "01 May", "cnt_in": 25, "vol_in": 929.03, "cnt_out": 16, "vol_out": 375.88}, {"date": "02 May", "cnt_in": 29, "vol_in": 546.04, "cnt_out": 25, "vol_out": 580.11}, {"date": "03 May", "cnt_in": 4, "vol_in": 267.58, "cnt_out": 0, "vol_out": 0}, {"date": "04 May", "cnt_in": 27, "vol_in": 816.31, "cnt_out": 40, "vol_out": 855.66}, {"date": "05 May", "cnt_in": 22, "vol_in": 504.22, "cnt_out": 37, "vol_out": 702.67}, {"date": "06 May", "cnt_in": 23, "vol_in": 392.94, "cnt_out": 28, "vol_out": 912.62}, {"date": "07 May", "cnt_in": 46, "vol_in": 223.45, "cnt_out": 46, "vol_out": 869.77}, {"date": "08 May", "cnt_in": 38, "vol_in": 916.29, "cnt_out": 39, "vol_out": 552.89}, {"date": "09 May", "cnt_in": 47, "vol_in": 1018.81, "cnt_out": 37, "vol_out": 719.47}, {"date": "10 May", "cnt_in": 9, "vol_in": 261.65, "cnt_out": 9, "vol_out": 257.07}, {"date": "11 May", "cnt_in": 33, "vol_in": 582.59, "cnt_out": 38, "vol_out": 747.15}, {"date": "12 May", "cnt_in": 30, "vol_in": 535.7, "cnt_out": 47, "vol_out": 779.23}, {"date": "13 May", "cnt_in": 29, "vol_in": 494.59, "cnt_out": 35, "vol_out": 829.8}, {"date": "14 May", "cnt_in": 31, "vol_in": 1104.64, "cnt_out": 39, "vol_out": 903.09}, {"date": "15 May", "cnt_in": 28, "vol_in": 795.65, "cnt_out": 39, "vol_out": 607.75}, {"date": "16 May", "cnt_in": 23, "vol_in": 370.95, "cnt_out": 21, "vol_out": 435.38}, {"date": "18 May", "cnt_in": 15, "vol_in": 259.11, "cnt_out": 50, "vol_out": 1139.72}, {"date": "19 May", "cnt_in": 29, "vol_in": 180.47, "cnt_out": 37, "vol_out": 612.72}, {"date": "20 May", "cnt_in": 19, "vol_in": 283.96, "cnt_out": 25, "vol_out": 802.92}];
 const IB_OWNERS=[{"owner": "T073", "vol": 1916.71, "docs": 31, "days": 10, "daily": {"01 May": {"vol": 396.98, "docs": 6}, "02 May": {"vol": 132.04, "docs": 2}, "03 May": {"vol": 66.02, "docs": 1}, "04 May": {"vol": 642.74, "docs": 10}, "05 May": {"vol": 158.76, "docs": 3}, "07 May": {"vol": 11.1, "docs": 1}, "12 May": {"vol": 62.57, "docs": 1}, "13 May": {"vol": 61.34, "docs": 1}, "14 May": {"vol": 190.71, "docs": 3}, "15 May": {"vol": 194.44, "docs": 3}}}, {"owner": "T108", "vol": 1475.73, "docs": 34, "days": 6, "daily": {"08 May": {"vol": 489.52, "docs": 10}, "09 May": {"vol": 153.82, "docs": 3}, "14 May": {"vol": 370.75, "docs": 9}, "15 May": {"vol": 248.62, "docs": 6}, "16 May": {"vol": 149.63, "docs": 4}, "18 May": {"vol": 63.38, "docs": 2}}}, {"owner": "T086", "vol": 1104.49, "docs": 27, "days": 16, "daily": {"01 May": {"vol": 186.31, "docs": 1}, "02 May": {"vol": 36.96, "docs": 1}, "03 May": {"vol": 98.95, "docs": 1}, "05 May": {"vol": 3.9, "docs": 1}, "06 May": {"vol": 168.52, "docs": 3}, "07 May": {"vol": 27.0, "docs": 1}, "08 May": {"vol": 8.54, "docs": 1}, "11 May": {"vol": 100.18, "docs": 4}, "12 May": {"vol": 35.42, "docs": 2}, "13 May": {"vol": 27.49, "docs": 2}, "14 May": {"vol": 95.97, "docs": 3}, "15 May": {"vol": 213.73, "docs": 2}, "16 May": {"vol": 26.57, "docs": 1}, "18 May": {"vol": 55.12, "docs": 1}, "19 May": {"vol": 5.69, "docs": 2}, "20 May": {"vol": 14.16, "docs": 1}}}, {"owner": "T223", "vol": 757.89, "docs": 23, "days": 11, "daily": {"01 May": {"vol": 135.91, "docs": 2}, "05 May": {"vol": 141.62, "docs": 2}, "06 May": {"vol": 33.51, "docs": 2}, "08 May": {"vol": 0.28, "docs": 1}, "09 May": {"vol": 8.53, "docs": 1}, "11 May": {"vol": 93.65, "docs": 4}, "12 May": {"vol": 35.42, "docs": 1}, "13 May": {"vol": 58.52, "docs": 3}, "14 May": {"vol": 188.81, "docs": 3}, "15 May": {"vol": 0.83, "docs": 1}, "19 May": {"vol": 60.81, "docs": 3}}}, {"owner": "T285", "vol": 704.05, "docs": 25, "days": 5, "daily": {"01 May": {"vol": 28.49, "docs": 1}, "02 May": {"vol": 113.96, "docs": 4}, "10 May": {"vol": 119.6, "docs": 4}, "11 May": {"vol": 270.37, "docs": 9}, "12 May": {"vol": 171.63, "docs": 7}}}, {"owner": "T315", "vol": 685.59, "docs": 28, "days": 16, "daily": {"01 May": {"vol": 34.0, "docs": 1}, "02 May": {"vol": 57.22, "docs": 2}, "04 May": {"vol": 13.1, "docs": 1}, "05 May": {"vol": 39.62, "docs": 2}, "06 May": {"vol": 76.53, "docs": 3}, "07 May": {"vol": 34.0, "docs": 1}, "08 May": {"vol": 56.11, "docs": 3}, "09 May": {"vol": 36.56, "docs": 1}, "11 May": {"vol": 21.47, "docs": 1}, "12 May": {"vol": 22.32, "docs": 1}, "13 May": {"vol": 43.6, "docs": 2}, "14 May": {"vol": 36.71, "docs": 2}, "16 May": {"vol": 34.0, "docs": 1}, "18 May": {"vol": 34.2, "docs": 1}, "19 May": {"vol": 44.32, "docs": 2}, "20 May": {"vol": 101.83, "docs": 4}}}, {"owner": "T314", "vol": 642.0, "docs": 27, "days": 14, "daily": {"01 May": {"vol": 84.31, "docs": 3}, "02 May": {"vol": 7.46, "docs": 1}, "04 May": {"vol": 62.32, "docs": 2}, "05 May": {"vol": 41.19, "docs": 1}, "06 May": {"vol": 21.25, "docs": 1}, "07 May": {"vol": 51.58, "docs": 2}, "08 May": {"vol": 61.6, "docs": 3}, "09 May": {"vol": 69.01, "docs": 4}, "11 May": {"vol": 48.34, "docs": 2}, "12 May": {"vol": 21.42, "docs": 1}, "14 May": {"vol": 20.05, "docs": 1}, "15 May": {"vol": 32.76, "docs": 1}, "16 May": {"vol": 66.97, "docs": 2}, "19 May": {"vol": 53.74, "docs": 3}}}, {"owner": "T091", "vol": 412.78, "docs": 10, "days": 8, "daily": {"02 May": {"vol": 128.35, "docs": 3}, "03 May": {"vol": 51.48, "docs": 1}, "04 May": {"vol": 32.3, "docs": 1}, "05 May": {"vol": 26.4, "docs": 1}, "14 May": {"vol": 48.38, "docs": 1}, "15 May": {"vol": 29.1, "docs": 1}, "16 May": {"vol": 48.4, "docs": 1}, "18 May": {"vol": 48.38, "docs": 1}}}, {"owner": "T351", "vol": 352.8, "docs": 7, "days": 1, "daily": {"09 May": {"vol": 352.8, "docs": 7}}}, {"owner": "T224", "vol": 332.72, "docs": 7, "days": 5, "daily": {"01 May": {"vol": 39.39, "docs": 1}, "08 May": {"vol": 36.9, "docs": 1}, "12 May": {"vol": 37.98, "docs": 1}, "13 May": {"vol": 183.0, "docs": 3}, "14 May": {"vol": 35.45, "docs": 1}}}, {"owner": "T087", "vol": 220.98, "docs": 13, "days": 2, "daily": {"08 May": {"vol": 19.18, "docs": 1}, "09 May": {"vol": 201.79, "docs": 12}}}, {"owner": "T293", "vol": 186.2, "docs": 5, "days": 3, "daily": {"08 May": {"vol": 40.88, "docs": 1}, "09 May": {"vol": 79.69, "docs": 2}, "15 May": {"vol": 65.62, "docs": 2}}}, {"owner": "T337", "vol": 167.69, "docs": 3, "days": 2, "daily": {"13 May": {"vol": 56.0, "docs": 1}, "14 May": {"vol": 111.69, "docs": 2}}}, {"owner": "T076", "vol": 154.62, "docs": 7, "days": 6, "daily": {"01 May": {"vol": 8.56, "docs": 1}, "04 May": {"vol": 5.23, "docs": 2}, "06 May": {"vol": 1.78, "docs": 1}, "07 May": {"vol": 0.41, "docs": 1}, "08 May": {"vol": 138.61, "docs": 1}, "12 May": {"vol": 0.03, "docs": 1}}}, {"owner": "T352", "vol": 141.57, "docs": 3, "days": 1, "daily": {"10 May": {"vol": 141.57, "docs": 3}}}, {"owner": "T316", "vol": 138.32, "docs": 3, "days": 3, "daily": {"04 May": {"vol": 56.39, "docs": 1}, "05 May": {"vol": 48.45, "docs": 1}, "18 May": {"vol": 33.48, "docs": 1}}}, {"owner": "T276", "vol": 110.97, "docs": 3, "days": 3, "daily": {"07 May": {"vol": 55.82, "docs": 1}, "12 May": {"vol": 2.07, "docs": 1}, "20 May": {"vol": 53.08, "docs": 1}}}, {"owner": "T082", "vol": 109.96, "docs": 9, "days": 6, "daily": {"02 May": {"vol": 0.03, "docs": 1}, "05 May": {"vol": 5.18, "docs": 1}, "11 May": {"vol": 0.12, "docs": 2}, "12 May": {"vol": 0.11, "docs": 1}, "16 May": {"vol": 19.02, "docs": 3}, "20 May": {"vol": 85.49, "docs": 1}}}, {"owner": "T297", "vol": 107.89, "docs": 3, "days": 2, "daily": {"09 May": {"vol": 65.12, "docs": 2}, "12 May": {"vol": 42.77, "docs": 1}}}, {"owner": "T053", "vol": 59.24, "docs": 16, "days": 8, "daily": {"04 May": {"vol": 0.51, "docs": 3}, "05 May": {"vol": 20.56, "docs": 3}, "09 May": {"vol": 4.4, "docs": 2}, "11 May": {"vol": 0.32, "docs": 1}, "13 May": {"vol": 14.28, "docs": 3}, "15 May": {"vol": 2.22, "docs": 2}, "18 May": {"vol": 0.03, "docs": 1}, "20 May": {"vol": 16.92, "docs": 1}}}, {"owner": "T342", "vol": 51.64, "docs": 1, "days": 1, "daily": {"06 May": {"vol": 51.64, "docs": 1}}}, {"owner": "T252", "vol": 51.14, "docs": 1, "days": 1, "daily": {"03 May": {"vol": 51.14, "docs": 1}}}, {"owner": "T001", "vol": 51.07, "docs": 34, "days": 15, "daily": {"01 May": {"vol": 2.84, "docs": 3}, "04 May": {"vol": 0.89, "docs": 2}, "05 May": {"vol": 4.17, "docs": 2}, "06 May": {"vol": 1.05, "docs": 2}, "07 May": {"vol": 1.02, "docs": 4}, "08 May": {"vol": 0.11, "docs": 1}, "09 May": {"vol": 0.0, "docs": 1}, "11 May": {"vol": 0.74, "docs": 1}, "12 May": {"vol": 36.14, "docs": 3}, "13 May": {"vol": 0.71, "docs": 3}, "14 May": {"vol": 0.04, "docs": 1}, "15 May": {"vol": 0.64, "docs": 2}, "18 May": {"vol": 0.82, "docs": 2}, "19 May": {"vol": 0.9, "docs": 5}, "20 May": {"vol": 1.0, "docs": 2}}}, {"owner": "T089", "vol": 47.67, "docs": 47, "days": 13, "daily": {"02 May": {"vol": 5.0, "docs": 6}, "05 May": {"vol": 14.38, "docs": 5}, "06 May": {"vol": 4.35, "docs": 3}, "07 May": {"vol": 5.18, "docs": 5}, "09 May": {"vol": 4.09, "docs": 3}, "11 May": {"vol": 0.61, "docs": 3}, "12 May": {"vol": 2.52, "docs": 1}, "13 May": {"vol": 0.84, "docs": 2}, "15 May": {"vol": 2.98, "docs": 4}, "16 May": {"vol": 5.67, "docs": 4}, "18 May": {"vol": 0.37, "docs": 2}, "19 May": {"vol": 1.68, "docs": 7}, "20 May": {"vol": 0.01, "docs": 2}}}, {"owner": "T030", "vol": 46.43, "docs": 1, "days": 1, "daily": {"08 May": {"vol": 46.43, "docs": 1}}}, {"owner": "T041", "vol": 39.0, "docs": 11, "days": 8, "daily": {"01 May": {"vol": 2.07, "docs": 1}, "02 May": {"vol": 16.78, "docs": 3}, "06 May": {"vol": 7.94, "docs": 1}, "07 May": {"vol": 0.97, "docs": 1}, "08 May": {"vol": 5.56, "docs": 1}, "09 May": {"vol": 1.28, "docs": 1}, "11 May": {"vol": 1.85, "docs": 1}, "15 May": {"vol": 2.55, "docs": 2}}}, {"owner": "T281", "vol": 38.06, "docs": 1, "days": 1, "daily": {"02 May": {"vol": 38.06, "docs": 1}}}, {"owner": "T110", "vol": 34.22, "docs": 37, "days": 4, "daily": {"07 May": {"vol": 10.98, "docs": 24}, "08 May": {"vol": 5.94, "docs": 9}, "10 May": {"vol": 0.48, "docs": 2}, "13 May": {"vol": 16.82, "docs": 2}}}, {"owner": "T242", "vol": 32.07, "docs": 17, "days": 6, "daily": {"07 May": {"vol": 0.36, "docs": 3}, "09 May": {"vol": 17.69, "docs": 4}, "12 May": {"vol": 0.01, "docs": 1}, "16 May": {"vol": 13.95, "docs": 4}, "19 May": {"vol": 0.0, "docs": 1}, "20 May": {"vol": 0.07, "docs": 4}}}, {"owner": "T260", "vol": 29.23, "docs": 4, "days": 4, "daily": {"01 May": {"vol": 0.04, "docs": 1}, "11 May": {"vol": 5.6, "docs": 1}, "12 May": {"vol": 21.2, "docs": 1}, "19 May": {"vol": 2.38, "docs": 1}}}, {"owner": "T353", "vol": 28.25, "docs": 1, "days": 1, "daily": {"13 May": {"vol": 28.25, "docs": 1}}}, {"owner": "T054", "vol": 27.39, "docs": 15, "days": 8, "daily": {"02 May": {"vol": 1.16, "docs": 3}, "04 May": {"vol": 0.68, "docs": 4}, "06 May": {"vol": 4.03, "docs": 3}, "11 May": {"vol": 0.0, "docs": 1}, "12 May": {"vol": 20.17, "docs": 1}, "13 May": {"vol": 0.0, "docs": 1}, "15 May": {"vol": 1.07, "docs": 1}, "19 May": {"vol": 0.27, "docs": 1}}}, {"owner": "T026", "vol": 26.81, "docs": 7, "days": 6, "daily": {"01 May": {"vol": 2.23, "docs": 1}, "09 May": {"vol": 4.02, "docs": 1}, "12 May": {"vol": 9.22, "docs": 1}, "14 May": {"vol": 2.99, "docs": 2}, "16 May": {"vol": 2.45, "docs": 1}, "19 May": {"vol": 5.91, "docs": 1}}}, {"owner": "T334", "vol": 26.4, "docs": 2, "days": 2, "daily": {"11 May": {"vol": 17.16, "docs": 1}, "12 May": {"vol": 9.24, "docs": 1}}}, {"owner": "T321", "vol": 22.97, "docs": 1, "days": 1, "daily": {"07 May": {"vol": 22.97, "docs": 1}}}, {"owner": "T329", "vol": 22.07, "docs": 1, "days": 1, "daily": {"11 May": {"vol": 22.07, "docs": 1}}}, {"owner": "T096", "vol": 21.16, "docs": 4, "days": 3, "daily": {"01 May": {"vol": 1.24, "docs": 1}, "09 May": {"vol": 17.51, "docs": 1}, "18 May": {"vol": 2.41, "docs": 2}}}, {"owner": "T039", "vol": 20.9, "docs": 1, "days": 1, "daily": {"18 May": {"vol": 20.9, "docs": 1}}}, {"owner": "T025", "vol": 19.51, "docs": 6, "days": 6, "daily": {"02 May": {"vol": 8.3, "docs": 1}, "08 May": {"vol": 2.29, "docs": 1}, "12 May": {"vol": 0.07, "docs": 1}, "14 May": {"vol": 0.7, "docs": 1}, "16 May": {"vol": 4.28, "docs": 1}, "19 May": {"vol": 3.87, "docs": 1}}}, {"owner": "T085", "vol": 15.5, "docs": 2, "days": 2, "daily": {"01 May": {"vol": 6.5, "docs": 1}, "06 May": {"vol": 9.0, "docs": 1}}}, {"owner": "T331", "vol": 13.33, "docs": 1, "days": 1, "daily": {"06 May": {"vol": 13.33, "docs": 1}}}, {"owner": "T028", "vol": 9.68, "docs": 4, "days": 3, "daily": {"08 May": {"vol": 3.64, "docs": 2}, "12 May": {"vol": 4.32, "docs": 1}, "13 May": {"vol": 1.73, "docs": 1}}}, {"owner": "T038", "vol": 8.47, "docs": 5, "days": 4, "daily": {"09 May": {"vol": 2.49, "docs": 2}, "12 May": {"vol": 1.08, "docs": 1}, "16 May": {"vol": 0.01, "docs": 1}, "20 May": {"vol": 4.89, "docs": 1}}}, {"owner": "T005", "vol": 7.83, "docs": 3, "days": 3, "daily": {"04 May": {"vol": 2.15, "docs": 1}, "14 May": {"vol": 2.35, "docs": 1}, "20 May": {"vol": 3.33, "docs": 1}}}, {"owner": "T037", "vol": 4.07, "docs": 2, "days": 2, "daily": {"19 May": {"vol": 0.9, "docs": 1}, "20 May": {"vol": 3.18, "docs": 1}}}, {"owner": "T165", "vol": 3.74, "docs": 5, "days": 5, "daily": {"01 May": {"vol": 0.17, "docs": 1}, "02 May": {"vol": 0.7, "docs": 1}, "07 May": {"vol": 2.07, "docs": 1}, "08 May": {"vol": 0.7, "docs": 1}, "11 May": {"vol": 0.1, "docs": 1}}}, {"owner": "T088", "vol": 3.1, "docs": 2, "days": 2, "daily": {"13 May": {"vol": 2.0, "docs": 1}, "15 May": {"vol": 1.1, "docs": 1}}}, {"owner": "T204", "vol": 0.06, "docs": 1, "days": 1, "daily": {"14 May": {"vol": 0.06, "docs": 1}}}, {"owner": "T273", "vol": 0.01, "docs": 1, "days": 1, "daily": {"06 May": {"vol": 0.01, "docs": 1}}}, {"owner": "T152", "vol": 0.01, "docs": 1, "days": 1, "daily": {"13 May": {"vol": 0.01, "docs": 1}}}, {"owner": "T153", "vol": 0.0, "docs": 4, "days": 3, "daily": {"13 May": {"vol": 0.0, "docs": 2}, "18 May": {"vol": 0.0, "docs": 1}, "19 May": {"vol": 0.0, "docs": 1}}}];
@@ -838,15 +798,12 @@ function parseTMM3ZoneXL(buf){
     if(validZones.indexOf(stype)<0)continue;
     lastRow[owner+'|'+stype]=vol;
   }
-  // Get zone distribution ratio per owner from stock type file
   var ownerZoneDist={};
   Object.entries(lastRow).forEach(function(e){
     var parts=e[0].split('|'),owner=parts[0],stype=parts[1],vol=e[1];
     if(!ownerZoneDist[owner])ownerZoneDist[owner]={};
     ownerZoneDist[owner][stype]=(ownerZoneDist[owner][stype]||0)+vol;
   });
-  // Use TMM_OCC.TMM3 as master (from occupancy.xlsx) - EXACT values
-  // Distribute each owner's TMM3 CBM proportionally across zones
   var zVol={},zOwners={};
   Object.entries(TMM_OCC.TMM3||{}).forEach(function(e){
     var owner=e[0],tmm3cbm=e[1];
@@ -879,159 +836,220 @@ function parseTMM3ZoneXL(buf){
 }
 
 function renderTMM3Zones(){
-  var el=document.getElementById('tmm3ZoneSection');
-  if(!el)return;
-  var zones=typeof LIVE_TMM3_ZONES!=='undefined'?LIVE_TMM3_ZONES:TMM3_ZONES;
-  var totalCap=zones.reduce(function(s,z){return s+z.cap;},0);
+  var el=document.getElementById('tmm3ZoneSection');if(!el)return;
+  var zones=typeof LIVE_TMM3_ZONES!=='undefined'&&LIVE_TMM3_ZONES?LIVE_TMM3_ZONES:TMM3_ZONES;
   var totalOcc=zones.reduce(function(s,z){return s+z.occ;},0);
+  var totalCap=zones.reduce(function(s,z){return s+z.cap;},0);
   var totalAvail=Math.max(0,totalCap-totalOcc);
-  var totalPct=Math.min(100,Math.round(totalOcc/totalCap*100));
-  var html='';
-  html+='<div style="background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(245,158,11,.04));border:2px solid #f59e0b;border-radius:var(--r);padding:16px 20px;margin-bottom:14px">';
+  var totalPct=Math.round(totalOcc/totalCap*100);
+  var html='<div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:var(--r);padding:16px 20px;margin-bottom:14px">';
   html+='<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px">';
-  html+='<div><div style="font-size:15px;font-weight:800;color:#f59e0b">TMM3 Warehouse &#8212; Total</div>';
-  html+='<div style="font-size:11px;color:var(--tx3)">4 Zones (C1+C2+C3+C4) &middot; 31,256 locations</div></div>';
-  html+='<span style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:'+(totalPct>=90?'rgba(239,68,68,.15)':totalPct>=70?'rgba(245,158,11,.15)':'rgba(34,197,94,.15)')+';color:'+(totalPct>=90?'#ef4444':totalPct>=70?'#f59e0b':'#22c55e')+'">'+totalPct+'% Occupied</span>';
+  html+='<div><div style="font-size:14px;font-weight:800;color:#f59e0b">TMM3 Total &#8212; All Zones</div>';
+  html+='<div style="font-size:10px;color:var(--tx3)">C1+C2+C3+C4 &middot; 31,256 locations</div></div>';
+  var sc=totalPct>=90?'#ef4444':totalPct>=70?'#f59e0b':'#22c55e';
+  html+='<span style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:'+sc+'22;color:'+sc+'">'+totalPct+'% Occupied</span>';
   html+='</div>';
   html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">';
   html+='<div style="background:rgba(0,0,0,.2);border-radius:var(--rs);padding:10px;text-align:center"><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Total Capacity</div><div style="font-size:20px;font-weight:800;color:#f59e0b">'+fD(totalCap)+'</div><div style="font-size:10px;color:var(--tx3)">CBM</div></div>';
   html+='<div style="background:rgba(0,0,0,.2);border-radius:var(--rs);padding:10px;text-align:center"><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Occupied</div><div style="font-size:20px;font-weight:800;color:#ef4444">'+fD(totalOcc)+'</div><div style="font-size:10px;color:#ef4444">'+totalPct+'%</div></div>';
   html+='<div style="background:rgba(0,0,0,.2);border-radius:var(--rs);padding:10px;text-align:center"><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Available</div><div style="font-size:20px;font-weight:800;color:#22c55e">'+fD(totalAvail)+'</div><div style="font-size:10px;color:#22c55e">'+(100-totalPct)+'%</div></div>';
   html+='</div>';
-  html+='<div style="height:12px;border-radius:6px;background:rgba(0,0,0,.3);overflow:hidden"><div style="height:100%;width:'+Math.min(100,totalPct)+'%;background:linear-gradient(90deg,#f59e0b,'+(totalPct>=90?'#ef4444':'#22c55e')+');border-radius:6px"></div></div>';
+  html+='<div style="height:10px;border-radius:5px;background:rgba(0,0,0,.3);overflow:hidden"><div style="height:100%;width:'+Math.min(100,totalPct)+'%;background:linear-gradient(90deg,#f59e0b,'+sc+');border-radius:5px"></div></div>';
   html+='<div style="display:flex;justify-content:space-between;font-size:10px;margin-top:4px"><span style="color:#ef4444;font-weight:600">Occ: '+fD(totalOcc)+' CBM</span><span style="color:#22c55e;font-weight:600">Free: '+fD(totalAvail)+' CBM</span></div>';
   html+='</div>';
-  html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:14px">';
+  html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:14px">';
   zones.forEach(function(z){
     var col=z.col||'#94a3b8';
     var usedPct=Math.min(100,z.pct);
-    var availPct=Math.max(0,100-usedPct);
     var avail=Math.max(0,z.cap-z.occ);
-    var statusColor=usedPct>=90?'#ef4444':usedPct>=70?'#f59e0b':'#22c55e';
-    var statusLabel=usedPct>=90?'Critical':usedPct>=70?'Moderate':'Available';
-    var ownerEntries=Object.entries(z.owners||{}).slice(0,4);
-    var ownerRows=ownerEntries.map(function(e){
-      var code=e[0],vol=e[1];
-      var nm=(OWNER_MAP[code]||code).substring(0,22);
-      var p2=z.occ>0?Math.round(vol/z.occ*100):0;
-      return '<div style="margin-bottom:6px">'+
-        '<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px">'+
-          '<span style="color:var(--tx2);font-weight:600">'+code+' '+nm+'</span>'+
-          '<span style="color:'+col+';font-weight:700">'+fD(vol)+'</span>'+
-        '</div>'+
-        '<div style="height:4px;border-radius:2px;background:var(--sf3);overflow:hidden">'+
-          '<div style="height:100%;width:'+p2+'%;background:'+col+'"></div>'+
-        '</div></div>';
+    var sc2=usedPct>=90?'#ef4444':usedPct>=70?'#f59e0b':'#22c55e';
+    var lbl=usedPct>=90?'Critical':usedPct>=70?'Moderate':'Available';
+    var owners=Object.entries(z.owners||{}).slice(0,4);
+    var ownerRows=owners.map(function(e){
+      var nm=(OWNER_MAP[e[0]]||e[0]).substring(0,20);
+      var p2=z.occ>0?Math.round(e[1]/z.occ*100):0;
+      return '<div style="margin-bottom:5px"><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px"><span style="color:var(--tx2);font-weight:600">'+e[0]+' '+nm+'</span><span style="color:'+col+';font-weight:700">'+fD(e[1])+'</span></div><div style="height:4px;border-radius:2px;background:var(--sf3);overflow:hidden"><div style="height:100%;width:'+p2+'%;background:'+col+'"></div></div></div>';
     }).join('');
     var extra=Object.keys(z.owners||{}).length>4?'<div style="font-size:10px;color:var(--tx3)">+'+(Object.keys(z.owners).length-4)+' more</div>':'';
-    html+='<div style="background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);overflow:hidden;box-shadow:var(--sh)">';
-    html+='<div style="background:'+col+'18;border-bottom:3px solid '+col+';padding:13px 16px;display:flex;align-items:center;justify-content:space-between">';
-    html+='<div><div style="font-size:15px;font-weight:900;color:'+col+'">'+z.name+' ('+z.code+')</div>';
-    html+='<div style="font-size:11px;color:var(--tx3);margin-top:2px">'+z.desc+' &middot; 1.2 CBM/loc</div></div>';
-    html+='<span style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;background:'+statusColor+'22;color:'+statusColor+';border:1px solid '+statusColor+'44">'+statusLabel+'</span></div>';
-    html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr">';
-    html+='<div style="padding:13px 8px;text-align:center;border-right:1px solid var(--bd)"><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Total CBM</div><div style="font-size:19px;font-weight:800;color:'+col+'">'+fD(z.cap)+'</div></div>';
-    html+='<div style="padding:13px 8px;text-align:center;border-right:1px solid var(--bd)"><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Occupied</div><div style="font-size:19px;font-weight:800;color:#ef4444">'+fD(z.occ)+'</div><div style="font-size:9px;color:#ef4444">'+usedPct.toFixed(1)+'%</div></div>';
-    html+='<div style="padding:13px 8px;text-align:center"><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Available</div><div style="font-size:19px;font-weight:800;color:#22c55e">'+fD(avail)+'</div><div style="font-size:9px;color:#22c55e">'+availPct.toFixed(1)+'%</div></div></div>';
-    html+='<div style="padding:10px 14px;border-top:1px solid var(--bd)">';
-    html+='<div style="height:10px;border-radius:5px;background:var(--sf3);overflow:hidden"><div style="height:100%;width:'+Math.min(100,usedPct)+'%;background:linear-gradient(90deg,'+col+','+statusColor+');border-radius:5px"></div></div>';
-    html+='<div style="display:flex;justify-content:space-between;font-size:10px;margin-top:4px"><span style="color:'+statusColor+';font-weight:600">Occ: '+fD(z.occ)+' CBM</span><span style="color:#22c55e;font-weight:600">Free: '+fD(avail)+' CBM</span></div></div>';
-    html+='<div style="padding:10px 14px;border-top:1px solid var(--bd)"><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px">Top Customers ('+Object.keys(z.owners||{}).length+' total)</div>'+ownerRows+extra+'</div></div>';
+    html+='<div class="cc">';
+    html+='<div style="border-left:3px solid '+col+';padding-left:10px;margin-bottom:12px">';
+    html+='<div style="font-size:15px;font-weight:900;color:'+col+'">'+z.name+' ('+z.code+')</div>';
+    html+='<div style="font-size:10px;color:var(--tx3)">'+z.desc+'</div></div>';
+    html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px">';
+    html+='<div style="background:var(--sf2);border-radius:var(--rs);padding:8px;text-align:center"><div style="font-size:8px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Capacity</div><div style="font-size:15px;font-weight:800;color:'+col+'">'+fD(z.cap)+'</div></div>';
+    html+='<div style="background:var(--sf2);border-radius:var(--rs);padding:8px;text-align:center"><div style="font-size:8px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Occupied</div><div style="font-size:15px;font-weight:800;color:#ef4444">'+fD(z.occ)+'</div><div style="font-size:9px;color:#ef4444">'+usedPct.toFixed(1)+'%</div></div>';
+    html+='<div style="background:var(--sf2);border-radius:var(--rs);padding:8px;text-align:center"><div style="font-size:8px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Available</div><div style="font-size:15px;font-weight:800;color:#22c55e">'+fD(avail)+'</div></div>';
+    html+='</div>';
+    html+='<div style="height:8px;border-radius:4px;background:var(--sf3);overflow:hidden;margin-bottom:4px"><div style="height:100%;width:'+Math.min(100,usedPct)+'%;background:linear-gradient(90deg,'+col+','+sc2+');border-radius:4px"></div></div>';
+    html+='<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:12px"><span style="color:'+sc2+';font-weight:600">'+usedPct.toFixed(1)+'% Used</span><span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;background:'+sc2+'22;color:'+sc2+'">'+lbl+'</span></div>';
+    html+='<div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px">Top Customers ('+Object.keys(z.owners||{}).length+' total)</div>';
+    html+=ownerRows+extra;
+    html+='</div>';
   });
   html+='</div>';
-  html+='<div class="cc full" style="margin-bottom:14px"><div class="ctit">TMM3 Zone Comparison</div><div class="csub">C1 (+18C) &middot; C2 Frozen &middot; C3 Frozen &middot; C4 Chiller</div><div class="cleg"><span class="lg"><span class="lb" style="background:#ef4444"></span>Occupied</span><span class="lg"><span class="lb" style="background:#22c55e"></span>Available</span></div><canvas id="tmm3ZoneChart"></canvas></div>';
+  html+='<div class="cc full" style="margin-bottom:14px"><div class="ctit">TMM3 Zone Comparison</div><div class="csub">Occupied vs Available per zone</div><div class="cleg"><span class="lg"><span class="lb" style="background:#ef4444"></span>Occupied</span><span class="lg"><span class="lb" style="background:#22c55e"></span>Available</span></div><canvas id="tmm3ZoneChart"></canvas></div>';
   el.innerHTML=html;
   setTimeout(function(){drawTMM3ZoneChart(zones);},80);
 }
 
 function drawTMM3ZoneChart(zones){
   var cv=document.getElementById('tmm3ZoneChart');if(!cv)return;
-  var W=Math.max(400,cv.parentElement.clientWidth-36);
-  var H=220;cv.width=W;cv.height=H;
+  var W=Math.max(400,cv.parentElement.clientWidth-36),H=200;
+  cv.width=W;cv.height=H;
   var ctx=cv.getContext('2d');ctx.clearRect(0,0,W,H);
-  var pad={l:60,r:14,t:14,b:60};
+  var pad={l:60,r:14,t:14,b:56};
   var cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
-  var n=zones.length,gW=cW/n,bW=Math.max(20,gW*0.3),gap=gW*0.05;
-  var maxV=Math.max.apply(null,zones.map(function(z){return z.cap;}))*1.12||1;
+  var n=zones.length,gW=cW/n,bW=Math.max(20,gW*0.28);
+  var maxV=Math.max.apply(null,zones.map(function(z){return z.cap;}))*1.1||1;
   ctx.strokeStyle='#334155';ctx.lineWidth=1;
   for(var i=0;i<=4;i++){
-    var y=pad.t+cH*(1-i/4);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    var y=pad.t+cH*(1-i/4);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
     ctx.fillStyle='#64748b';ctx.font='10px Inter,sans-serif';ctx.textAlign='right';
-    var v=maxV*i/4;ctx.fillText(v>=1000?(v/1000).toFixed(0)+'k':Math.round(v),pad.l-5,y+3);
+    var v=maxV*i/4;ctx.fillText(v>=1000?(v/1000).toFixed(0)+'k':Math.round(v),pad.l-4,y+3);
   }
   zones.forEach(function(z,i){
     var col=z.col||'#94a3b8',gx=pad.l+i*gW+gW/2;
     var th=z.cap/maxV*cH;
-    ctx.strokeStyle=col;ctx.lineWidth=2;ctx.setLineDash([5,3]);
-    ctx.beginPath();ctx.moveTo(gx-bW*1.2,pad.t+cH-th);ctx.lineTo(gx+bW*1.2,pad.t+cH-th);ctx.stroke();ctx.setLineDash([]);
+    ctx.strokeStyle=col+'66';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(gx-bW*1.3,pad.t+cH-th);ctx.lineTo(gx+bW*1.3,pad.t+cH-th);ctx.stroke();ctx.setLineDash([]);
     var oh=z.occ/maxV*cH;
-    var go=ctx.createLinearGradient(0,pad.t+cH-oh,0,pad.t+cH);go.addColorStop(0,'#ef4444');go.addColorStop(1,'rgba(239,68,68,.2)');
-    ctx.fillStyle=go;ctx.beginPath();ctx.roundRect(gx-bW-gap,pad.t+cH-oh,bW,oh,3);ctx.fill();
-    var avail=Math.max(0,z.cap-z.occ),ah=avail/maxV*cH;
-    var ga=ctx.createLinearGradient(0,pad.t+cH-ah,0,pad.t+cH);ga.addColorStop(0,'#22c55e');ga.addColorStop(1,'rgba(34,197,94,.2)');
-    ctx.fillStyle=ga;ctx.beginPath();ctx.roundRect(gx+gap,pad.t+cH-ah,bW,ah,3);ctx.fill();
-    ctx.fillStyle=col;ctx.font='bold 11px Inter,sans-serif';ctx.textAlign='center';ctx.fillText(z.name,gx,H-42);
-    ctx.fillStyle='#64748b';ctx.font='9px Inter,sans-serif';ctx.fillText(z.code,gx,H-28);ctx.fillText(z.desc.substring(0,12),gx,H-16);
+    ctx.fillStyle='#ef4444aa';ctx.beginPath();ctx.roundRect(gx-bW-2,pad.t+cH-oh,bW,oh,3);ctx.fill();
+    var av=Math.max(0,z.cap-z.occ),ah=av/maxV*cH;
+    ctx.fillStyle='#22c55eaa';ctx.beginPath();ctx.roundRect(gx+2,pad.t+cH-ah,bW,ah,3);ctx.fill();
+    ctx.fillStyle=col;ctx.font='bold 11px Inter,sans-serif';ctx.textAlign='center';ctx.fillText(z.name,gx,H-38);
+    ctx.fillStyle='#64748b';ctx.font='9px Inter,sans-serif';ctx.fillText(z.code,gx,H-24);ctx.fillText(z.desc.substring(0,10),gx,H-12);
   });
 }
 
 function renderTMM3Breakdown(){
   var el=document.getElementById('tmm3BreakdownSection');if(!el)return;
   var ownerZoneMap={};
-  TMM3_ZONES.forEach(function(z){
-    Object.entries(z.owners||{}).forEach(function(e){
-      var owner=e[0],vol=e[1];
-      if(!ownerZoneMap[owner])ownerZoneMap[owner]={};
-      ownerZoneMap[owner][z.code]=vol;
-    });
-  });
+  TMM3_ZONES.forEach(function(z){Object.entries(z.owners||{}).forEach(function(e){if(!ownerZoneMap[e[0]])ownerZoneMap[e[0]]={};ownerZoneMap[e[0]][z.code]=e[1];});});
   var tmm3owners=Object.entries(TMM_OCC.TMM3||{}).sort(function(a,b){return b[1]-a[1];});
   var total=tmm3owners.reduce(function(s,e){return s+e[1];},0)||1;
   var html='<div style="background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);overflow:hidden;box-shadow:var(--sh);margin-bottom:14px">';
-  html+='<table class="tbl2" style="margin-bottom:0"><thead><tr>';
-  html+='<th>#</th><th>Customer</th>';
-  html+='<th style="color:#f59e0b">Total CBM</th>';
-  html+='<th style="color:#f59e0b">C1 T3R1</th>';
-  html+='<th style="color:#3b82f6">C2 T3C1</th>';
-  html+='<th style="color:#60a5fa">C3 T3C2</th>';
-  html+='<th style="color:#14b8a6">C4 T3C3</th>';
-  html+='<th>% Share</th>';
-  html+='</tr></thead><tbody>';
+  html+='<table class="tbl2"><thead><tr><th>#</th><th>Customer</th><th style="color:#f59e0b">Total CBM</th><th style="color:#f59e0b">C1 T3R1</th><th style="color:#3b82f6">C2 T3C1</th><th style="color:#60a5fa">C3 T3C2</th><th style="color:#14b8a6">C4 T3C3</th><th>% Share</th></tr></thead><tbody>';
   tmm3owners.forEach(function(e,i){
-    var code=e[0],vol=e[1];
-    var nm=OWNER_MAP[code]||code;
-    var pct=(vol/total*100).toFixed(1);
-    var oz=ownerZoneMap[code]||{};
-    var t1=oz.T3R1||0,t2=oz.T3C1||0,t3=oz.T3C2||0,t4=oz.T3C3||0;
-    html+='<tr>';
-    html+='<td style="color:var(--tx3);font-size:11px">'+(i+1)+'</td>';
-    html+='<td><div style="font-weight:700;color:var(--tx)">'+code+'</div><div style="font-size:10px;color:var(--tx3)">'+nm+'</div></td>';
+    var code=e[0],vol=e[1],nm=OWNER_MAP[code]||code,pct=(vol/total*100).toFixed(1),oz=ownerZoneMap[code]||{};
+    html+='<tr><td style="color:var(--tx3);font-size:11px">'+(i+1)+'</td><td><div style="font-weight:700;color:var(--tx)">'+code+'</div><div style="font-size:10px;color:var(--tx3)">'+nm+'</div></td>';
     html+='<td style="font-weight:800;color:#f59e0b">'+fD(vol)+'</td>';
-    html+='<td style="color:#f59e0b;font-weight:600">'+(t1>0?fD(t1):'-')+'</td>';
-    html+='<td style="color:#3b82f6;font-weight:600">'+(t2>0?fD(t2):'-')+'</td>';
-    html+='<td style="color:#60a5fa;font-weight:600">'+(t3>0?fD(t3):'-')+'</td>';
-    html+='<td style="color:#14b8a6;font-weight:600">'+(t4>0?fD(t4):'-')+'</td>';
-    html+='<td><span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(245,158,11,.15);color:#f59e0b">'+pct+'%</span></td>';
-    html+='</tr>';
+    html+='<td style="color:#f59e0b">'+(oz.T3R1?fD(oz.T3R1):'-')+'</td>';
+    html+='<td style="color:#3b82f6">'+(oz.T3C1?fD(oz.T3C1):'-')+'</td>';
+    html+='<td style="color:#60a5fa">'+(oz.T3C2?fD(oz.T3C2):'-')+'</td>';
+    html+='<td style="color:#14b8a6">'+(oz.T3C3?fD(oz.T3C3):'-')+'</td>';
+    html+='<td><span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(245,158,11,.15);color:#f59e0b">'+pct+'%</span></td></tr>';
   });
   var zones=TMM3_ZONES;
-  html+='<tr class="tot"><td></td><td>TOTAL</td>';
-  html+='<td style="color:#f59e0b">'+fD(tmm3owners.reduce(function(s,e){return s+e[1];},0))+'</td>';
-  html+='<td style="color:#f59e0b">'+fD(zones[0]?zones[0].occ:0)+'</td>';
-  html+='<td style="color:#3b82f6">'+fD(zones[1]?zones[1].occ:0)+'</td>';
-  html+='<td style="color:#60a5fa">'+fD(zones[2]?zones[2].occ:0)+'</td>';
-  html+='<td style="color:#14b8a6">'+fD(zones[3]?zones[3].occ:0)+'</td>';
-  html+='<td>100%</td></tr>';
+  html+='<tr class="tot"><td></td><td>TOTAL</td><td style="color:#f59e0b">'+fD(tmm3owners.reduce(function(s,e){return s+e[1];},0))+'</td>';
+  html+='<td style="color:#f59e0b">'+fD(zones[0]?zones[0].occ:0)+'</td><td style="color:#3b82f6">'+fD(zones[1]?zones[1].occ:0)+'</td>';
+  html+='<td style="color:#60a5fa">'+fD(zones[2]?zones[2].occ:0)+'</td><td style="color:#14b8a6">'+fD(zones[3]?zones[3].occ:0)+'</td><td>100%</td></tr>';
   html+='</tbody></table></div>';
   el.innerHTML=html;
 }
 
+function buildKPI(){
+  KPI_DATA=[];
+  var ibByOwner={},obByOwner={},hasLive=false;
+  if(typeof PIB!=='undefined'&&PIB&&PIB.ownerD){hasLive=true;Object.entries(PIB.ownerD).forEach(function(e){var owner=e[0],dates=e[1];ibByOwner[owner]=0;Object.values(dates).forEach(function(d){ibByOwner[owner]+=d.vol||0;});});}
+  if(typeof POB!=='undefined'&&POB&&POB.ownerD){hasLive=true;Object.entries(POB.ownerD).forEach(function(e){var owner=e[0],dates=e[1];obByOwner[owner]=0;Object.values(dates).forEach(function(d){obByOwner[owner]+=d.vol||0;});});}
+  if(hasLive){
+    var allOwners=new Set([...Object.keys(TMM_OCC.TMM1||{}),...Object.keys(TMM_OCC.TMM2||{}),...Object.keys(TMM_OCC.TMM3||{}),...Object.keys(ibByOwner),...Object.keys(obByOwner)]);
+    var ts2=0;allOwners.forEach(function(c){ts2+=(TMM_OCC.TMM1[c]||0)+(TMM_OCC.TMM2[c]||0)+(TMM_OCC.TMM3[c]||0);});
+    allOwners.forEach(function(code){
+      var t1=Math.round((TMM_OCC.TMM1[code]||0)*100)/100,t2=Math.round((TMM_OCC.TMM2[code]||0)*100)/100,t3=Math.round((TMM_OCC.TMM3[code]||0)*100)/100;
+      var storage=Math.round((t1+t2+t3)*100)/100,ib=Math.round((ibByOwner[code]||0)*100)/100,ob=Math.round((obByOwner[code]||0)*100)/100;
+      var wh=[];if(t1>0)wh.push('TMM1');if(t2>0)wh.push('TMM2');if(t3>0)wh.push('TMM3');
+      KPI_DATA.push({code:code,name:OWNER_MAP[code]||code,t1:t1,t2:t2,t3:t3,storage:storage,ib:ib,ob:ob,net:Math.round((ib-ob)*100)/100,pct:ts2>0?Math.round(storage/ts2*1000)/10:0,wh:wh});
+    });
+  }else{
+    KPI_DATA_BAKED.forEach(function(d){KPI_DATA.push({code:d.code,name:d.name||(OWNER_MAP[d.code]||d.code),t1:d.t1,t2:d.t2,t3:d.t3,storage:d.storage,ib:d.ib,ob:d.ob,net:d.net,pct:d.pct,wh:d.wh});});
+  }
+  KPI_DATA.sort(function(a,b){return b.storage-a.storage;});
+}
+
+function renderKPI(){
+  buildKPI();
+  var data=KPI_DATA;
+  var ts=data.reduce(function(s,d){return s+d.storage;},0);
+  var ti=data.reduce(function(s,d){return s+d.ib;},0);
+  var to=data.reduce(function(s,d){return s+d.ob;},0);
+  var net=Math.round((ti-to)*100)/100;
+  var totalCap=36998.24+11000+37507.2;
+  var cards=[
+    {label:'Total Customers',val:data.length+'',sub:'with storage',col:'#a78bfa',icon:'&#128101;'},
+    {label:'Total Storage',val:fD(ts)+' CBM',sub:'TMM1+TMM2+TMM3',col:'#f59e0b',icon:'&#127981;'},
+    {label:'Total Inbound',val:fD(ti)+' CBM',sub:data.filter(function(d){return d.ib>0;}).length+' active',col:'#22c55e',icon:'&#128229;'},
+    {label:'Total Outbound',val:fD(to)+' CBM',sub:data.filter(function(d){return d.ob>0;}).length+' active',col:'#ef4444',icon:'&#128228;'},
+    {label:'Net Flow',val:(net>=0?'+':'')+fD(net)+' CBM',sub:net>=0?'Net Inbound':'Net Outbound',col:net>=0?'#22c55e':'#ef4444',icon:'&#8644;'},
+    {label:'Utilization',val:Math.round(ts/totalCap*100)+'%',sub:'of total capacity',col:'#3b82f6',icon:'&#128202;'},
+  ];
+  var ce=document.getElementById('kpiCards');
+  if(ce)ce.innerHTML=cards.map(function(c){return '<div style="background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);padding:14px 16px;box-shadow:var(--sh)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:30px;height:30px;border-radius:8px;background:'+c.col+'22;display:flex;align-items:center;justify-content:center;font-size:15px">'+c.icon+'</div><div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase">'+c.label+'</div></div><div style="font-size:20px;font-weight:800;color:'+c.col+'">'+c.val+'</div><div style="font-size:10px;color:var(--tx3);margin-top:2px">'+c.sub+'</div></div>';}).join('');
+  drawKPIHBar('kpiStorageChart',data.slice(0,10),'storage','#a78bfa');
+  drawKPIHBar('kpiInChart',data.slice().sort(function(a,b){return b.ib-a.ib;}).slice(0,10),'ib','#22c55e');
+  drawKPIHBar('kpiOutChart',data.slice().sort(function(a,b){return b.ob-a.ob;}).slice(0,10),'ob','#ef4444');
+  drawNetFlowChart(data.filter(function(d){return d.ib>0||d.ob>0;}).slice(0,15));
+  filterKPI();
+}
+
+function drawKPIHBar(cid,data,field,col){
+  var cv=document.getElementById(cid);if(!cv)return;
+  var W=Math.max(300,cv.parentElement.clientWidth-20),ROW_H=26,PAD_T=8,PAD_B=8,NAME_W=160,VAL_W=70;
+  var H=data.length*ROW_H+PAD_T+PAD_B;cv.width=W;cv.height=H;
+  var ctx=cv.getContext('2d');ctx.clearRect(0,0,W,H);
+  var bs=NAME_W+8,bw=W-bs-VAL_W-8;
+  var maxV=Math.max.apply(null,data.map(function(d){return d[field]||0;}))||1;
+  data.forEach(function(d,i){
+    var y=PAD_T+i*ROW_H,midY=y+ROW_H/2,val=d[field]||0;
+    if(i%2===0){ctx.fillStyle='rgba(255,255,255,0.02)';ctx.fillRect(0,y,W,ROW_H);}
+    ctx.fillStyle='#f1f5f9';ctx.font='bold 10px Inter,sans-serif';ctx.textAlign='left';ctx.fillText(d.code,8,midY-2);
+    ctx.fillStyle='#64748b';ctx.font='9px Inter,sans-serif';ctx.fillText((d.name||'').substring(0,20),8,midY+9);
+    if(val>0){var barW=val/maxV*bw;var g=ctx.createLinearGradient(bs,0,bs+barW,0);g.addColorStop(0,col);g.addColorStop(1,col+'66');ctx.fillStyle=g;ctx.beginPath();ctx.roundRect(bs,midY-6,barW,12,2);ctx.fill();}
+    ctx.fillStyle='#f1f5f9';ctx.font='bold 10px Inter,sans-serif';ctx.textAlign='left';ctx.fillText(fD(val)+' CBM',bs+(val>0?val/maxV*bw:0)+5,midY+3);
+    ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,y+ROW_H);ctx.lineTo(W,y+ROW_H);ctx.stroke();
+  });
+}
+
+function drawNetFlowChart(data){
+  var cv=document.getElementById('kpiNetChart');if(!cv)return;
+  var W=Math.max(500,cv.parentElement.clientWidth-20),ROW_H=30,PAD_T=10,NAME_W=170,VAL_W=80;
+  var H=data.length*ROW_H+PAD_T+10;cv.width=W;cv.height=H;
+  var ctx=cv.getContext('2d');ctx.clearRect(0,0,W,H);
+  var bs=NAME_W+8,bw=W-bs-VAL_W-8;
+  var maxV=Math.max.apply(null,data.map(function(d){return Math.max(d.ib,d.ob);}))*1.05||1;
+  data.forEach(function(d,i){
+    var y=PAD_T+i*ROW_H,midY=y+ROW_H/2;
+    if(i%2===0){ctx.fillStyle='rgba(255,255,255,0.02)';ctx.fillRect(0,y,W,ROW_H);}
+    ctx.fillStyle='#f1f5f9';ctx.font='bold 10px Inter,sans-serif';ctx.textAlign='left';ctx.fillText(d.code,8,midY-2);
+    ctx.fillStyle='#64748b';ctx.font='9px Inter,sans-serif';ctx.fillText((d.name||'').substring(0,22),8,midY+9);
+    var bh=ROW_H*0.28;
+    if(d.ib>0){var ibw=d.ib/maxV*bw;ctx.fillStyle='#22c55e';ctx.beginPath();ctx.roundRect(bs,midY-bh-1,ibw,bh,2);ctx.fill();}
+    if(d.ob>0){var obw=d.ob/maxV*bw;ctx.fillStyle='#ef4444';ctx.beginPath();ctx.roundRect(bs,midY+1,obw,bh,2);ctx.fill();}
+    var nc=d.net>=0?'#22c55e':'#ef4444';var mx=Math.max(d.ib,d.ob)/maxV*bw;
+    ctx.fillStyle=nc;ctx.font='bold 10px Inter,sans-serif';ctx.textAlign='left';ctx.fillText((d.net>=0?'+':'')+fD(d.net),bs+mx+5,midY+3);
+    ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,y+ROW_H);ctx.lineTo(W,y+ROW_H);ctx.stroke();
+  });
+}
+
+function filterKPI(){
+  var search=(document.getElementById('kpiSearch')&&document.getElementById('kpiSearch').value||'').toLowerCase();
+  var sort=document.getElementById('kpiSort')&&document.getElementById('kpiSort').value||'storage';
+  var data=KPI_DATA.filter(function(d){return !search||d.code.toLowerCase().includes(search)||(d.name||'').toLowerCase().includes(search);});
+  data=data.slice().sort(function(a,b){return sort==='inbound'?b.ib-a.ib:sort==='outbound'?b.ob-a.ob:sort==='net'?b.net-a.net:b.storage-a.storage;});
+  var tbody=document.getElementById('kpiTbody');if(!tbody)return;
+  tbody.innerHTML=data.map(function(d,i){
+    var nc=d.net>0?'#22c55e':d.net<0?'#ef4444':'#64748b';
+    var wh=(d.wh||[]).map(function(w){var c=w==='TMM1'?'#3b82f6':w==='TMM2'?'#22c55e':'#f59e0b';return '<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:5px;background:'+c+'22;color:'+c+';margin-right:2px">'+w+'</span>';}).join('');
+    return '<tr><td style="color:var(--tx3);font-size:11px">'+(i+1)+'</td><td><div style="font-weight:700;color:var(--tx)">'+d.code+'</div><div style="font-size:10px;color:var(--tx3)">'+(d.name||'')+'</div><div style="margin-top:2px">'+wh+'</div></td><td style="font-weight:800;color:#a78bfa">'+fD(d.storage)+'</td><td style="color:#3b82f6">'+(d.t1>0?fD(d.t1):'-')+'</td><td style="color:#22c55e">'+(d.t2>0?fD(d.t2):'-')+'</td><td style="color:#f59e0b">'+(d.t3>0?fD(d.t3):'-')+'</td><td style="color:#22c55e;font-weight:600">'+(d.ib>0?fD(d.ib):'-')+'</td><td style="color:#ef4444;font-weight:600">'+(d.ob>0?fD(d.ob):'-')+'</td><td style="font-weight:700;color:'+nc+'">'+(d.net>0?'+':'')+fD(d.net)+'</td><td><span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(167,139,250,.15);color:#a78bfa">'+d.pct+'%</span></td></tr>';
+  }).join('');
+}
 function renderOcc(){
   const cols={'TMM1':'#3b82f6','TMM2':'#22c55e','TMM3':'#f59e0b'};
   const tmms=['TMM1','TMM2','TMM3'];
   // Summary cards
   renderCapacity();
-  const gc2=document.getElementById('tmmcards');if(gc2)gc2.innerHTML='';
+  const gc2=document.getElementById('tmmcards');if(!gc2)return;gc2.innerHTML='';
   tmms.forEach(tmm=>{
     const data=TMM_OCC[tmm]||{};
     const ents=Object.entries(data).sort((a,b)=>b[1]-a[1]);
@@ -1405,270 +1423,62 @@ function parseOccXL(buf){
   return occ;
 }
 
-
 function chkPw(){
   var email=(document.getElementById('puni')||{value:''}).value.trim();
   var pwd=(document.getElementById('pwi')||{value:''}).value.trim();
   var err=document.getElementById('pwerr');
   if(!email||!pwd){if(err){err.textContent='Enter email and password.';err.style.display='block';}return;}
   if(err)err.style.display='none';
-
-  // User list — checked locally first (works without Supabase)
   var users=[
-    {e:'it@tmm.ae',        p:'Admin@2026'},
-    {e:'biju@thomsun.ae',  p:'Biju@2026'},
-    {e:'inventory@tmm.ae', p:'inv@2026'},
-    {e:'jubi@tmm.ae',      p:'Jubi@2026'},
+    {e:'it@tmm.ae',p:'Admin@2026'},
+    {e:'biju@thomsun.ae',p:'Biju@2026'},
+    {e:'inventory@tmm.ae',p:'inv@2026'},
+    {e:'jubi@tmm.ae',p:'Jubi@2026'},
     {e:'thomasmani@tmm.ae',p:'Thomas@2026'},
   ];
-
-  // Step 1: Check local credentials first
   var localUser=users.find(function(x){return x.e===email&&x.p===pwd;});
-  if(!localUser){
-    if(err){err.textContent='Wrong email or password. Please try again.';err.style.display='block';}
-    if(document.getElementById('pwi'))document.getElementById('pwi').value='';
-    return;
-  }
-
-  // Step 2: Try Supabase auth (for session persistence)
+  if(!localUser){if(err){err.textContent='Wrong email or password.';err.style.display='block';}if(document.getElementById('pwi'))document.getElementById('pwi').value='';return;}
   initSupa();
   if(supa){
     supaSignIn(email,pwd).then(function(res){
-      if(res&&res.data&&res.data.user){
-        doLogin(res.data.user);
-      } else {
-        // Supabase failed but local auth passed — login anyway
-        doLogin({email:email});
-      }
-    }).catch(function(){
-      // Network error — use local auth
-      doLogin({email:email});
-    });
-  } else {
-    // Supabase not loaded — use local auth
-    doLogin({email:email});
-  }
+      if(res&&res.data&&res.data.user){doLogin(res.data.user);}
+      else{doLogin({email:email});}
+    }).catch(function(){doLogin({email:email});});
+  }else{doLogin({email:email});}
+}
+function doLogin(user){
+  CURRENT_USER=user;
+  if(supa){supa.auth.getSession().then(function(r){if(r&&r.data&&r.data.session)SESSION_TOKEN=r.data.session.access_token;});}
+  var lp=document.getElementById('loginPage');if(lp)lp.style.display='none';
+  var mc=document.getElementById('mainContent');if(mc)mc.style.display='block';
+  if(document.getElementById('puni'))document.getElementById('puni').value='';
+  if(document.getElementById('pwi'))document.getElementById('pwi').value='';
+  var ub=document.getElementById('userBadge');if(ub){ub.textContent=user.email||'User';ub.style.display='';}
+  var lb=document.getElementById('lockBtn');if(lb)lb.style.display='';
+  autoFetch();
 }
 function lockUp(){
   supaSignOut().then(function(){
-    CURRENT_USER=null;
+    CURRENT_USER=null;SESSION_TOKEN=null;
     var mc=document.getElementById('mainContent');if(mc)mc.style.display='none';
     var lp=document.getElementById('loginPage');if(lp)lp.style.display='flex';
     if(document.getElementById('puni'))document.getElementById('puni').value='';
     if(document.getElementById('pwi'))document.getElementById('pwi').value='';
+    var ub=document.getElementById('userBadge');if(ub)ub.style.display='none';
+    var lb=document.getElementById('lockBtn');if(lb)lb.style.display='none';
   });
 }
+function showUnlock(){}function cancelUnlock(){}
 document.addEventListener('DOMContentLoaded',function(){
   initSupa();
   var lp=document.getElementById('loginPage');
   var mc=document.getElementById('mainContent');
   if(!supa){if(lp)lp.style.display='flex';if(mc)mc.style.display='none';return;}
   supaSession().then(function(s){
-    if(s&&s.user){
-      SESSION_TOKEN=s.access_token||null;
-      doLogin(s.user);
-    }
+    if(s&&s.user){SESSION_TOKEN=s.access_token||null;doLogin(s.user);}
     else{if(lp)lp.style.display='flex';if(mc)mc.style.display='none';}
   });
 });
-var SESSION_TOKEN = null;
-function doLogin(user){
-  CURRENT_USER=user;
-  // Store session token for authenticated storage access
-  if(supa){
-    supa.auth.getSession().then(function(r){
-      if(r&&r.data&&r.data.session){
-        SESSION_TOKEN=r.data.session.access_token;
-        console.log('Session token stored');
-      }
-    });
-  }
-  var lp=document.getElementById('loginPage');if(lp)lp.style.display='none';
-  var mc=document.getElementById('mainContent');if(mc)mc.style.display='block';
-  if(document.getElementById('puni'))document.getElementById('puni').value='';
-  if(document.getElementById('pwi'))document.getElementById('pwi').value='';
-  var ub=document.getElementById('userBadge');
-  if(ub){ub.textContent=user.email||'User';ub.style.display='';}
-  var lb=document.getElementById('lockBtn');
-  if(lb)lb.textContent='Logout ('+(user.email||'User')+')';
-  autoFetch();
-}
-
-// Check Supabase session on page load
-document.addEventListener('DOMContentLoaded',function(){
-  initSupa();
-  var lp=document.getElementById('loginPage');
-  var mc=document.getElementById('mainContent');
-  if(!supa){
-    if(lp)lp.style.display='flex';
-    if(mc)mc.style.display='none';
-    setTimeout(function(){if(document.getElementById('puni'))document.getElementById('puni').focus();},300);
-    return;
-  }
-  supaSession().then(function(s){
-    if(s&&s.user){doLogin(s.user);}
-    else{
-      if(lp)lp.style.display='flex';
-      if(mc)mc.style.display='none';
-      setTimeout(function(){if(document.getElementById('puni'))document.getElementById('puni').focus();},300);
-    }
-  });
-});
-
-function buildKPI(){
-  KPI_DATA=[];
-  var ibByOwner={},obByOwner={},hasLive=false;
-  if(typeof PIB!=='undefined'&&PIB&&PIB.ownerD){
-    hasLive=true;
-    Object.entries(PIB.ownerD).forEach(function(e){
-      var owner=e[0],dates=e[1];ibByOwner[owner]=0;
-      Object.values(dates).forEach(function(d){ibByOwner[owner]+=d.vol||0;});
-    });
-  }
-  if(typeof POB!=='undefined'&&POB&&POB.ownerD){
-    hasLive=true;
-    Object.entries(POB.ownerD).forEach(function(e){
-      var owner=e[0],dates=e[1];obByOwner[owner]=0;
-      Object.values(dates).forEach(function(d){obByOwner[owner]+=d.vol||0;});
-    });
-  }
-  if(hasLive){
-    var allOwners=new Set([...Object.keys(TMM_OCC.TMM1||{}),...Object.keys(TMM_OCC.TMM2||{}),...Object.keys(TMM_OCC.TMM3||{}),...Object.keys(ibByOwner),...Object.keys(obByOwner)]);
-    var ts=0;allOwners.forEach(function(c){ts+=(TMM_OCC.TMM1[c]||0)+(TMM_OCC.TMM2[c]||0)+(TMM_OCC.TMM3[c]||0);});
-    allOwners.forEach(function(code){
-      var t1=Math.round((TMM_OCC.TMM1[code]||0)*100)/100;
-      var t2=Math.round((TMM_OCC.TMM2[code]||0)*100)/100;
-      var t3=Math.round((TMM_OCC.TMM3[code]||0)*100)/100;
-      var storage=Math.round((t1+t2+t3)*100)/100;
-      var ib=Math.round((ibByOwner[code]||0)*100)/100;
-      var ob=Math.round((obByOwner[code]||0)*100)/100;
-      var wh=[];if(t1>0)wh.push('TMM1');if(t2>0)wh.push('TMM2');if(t3>0)wh.push('TMM3');
-      KPI_DATA.push({code:code,name:OWNER_MAP[code]||code,t1:t1,t2:t2,t3:t3,storage:storage,
-        ib:ib,ob:ob,net:Math.round((ib-ob)*100)/100,pct:ts>0?Math.round(storage/ts*1000)/10:0,wh:wh});
-    });
-  } else {
-    KPI_DATA_BAKED.forEach(function(d){
-      KPI_DATA.push({code:d.code,name:d.name||(OWNER_MAP[d.code]||d.code),
-        t1:d.t1,t2:d.t2,t3:d.t3,storage:d.storage,ib:d.ib,ob:d.ob,net:d.net,pct:d.pct,wh:d.wh});
-    });
-  }
-  KPI_DATA.sort(function(a,b){return b.storage-a.storage;});
-}
-
-function renderKPI(){
-  buildKPI();
-  var data=KPI_DATA;
-  var ts=data.reduce(function(s,d){return s+d.storage;},0);
-  var ti=data.reduce(function(s,d){return s+d.ib;},0);
-  var to=data.reduce(function(s,d){return s+d.ob;},0);
-  var net=Math.round((ti-to)*100)/100;
-  var totalCap=36998.24+11000+37507.2;
-  var cards=[
-    {label:'Total Customers',val:data.length,sub:'with storage',col:'#a78bfa',icon:'&#128101;'},
-    {label:'Total Storage',val:fD(ts)+' CBM',sub:'TMM1+TMM2+TMM3',col:'#f59e0b',icon:'&#127981;'},
-    {label:'Total Inbound',val:fD(ti)+' CBM',sub:data.filter(function(d){return d.ib>0;}).length+' customers',col:'#22c55e',icon:'&#128229;'},
-    {label:'Total Outbound',val:fD(to)+' CBM',sub:data.filter(function(d){return d.ob>0;}).length+' customers',col:'#ef4444',icon:'&#128228;'},
-    {label:'Net Flow',val:(net>=0?'+':'')+fD(net)+' CBM',sub:net>=0?'Net Inbound':'Net Outbound',col:net>=0?'#22c55e':'#ef4444',icon:'&#8644;'},
-    {label:'Utilization',val:Math.round(ts/totalCap*100)+'%',sub:'of total capacity',col:'#3b82f6',icon:'&#128202;'},
-  ];
-  var ce=document.getElementById('kpiCards');
-  if(ce)ce.innerHTML=cards.map(function(c){
-    return '<div style="background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);padding:14px 16px;box-shadow:var(--sh)">'+
-      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'+
-        '<div style="width:30px;height:30px;border-radius:8px;background:'+c.col+'22;display:flex;align-items:center;justify-content:center;font-size:15px">'+c.icon+'</div>'+
-        '<div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase">'+c.label+'</div>'+
-      '</div>'+
-      '<div style="font-size:20px;font-weight:800;color:'+c.col+'">'+c.val+'</div>'+
-      '<div style="font-size:10px;color:var(--tx3);margin-top:2px">'+c.sub+'</div>'+
-    '</div>';
-  }).join('');
-  drawKPIHBar('kpiStorageChart',data.slice(0,10),'storage','#a78bfa');
-  drawKPIHBar('kpiInChart',data.slice().sort(function(a,b){return b.ib-a.ib;}).slice(0,10),'ib','#22c55e');
-  drawKPIHBar('kpiOutChart',data.slice().sort(function(a,b){return b.ob-a.ob;}).slice(0,10),'ob','#ef4444');
-  drawNetFlowChart(data.filter(function(d){return d.ib>0||d.ob>0;}).slice(0,15));
-  filterKPI();
-}
-
-function drawKPIHBar(cid,data,field,col){
-  var cv=document.getElementById(cid);if(!cv)return;
-  var W=Math.max(300,cv.parentElement.clientWidth-20);
-  var ROW_H=26,PAD_T=8,PAD_B=8,NAME_W=160,VAL_W=70;
-  var H=data.length*ROW_H+PAD_T+PAD_B;
-  cv.width=W;cv.height=H;
-  var ctx=cv.getContext('2d');ctx.clearRect(0,0,W,H);
-  var bs=NAME_W+8,bw=W-bs-VAL_W-8;
-  var maxV=Math.max.apply(null,data.map(function(d){return d[field]||0;}))||1;
-  data.forEach(function(d,i){
-    var y=PAD_T+i*ROW_H,midY=y+ROW_H/2,val=d[field]||0;
-    if(i%2===0){ctx.fillStyle='rgba(255,255,255,0.03)';ctx.fillRect(0,y,W,ROW_H);}
-    ctx.fillStyle='#f1f5f9';ctx.font='bold 10px Inter,sans-serif';ctx.textAlign='left';
-    ctx.fillText(d.code,8,midY-2);
-    ctx.fillStyle='#64748b';ctx.font='9px Inter,sans-serif';
-    ctx.fillText((d.name||'').substring(0,20),8,midY+9);
-    if(val>0){
-      var barW=val/maxV*bw;
-      var g=ctx.createLinearGradient(bs,0,bs+barW,0);g.addColorStop(0,col);g.addColorStop(1,col+'66');
-      ctx.fillStyle=g;ctx.beginPath();ctx.roundRect(bs,midY-6,barW,12,2);ctx.fill();
-      if(barW>35){ctx.fillStyle='rgba(255,255,255,.9)';ctx.font='bold 8px Inter,sans-serif';ctx.textAlign='center';ctx.fillText(fD(val),bs+barW/2,midY+3);}
-    }
-    ctx.fillStyle='#f1f5f9';ctx.font='bold 10px Inter,sans-serif';ctx.textAlign='left';
-    ctx.fillText(fD(val)+' CBM',bs+(val>0?val/maxV*bw:0)+5,midY+3);
-    ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(0,y+ROW_H);ctx.lineTo(W,y+ROW_H);ctx.stroke();
-  });
-}
-
-function drawNetFlowChart(data){
-  var cv=document.getElementById('kpiNetChart');if(!cv)return;
-  var W=Math.max(500,cv.parentElement.clientWidth-20);
-  var ROW_H=30,PAD_T=10,NAME_W=170,VAL_W=80;
-  var H=data.length*ROW_H+PAD_T+10;
-  cv.width=W;cv.height=H;
-  var ctx=cv.getContext('2d');ctx.clearRect(0,0,W,H);
-  var bs=NAME_W+8,bw=W-bs-VAL_W-8;
-  var maxV=Math.max.apply(null,data.map(function(d){return Math.max(d.ib,d.ob);}))*1.05||1;
-  data.forEach(function(d,i){
-    var y=PAD_T+i*ROW_H,midY=y+ROW_H/2;
-    if(i%2===0){ctx.fillStyle='rgba(255,255,255,0.03)';ctx.fillRect(0,y,W,ROW_H);}
-    ctx.fillStyle='#f1f5f9';ctx.font='bold 10px Inter,sans-serif';ctx.textAlign='left';
-    ctx.fillText(d.code,8,midY-2);
-    ctx.fillStyle='#64748b';ctx.font='9px Inter,sans-serif';
-    ctx.fillText((d.name||'').substring(0,22),8,midY+9);
-    var bh=ROW_H*0.28;
-    if(d.ib>0){var ibw=d.ib/maxV*bw;ctx.fillStyle='#22c55e';ctx.beginPath();ctx.roundRect(bs,midY-bh-1,ibw,bh,2);ctx.fill();}
-    if(d.ob>0){var obw=d.ob/maxV*bw;ctx.fillStyle='#ef4444';ctx.beginPath();ctx.roundRect(bs,midY+1,obw,bh,2);ctx.fill();}
-    var nc=d.net>=0?'#22c55e':'#ef4444';
-    var mx=Math.max(d.ib,d.ob)/maxV*bw;
-    ctx.fillStyle=nc;ctx.font='bold 10px Inter,sans-serif';ctx.textAlign='left';
-    ctx.fillText((d.net>=0?'+':'')+fD(d.net),bs+mx+5,midY+3);
-    ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(0,y+ROW_H);ctx.lineTo(W,y+ROW_H);ctx.stroke();
-  });
-}
-
-function filterKPI(){
-  var search=(document.getElementById('kpiSearch')&&document.getElementById('kpiSearch').value||'').toLowerCase();
-  var sort=document.getElementById('kpiSort')&&document.getElementById('kpiSort').value||'storage';
-  var data=KPI_DATA.filter(function(d){return !search||d.code.toLowerCase().includes(search)||(d.name||'').toLowerCase().includes(search);});
-  data=data.slice().sort(function(a,b){return sort==='inbound'?b.ib-a.ib:sort==='outbound'?b.ob-a.ob:sort==='net'?b.net-a.net:b.storage-a.storage;});
-  var tbody=document.getElementById('kpiTbody');if(!tbody)return;
-  tbody.innerHTML=data.map(function(d,i){
-    var nc=d.net>0?'#22c55e':d.net<0?'#ef4444':'#64748b';
-    var wh=(d.wh||[]).map(function(w){var c=w==='TMM1'?'#3b82f6':w==='TMM2'?'#22c55e':'#f59e0b';return '<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:5px;background:'+c+'22;color:'+c+';margin-right:2px">'+w+'</span>';}).join('');
-    return '<tr>'+
-      '<td style="color:var(--tx3);font-size:11px">'+(i+1)+'</td>'+
-      '<td><div style="font-weight:700;color:var(--tx)">'+d.code+'</div><div style="font-size:10px;color:var(--tx3)">'+(d.name||'')+'</div><div style="margin-top:2px">'+wh+'</div></td>'+
-      '<td style="font-weight:800;color:#a78bfa">'+fD(d.storage)+'</td>'+
-      '<td style="color:#3b82f6">'+(d.t1>0?fD(d.t1):'-')+'</td>'+
-      '<td style="color:#22c55e">'+(d.t2>0?fD(d.t2):'-')+'</td>'+
-      '<td style="color:#f59e0b">'+(d.t3>0?fD(d.t3):'-')+'</td>'+
-      '<td style="color:#22c55e;font-weight:600">'+(d.ib>0?fD(d.ib):'-')+'</td>'+
-      '<td style="color:#ef4444;font-weight:600">'+(d.ob>0?fD(d.ob):'-')+'</td>'+
-      '<td style="font-weight:700;color:'+nc+'">'+(d.net>0?'+':'')+fD(d.net)+'</td>'+
-      '<td><span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(167,139,250,.15);color:#a78bfa">'+d.pct+'%</span></td>'+
-    '</tr>';
-  }).join('');
-}
 // PARSE XLSX
 function parseXL(buf){
   const wb=XLSX.read(buf,{type:'array'});
@@ -1755,7 +1565,7 @@ function hfile(file,t){
 async function autoFetch(){
   var ovl=document.getElementById('ovl');if(ovl)ovl.classList.add('show');
   var ibOk=false,obOk=false;
-  try{var b=await supaFetch('inbound.xlsx');if(b){PIB=parseXL(b);if(PIB){ibOk=true;var s=document.getElementById('ibst');if(s){s.textContent='inbound.xlsx loaded';s.style.color='#22c55e';}var bx=document.getElementById('ibbox');if(bx)bx.classList.add('loaded');}}}catch(e){console.log('inbound error:',e);}
+  try{var b=await supaFetch('inbound.xlsx');if(b){PIB=parseXL(b);if(PIB){ibOk=true;var s=document.getElementById('ibst');if(s){s.textContent='inbound.xlsx loaded';s.style.color='#22c55e';}var bx=document.getElementById('ibbox');if(bx)bx.classList.add('loaded');}}}catch(e){}
   try{var b=await supaFetch('outbound.xlsx');if(b){POB=parseXL(b);if(POB){obOk=true;var s=document.getElementById('obst');if(s){s.textContent='outbound.xlsx loaded';s.style.color='#ef4444';}var bx=document.getElementById('obbox');if(bx)bx.classList.add('loaded');}}}catch(e){}
   try{var b=await supaFetch('occupancy.xlsx');if(b){var oc=parseOccXL(b);if(oc){TMM_OCC.TMM1=oc.TMM1;TMM_OCC.TMM2=oc.TMM2;TMM_OCC.TMM3=oc.TMM3;POCC=oc;var s=document.getElementById('occst');if(s){s.textContent='occupancy.xlsx loaded';s.style.color='#f59e0b';}var bx=document.getElementById('occbox');if(bx)bx.classList.add('loaded');}}}catch(e){}
   try{var b=await supaFetch('tmm3storagetype.xlsx');if(b){var zd=parseTMM3ZoneXL(b);if(zd){window.LIVE_TMM3_ZONES=zd;var s=document.getElementById('zonest');if(s){s.textContent='tmm3storagetype.xlsx loaded';s.style.color='#f59e0b';}var bx=document.getElementById('zonebox');if(bx)bx.classList.add('loaded');}}}catch(e){}
@@ -1764,7 +1574,6 @@ async function autoFetch(){
   renderFlow();owgrid('ib');owtbl('ib');owgrid('ob');owtbl('ob');owbar('ib');owdnt('ib');owbar('ob');owdnt('ob');
   renderOcc();KPI_DATA=[];
   if(ovl)ovl.classList.remove('show');
-  setTimeout(function(){renderOcc();renderKPI();},400);
 }
 
 function setLoadingMsg(msg){
@@ -1774,12 +1583,6 @@ function setLoadingMsg(msg){
 
 // File input listeners — safe init after DOM ready
 function initListeners(){
-  ['ibin','obin','occin','zonein'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(!el)return;
-    var type=id==='ibin'?'ib':id==='obin'?'ob':id==='occin'?'occ':'zone';
-    el.addEventListener('change',function(e){hfile(e.target.files[0],type);e.target.value='';});
-  });
   const ibin=document.getElementById('ibin');
   const obin=document.getElementById('obin');
   const occin=document.getElementById('occin');
@@ -1811,9 +1614,5 @@ autoFetch();
 // Auto-refresh every 10 minutes
 setInterval(autoFetch, 10*60*1000);
 </script>
-<input type="file" id="ibin"  accept=".xlsx,.xls" style="display:none">
-<input type="file" id="obin"  accept=".xlsx,.xls" style="display:none">
-<input type="file" id="occin" accept=".xlsx,.xls" style="display:none">
-<input type="file" id="zonein" accept=".xlsx,.xls" style="display:none">
 </body>
 </html>
