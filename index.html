@@ -401,8 +401,42 @@ function initSupa(){if(typeof window.supabase!=='undefined'&&!supa)supa=window.s
 async function supaSignIn(e,p){initSupa();if(!supa)return{error:true};return supa.auth.signInWithPassword({email:e,password:p});}
 async function supaSignOut(){initSupa();if(supa)await supa.auth.signOut();}
 async function supaSession(){initSupa();if(!supa)return null;const r=await supa.auth.getSession();return r.data.session;}
-async function supaFetch(fn){initSupa();if(!supa)return null;try{const r=await supa.storage.from('warehouse-data').download(fn);if(r.error||!r.data)return null;return r.data.arrayBuffer();}catch(e){return null;}}
-async function supaUpload(fn,f){initSupa();if(!supa)return;try{await supa.storage.from('warehouse-data').upload(fn,f,{upsert:true});}catch(e){}}
+async function supaFetch(fn){
+  // Use direct REST API — avoids SDK postMessage issues
+  var url='https://gccbdujmfxkqpkzocliq.supabase.co/storage/v1/object/warehouse-data/'+fn;
+  console.log('supaFetch: GET',url);
+  try{
+    var token=null;
+    // Try to get session token
+    if(supa){
+      try{
+        var sess=await supa.auth.getSession();
+        if(sess&&sess.data&&sess.data.session)token=sess.data.session.access_token;
+      }catch(e){}
+    }
+    var headers={'Authorization':'Bearer '+(token||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjY2JkdWptZnhrcXBrem9jbGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTczMTEsImV4cCI6MjA5NTI3MzMxMX0.cosJ4LVExjDqV0bZZFF3ceqMNtlyUstz6-gNn6jvb9k')};
+    var res=await fetch(url,{headers:headers});
+    console.log('supaFetch response:',res.status,res.statusText);
+    if(!res.ok)return null;
+    return res.arrayBuffer();
+  }catch(e){
+    console.log('supaFetch error:',e.message);
+    return null;
+  }
+}
+async function supaUpload(fn,f){
+  var url='https://gccbdujmfxkqpkzocliq.supabase.co/storage/v1/object/warehouse-data/'+fn;
+  try{
+    var token=null;
+    if(supa){try{var sess=await supa.auth.getSession();if(sess&&sess.data&&sess.data.session)token=sess.data.session.access_token;}catch(e){}}
+    await fetch(url,{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+(token||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjY2JkdWptZnhrcXBrem9jbGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTczMTEsImV4cCI6MjA5NTI3MzMxMX0.cosJ4LVExjDqV0bZZFF3ceqMNtlyUstz6-gNn6jvb9k'),'x-upsert':'true','Content-Type':'application/octet-stream'},
+      body:f
+    });
+    console.log('supaUpload: uploaded',fn);
+  }catch(e){console.log('supaUpload error:',e.message);}
+}
 let CURRENT_USER=null;
 
 const DAILY_DATA=[{"date": "01 May", "cnt_in": 25, "vol_in": 929.03, "cnt_out": 16, "vol_out": 375.88}, {"date": "02 May", "cnt_in": 29, "vol_in": 546.04, "cnt_out": 25, "vol_out": 580.11}, {"date": "03 May", "cnt_in": 4, "vol_in": 267.58, "cnt_out": 0, "vol_out": 0}, {"date": "04 May", "cnt_in": 27, "vol_in": 816.31, "cnt_out": 40, "vol_out": 855.66}, {"date": "05 May", "cnt_in": 22, "vol_in": 504.22, "cnt_out": 37, "vol_out": 702.67}, {"date": "06 May", "cnt_in": 23, "vol_in": 392.94, "cnt_out": 28, "vol_out": 912.62}, {"date": "07 May", "cnt_in": 46, "vol_in": 223.45, "cnt_out": 46, "vol_out": 869.77}, {"date": "08 May", "cnt_in": 38, "vol_in": 916.29, "cnt_out": 39, "vol_out": 552.89}, {"date": "09 May", "cnt_in": 47, "vol_in": 1018.81, "cnt_out": 37, "vol_out": 719.47}, {"date": "10 May", "cnt_in": 9, "vol_in": 261.65, "cnt_out": 9, "vol_out": 257.07}, {"date": "11 May", "cnt_in": 33, "vol_in": 582.59, "cnt_out": 38, "vol_out": 747.15}, {"date": "12 May", "cnt_in": 30, "vol_in": 535.7, "cnt_out": 47, "vol_out": 779.23}, {"date": "13 May", "cnt_in": 29, "vol_in": 494.59, "cnt_out": 35, "vol_out": 829.8}, {"date": "14 May", "cnt_in": 31, "vol_in": 1104.64, "cnt_out": 39, "vol_out": 903.09}, {"date": "15 May", "cnt_in": 28, "vol_in": 795.65, "cnt_out": 39, "vol_out": 607.75}, {"date": "16 May", "cnt_in": 23, "vol_in": 370.95, "cnt_out": 21, "vol_out": 435.38}, {"date": "18 May", "cnt_in": 15, "vol_in": 259.11, "cnt_out": 50, "vol_out": 1139.72}, {"date": "19 May", "cnt_in": 29, "vol_in": 180.47, "cnt_out": 37, "vol_out": 612.72}, {"date": "20 May", "cnt_in": 19, "vol_in": 283.96, "cnt_out": 25, "vol_out": 802.92}];
@@ -1499,7 +1533,7 @@ function hfile(file,t){
 async function autoFetch(){
   var ovl=document.getElementById('ovl');if(ovl)ovl.classList.add('show');
   var ibOk=false,obOk=false;
-  try{var b=await supaFetch('inbound.xlsx');if(b){PIB=parseXL(b);if(PIB){ibOk=true;var s=document.getElementById('ibst');if(s){s.textContent='inbound.xlsx loaded';s.style.color='#22c55e';}var bx=document.getElementById('ibbox');if(bx)bx.classList.add('loaded');}}}catch(e){}
+  try{var b=await supaFetch('inbound.xlsx');if(b){PIB=parseXL(b);if(PIB){ibOk=true;var s=document.getElementById('ibst');if(s){s.textContent='inbound.xlsx loaded';s.style.color='#22c55e';}var bx=document.getElementById('ibbox');if(bx)bx.classList.add('loaded');}}}catch(e){console.log('inbound error:',e);}
   try{var b=await supaFetch('outbound.xlsx');if(b){POB=parseXL(b);if(POB){obOk=true;var s=document.getElementById('obst');if(s){s.textContent='outbound.xlsx loaded';s.style.color='#ef4444';}var bx=document.getElementById('obbox');if(bx)bx.classList.add('loaded');}}}catch(e){}
   try{var b=await supaFetch('occupancy.xlsx');if(b){var oc=parseOccXL(b);if(oc){TMM_OCC.TMM1=oc.TMM1;TMM_OCC.TMM2=oc.TMM2;TMM_OCC.TMM3=oc.TMM3;POCC=oc;var s=document.getElementById('occst');if(s){s.textContent='occupancy.xlsx loaded';s.style.color='#f59e0b';}var bx=document.getElementById('occbox');if(bx)bx.classList.add('loaded');}}}catch(e){}
   try{var b=await supaFetch('tmm3zone.xlsx');if(b){var zd=parseTMM3ZoneXL(b);if(zd){window.LIVE_TMM3_ZONES=zd;var s=document.getElementById('zonest');if(s){s.textContent='tmm3zone.xlsx loaded';s.style.color='#f59e0b';}var bx=document.getElementById('zonebox');if(bx)bx.classList.add('loaded');}}}catch(e){}
