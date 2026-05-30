@@ -402,21 +402,19 @@ async function supaSignIn(e,p){initSupa();if(!supa)return{error:true};return sup
 async function supaSignOut(){initSupa();if(supa)await supa.auth.signOut();}
 async function supaSession(){initSupa();if(!supa)return null;const r=await supa.auth.getSession();return r.data.session;}
 async function supaFetch(fn){
-  // Use direct REST API — avoids SDK postMessage issues
   var url='https://gccbdujmfxkqpkzocliq.supabase.co/storage/v1/object/warehouse-data/'+fn;
-  console.log('supaFetch: GET',url);
   try{
-    var token=null;
-    // Try to get session token
-    if(supa){
-      try{
-        var sess=await supa.auth.getSession();
-        if(sess&&sess.data&&sess.data.session)token=sess.data.session.access_token;
-      }catch(e){}
+    // Use stored session token (set on login)
+    var token=SESSION_TOKEN||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjY2JkdWptZnhrcXBrem9jbGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTczMTEsImV4cCI6MjA5NTI3MzMxMX0.cosJ4LVExjDqV0bZZFF3ceqMNtlyUstz6-gNn6jvb9k';
+    var res=await fetch(url,{
+      headers:{'Authorization':'Bearer '+token}
+    });
+    if(!res.ok){
+      // Try with anon key as fallback
+      res=await fetch(url,{
+        headers:{'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjY2JkdWptZnhrcXBrem9jbGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTczMTEsImV4cCI6MjA5NTI3MzMxMX0.cosJ4LVExjDqV0bZZFF3ceqMNtlyUstz6-gNn6jvb9k'}
+      });
     }
-    var headers={'Authorization':'Bearer '+(token||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjY2JkdWptZnhrcXBrem9jbGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTczMTEsImV4cCI6MjA5NTI3MzMxMX0.cosJ4LVExjDqV0bZZFF3ceqMNtlyUstz6-gNn6jvb9k')};
-    var res=await fetch(url,{headers:headers});
-    console.log('supaFetch response:',res.status,res.statusText);
     if(!res.ok)return null;
     return res.arrayBuffer();
   }catch(e){
@@ -427,14 +425,14 @@ async function supaFetch(fn){
 async function supaUpload(fn,f){
   var url='https://gccbdujmfxkqpkzocliq.supabase.co/storage/v1/object/warehouse-data/'+fn;
   try{
-    var token=null;
-    if(supa){try{var sess=await supa.auth.getSession();if(sess&&sess.data&&sess.data.session)token=sess.data.session.access_token;}catch(e){}}
-    await fetch(url,{
+    var token=SESSION_TOKEN||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjY2JkdWptZnhrcXBrem9jbGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTczMTEsImV4cCI6MjA5NTI3MzMxMX0.cosJ4LVExjDqV0bZZFF3ceqMNtlyUstz6-gNn6jvb9k';
+    var res=await fetch(url,{
       method:'POST',
-      headers:{'Authorization':'Bearer '+(token||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjY2JkdWptZnhrcXBrem9jbGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTczMTEsImV4cCI6MjA5NTI3MzMxMX0.cosJ4LVExjDqV0bZZFF3ceqMNtlyUstz6-gNn6jvb9k'),'x-upsert':'true','Content-Type':'application/octet-stream'},
+      headers:{'Authorization':'Bearer '+token,'x-upsert':'true','Content-Type':'application/octet-stream'},
       body:f
     });
-    console.log('supaUpload: uploaded',fn);
+    if(!res.ok)console.log('supaUpload failed:',res.status);
+    else console.log('supaUpload: uploaded',fn);
   }catch(e){console.log('supaUpload error:',e.message);}
 }
 let CURRENT_USER=null;
@@ -1255,12 +1253,25 @@ document.addEventListener('DOMContentLoaded',function(){
   var mc=document.getElementById('mainContent');
   if(!supa){if(lp)lp.style.display='flex';if(mc)mc.style.display='none';return;}
   supaSession().then(function(s){
-    if(s&&s.user){doLogin(s.user);}
+    if(s&&s.user){
+      SESSION_TOKEN=s.access_token||null;
+      doLogin(s.user);
+    }
     else{if(lp)lp.style.display='flex';if(mc)mc.style.display='none';}
   });
 });
+var SESSION_TOKEN = null;
 function doLogin(user){
   CURRENT_USER=user;
+  // Store session token for authenticated storage access
+  if(supa){
+    supa.auth.getSession().then(function(r){
+      if(r&&r.data&&r.data.session){
+        SESSION_TOKEN=r.data.session.access_token;
+        console.log('Session token stored');
+      }
+    });
+  }
   var lp=document.getElementById('loginPage');if(lp)lp.style.display='none';
   var mc=document.getElementById('mainContent');if(mc)mc.style.display='block';
   if(document.getElementById('puni'))document.getElementById('puni').value='';
@@ -1268,7 +1279,7 @@ function doLogin(user){
   var ub=document.getElementById('userBadge');
   if(ub){ub.textContent=user.email||'User';ub.style.display='';}
   var lb=document.getElementById('lockBtn');
-  if(lb)lb.textContent='Logout ('+( user.email||'User')+')';
+  if(lb)lb.textContent='Logout ('+(user.email||'User')+')';
   autoFetch();
 }
 
