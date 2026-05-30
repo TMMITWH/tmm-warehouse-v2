@@ -1468,7 +1468,14 @@ function doLogin(user){
   if(document.getElementById('pwi'))document.getElementById('pwi').value='';
   var ub=document.getElementById('userBadge');if(ub){ub.textContent=user.email||'User';ub.style.display='';}
   var lb=document.getElementById('lockBtn');if(lb)lb.style.display='';
-  autoFetch();
+  // Render baked data immediately so dashboard shows data right away
+  DAILY=[...DAILY_DATA];FILT=[...DAILY];
+  IB=[...IB_OWNERS];OB=[...OB_OWNERS];IBF=[...IB];OBF=[...OB];
+  renderFlow();owgrid('ib');owtbl('ib');owgrid('ob');owtbl('ob');
+  owbar('ib');owdnt('ib');owbar('ob');owdnt('ob');
+  renderOcc();KPI_DATA=[];
+  // Then fetch live data from Supabase in background
+  setTimeout(function(){autoFetch();},300);
 }
 function lockUp(){
   supaSignOut().then(function(){
