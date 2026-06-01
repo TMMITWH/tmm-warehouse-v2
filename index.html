@@ -200,7 +200,22 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <button class="fb active" onclick="setF('all',this)">All Days</button>
     <button class="fb" onclick="setF('w1',this)">Week 1</button>
     <button class="fb" onclick="setF('w2',this)">Week 2</button>
-    <button class="fb" onclick="setF('w3',this)">Week 3+</button>
+    <button class="fb" onclick="setF('w3',this)">Week 3</button>
+    <button class="fb" onclick="setF('w4',this)">Week 4+</button>
+    <span style="width:1px;height:20px;background:var(--bd);margin:0 4px;display:inline-block;vertical-align:middle"></span>
+    <button class="fb" onclick="setF('jan',this)">Jan</button>
+    <button class="fb" onclick="setF('feb',this)">Feb</button>
+    <button class="fb" onclick="setF('mar',this)">Mar</button>
+    <button class="fb" onclick="setF('apr',this)">Apr</button>
+    <button class="fb" onclick="setF('may',this)">May</button>
+    <button class="fb" onclick="setF('jun',this)">Jun</button>
+    <button class="fb" onclick="setF('jul',this)">Jul</button>
+    <button class="fb" onclick="setF('aug',this)">Aug</button>
+    <button class="fb" onclick="setF('sep',this)">Sep</button>
+    <button class="fb" onclick="setF('oct',this)">Oct</button>
+    <button class="fb" onclick="setF('nov',this)">Nov</button>
+    <button class="fb" onclick="setF('dec',this)">Dec</button>
+    <span style="width:1px;height:20px;background:var(--bd);margin:0 4px;display:inline-block;vertical-align:middle"></span>
     <button class="fb" onclick="setF('hi',this)">&#128229; Heavy IN</button>
     <button class="fb" onclick="setF('ho',this)">&#128228; Heavy OUT</button>
   </div>
@@ -412,6 +427,25 @@ const OWNER_MAP={};
 const TMM_OCC={TMM1:{},TMM2:{},TMM3:{}};
 
 let DAILY=[...DAILY_DATA],FILT=[...DAILY];
+// Auto-detect current month from data
+function autoSelectMonth(){
+  if(!DAILY||DAILY.length===0)return;
+  var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  // Get most recent month in data
+  var lastDate=DAILY[DAILY.length-1];
+  if(!lastDate)return;
+  var parts=(lastDate.date||'').split(' ');
+  if(parts.length<2)return;
+  var mon=parts[1].toLowerCase();
+  // Find and click that month button
+  var btns=document.querySelectorAll('.fb');
+  btns.forEach(function(b){
+    if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+mon+"'")){
+      // Don't auto-click — just add indicator
+      b.style.borderColor='rgba(59,130,246,0.4)';
+    }
+  });
+}
 let IB=[...IB_OWNERS],OB=[...OB_OWNERS];
 let IBF=[...IB],OBF=[...OB];
 let PIB=null,POB=null,POCC=null;
@@ -484,13 +518,40 @@ function setF(t,el){
   document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   const dy=d=>parseInt(d.date);
+  const months={
+    jan:'Jan',feb:'Feb',mar:'Mar',apr:'Apr',may:'May',jun:'Jun',
+    jul:'Jul',aug:'Aug',sep:'Sep',oct:'Oct',nov:'Nov',dec:'Dec'
+  };
   switch(t){
-    case 'all':FILT=[...DAILY];break;
-    case 'w1':FILT=DAILY.filter(d=>dy(d)<=7);break;
-    case 'w2':FILT=DAILY.filter(d=>dy(d)>7&&dy(d)<=14);break;
-    case 'w3':FILT=DAILY.filter(d=>dy(d)>14);break;
-    case 'hi':FILT=DAILY.filter(d=>(d.vol_in-d.vol_out)>200);break;
-    case 'ho':FILT=DAILY.filter(d=>(d.vol_out-d.vol_in)>200);break;
+    case 'all': FILT=[...DAILY];break;
+    case 'w1':  FILT=DAILY.filter(d=>dy(d)<=7);break;
+    case 'w2':  FILT=DAILY.filter(d=>dy(d)>7&&dy(d)<=14);break;
+    case 'w3':  FILT=DAILY.filter(d=>dy(d)>14&&dy(d)<=21);break;
+    case 'w4':  FILT=DAILY.filter(d=>dy(d)>21);break;
+    case 'hi':  FILT=DAILY.filter(d=>(d.vol_in-d.vol_out)>200);break;
+    case 'ho':  FILT=DAILY.filter(d=>(d.vol_out-d.vol_in)>200);break;
+    default:
+      // Month filter — e.g. 'may', 'jun'
+      if(months[t]){
+        var mon=months[t];
+        FILT=DAILY.filter(function(d){
+          var parts=(d.date||'').split(' ');
+          return parts.length>1&&parts[1]===mon;
+        });
+      } else {
+        FILT=[...DAILY];
+      }
+  }
+  // Show active month label in section title
+  var sl=document.querySelector('#tab-flow .sl');
+  if(sl){
+    if(months[t]){
+      sl.textContent='Monthly Flow Summary — '+months[t].toUpperCase();
+    } else if(t==='all'){
+      sl.textContent='Monthly Flow Summary';
+    } else if(t.startsWith('w')){
+      sl.textContent='Monthly Flow Summary — Week '+t.replace('w','');
+    }
   }
   renderFlow();
 }
@@ -1596,8 +1657,23 @@ function hfile(file,t){
         renderOcc();
       } else {
         const p=parseXL(ev.target.result);
-        if(t==='ib'){PIB=p;supaUpload('inbound.xlsx',file);document.getElementById('ibst').textContent='✅ '+file.name;document.getElementById('ibst').style.color='#22c55e';document.getElementById('ibbox').classList.add('loaded');}
-        else{POB=p;supaUpload('outbound.xlsx',file);document.getElementById('obst').textContent='✅ '+file.name;document.getElementById('obst').style.color='#ef4444';document.getElementById('obbox').classList.add('loaded');}
+        if(t==='ib'){PIB=p;
+        // Upload as dated file AND as inbound.xlsx (fallback)
+        var today=new Date();
+        var dd=String(today.getDate()).padStart(2,'0');
+        var mm=String(today.getMonth()+1).padStart(2,'0');
+        var yyyy=today.getFullYear();
+        var dated='inbound_'+yyyy+mm+dd+'.xlsx';
+        supaUpload(dated,file);
+        supaUpload('inbound.xlsx',file);document.getElementById('ibst').textContent='✅ '+file.name;document.getElementById('ibst').style.color='#22c55e';document.getElementById('ibbox').classList.add('loaded');}
+        else{POB=p;
+        var today2=new Date();
+        var dd2=String(today2.getDate()).padStart(2,'0');
+        var mm2=String(today2.getMonth()+1).padStart(2,'0');
+        var yyyy2=today2.getFullYear();
+        var dated2='outbound_'+today2.getFullYear()+mm2+dd2+'.xlsx';
+        supaUpload(dated2,file);
+        supaUpload('outbound.xlsx',file);document.getElementById('obst').textContent='✅ '+file.name;document.getElementById('obst').style.color='#ef4444';document.getElementById('obbox').classList.add('loaded');}
         applyParsed();
         document.querySelectorAll('.fb').forEach((b,i)=>b.classList.toggle('active',i===0));
         renderFlow();owgrid('ib');owtbl('ib');owgrid('ob');owtbl('ob');owbar('ib');owdnt('ib');owbar('ob');owdnt('ob');
@@ -1608,6 +1684,83 @@ function hfile(file,t){
   rd.readAsArrayBuffer(file);
 }
 // AUTO FETCH from GitHub repository files
+
+// ── INCREMENTAL DAILY FILE LOADER ────────────────────────
+async function listSupaFiles(){
+  // List all files in warehouse-data bucket
+  try{
+    var url=SUPA_URL+'/storage/v1/object/list/warehouse-data';
+    var token=SESSION_TOKEN||SUPA_KEY;
+    var res=await fetch(url,{
+      method:'POST',
+      headers:{
+        'Authorization':'Bearer '+token,
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({prefix:'',limit:200,offset:0})
+    });
+    if(!res.ok)return[];
+    var data=await res.json();
+    return Array.isArray(data)?data.map(function(f){return f.name;}):[];
+  }catch(e){
+    console.log('listSupaFiles error:',e.message);
+    return[];
+  }
+}
+
+async function fetchDailyFiles(prefix){
+  // prefix = 'inbound' or 'outbound'
+  var files=await listSupaFiles();
+  // Filter daily files: inbound_20260501.xlsx
+  var daily=files.filter(function(f){
+    return f.startsWith(prefix+'_')&&f.endsWith('.xlsx');
+  }).sort(); // sort by date ascending
+  console.log(prefix+' daily files found:',daily.length,daily);
+
+  if(daily.length===0){
+    // Fall back to single file
+    console.log('No daily files — trying '+prefix+'.xlsx');
+    var buf=await supaFetch(prefix+'.xlsx');
+    return buf?[buf]:[];
+  }
+
+  // Fetch all daily files
+  var buffers=[];
+  for(var i=0;i<daily.length;i++){
+    var buf=await supaFetch(daily[i]);
+    if(buf)buffers.push(buf);
+  }
+  return buffers;
+}
+
+function mergeXLBuffers(buffers){
+  // Parse each buffer and merge all rows
+  if(!buffers||buffers.length===0)return null;
+  if(buffers.length===1)return parseXL(buffers[0]);
+
+  var allRows=[];
+  var headers=null;
+  buffers.forEach(function(buf){
+    var wb=XLSX.read(buf,{type:'array'});
+    var ws=wb.Sheets[wb.SheetNames[0]];
+    var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null});
+    if(!headers&&rows.length>0)headers=rows[0];
+    // Skip header row for subsequent files
+    for(var i=1;i<rows.length;i++){
+      allRows.push(rows[i]);
+    }
+  });
+
+  if(!allRows.length)return null;
+
+  // Create merged workbook
+  var wsData=[headers].concat(allRows);
+  var newWb=XLSX.utils.book_new();
+  var newWs=XLSX.utils.aoa_to_sheet(wsData);
+  XLSX.utils.book_append_sheet(newWb,newWs,'Data');
+  var mergedBuf=XLSX.write(newWb,{type:'array',bookType:'xlsx'});
+  return parseXL(mergedBuf.buffer||mergedBuf);
+}
 async function autoFetch(){
   var ovl=document.getElementById('ovl');if(ovl)ovl.classList.add('show');
   setLoadingMsg('Loading secure data...');
@@ -1630,8 +1783,32 @@ async function autoFetch(){
     }
   }catch(e){console.log('Meta load error:',e);}
 
-  try{var b=await supaFetch('inbound.xlsx');if(b){PIB=parseXL(b);if(PIB){ibOk=true;var s=document.getElementById('ibst');if(s){s.textContent='inbound.xlsx loaded';s.style.color='#22c55e';}var bx=document.getElementById('ibbox');if(bx)bx.classList.add('loaded');}}}catch(e){}
-  try{var b=await supaFetch('outbound.xlsx');if(b){POB=parseXL(b);if(POB){obOk=true;var s=document.getElementById('obst');if(s){s.textContent='outbound.xlsx loaded';s.style.color='#ef4444';}var bx=document.getElementById('obbox');if(bx)bx.classList.add('loaded');}}}catch(e){}
+  // Load incremental daily files or fall back to single file
+  try{
+    var ibBufs=await fetchDailyFiles('inbound');
+    if(ibBufs.length>0){
+      PIB=ibBufs.length===1?parseXL(ibBufs[0]):mergeXLBuffers(ibBufs);
+      if(PIB){
+        ibOk=true;
+        var s=document.getElementById('ibst');
+        if(s){s.textContent='inbound loaded ('+ibBufs.length+' files)';s.style.color='#22c55e';}
+        var bx=document.getElementById('ibbox');if(bx)bx.classList.add('loaded');
+      }
+    }
+  }catch(e){console.log('IB load error:',e);}
+
+  try{
+    var obBufs=await fetchDailyFiles('outbound');
+    if(obBufs.length>0){
+      POB=obBufs.length===1?parseXL(obBufs[0]):mergeXLBuffers(obBufs);
+      if(POB){
+        obOk=true;
+        var s=document.getElementById('obst');
+        if(s){s.textContent='outbound loaded ('+obBufs.length+' files)';s.style.color='#ef4444';}
+        var bx=document.getElementById('obbox');if(bx)bx.classList.add('loaded');
+      }
+    }
+  }catch(e){console.log('OB load error:',e);}
   try{var b=await supaFetch('occupancy.xlsx');if(b){var oc=parseOccXL(b);if(oc){TMM_OCC.TMM1=oc.TMM1;TMM_OCC.TMM2=oc.TMM2;TMM_OCC.TMM3=oc.TMM3;POCC=oc;var s=document.getElementById('occst');if(s){s.textContent='occupancy.xlsx loaded';s.style.color='#f59e0b';}var bx=document.getElementById('occbox');if(bx)bx.classList.add('loaded');}}}catch(e){}
   try{var b=await supaFetch('tmm3storagetype.xlsx');if(b){var zd=parseTMM3ZoneXL(b);if(zd){window.LIVE_TMM3_ZONES=zd;var s=document.getElementById('zonest');if(s){s.textContent='tmm3storagetype.xlsx loaded';s.style.color='#f59e0b';}var bx=document.getElementById('zonebox');if(bx)bx.classList.add('loaded');}}}catch(e){}
   if(ibOk||obOk){
