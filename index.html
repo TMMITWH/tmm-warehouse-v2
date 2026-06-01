@@ -1440,25 +1440,42 @@ function chkPw(){
   var email=(document.getElementById('puni')||{value:''}).value.trim();
   var pwd=(document.getElementById('pwi')||{value:''}).value.trim();
   var err=document.getElementById('pwerr');
-  if(!email||!pwd){if(err){err.textContent='Enter email and password.';err.style.display='block';}return;}
+  var btn=document.querySelector('#loginPage button');
+  if(!email||!pwd){
+    if(err){err.textContent='Please enter email and password.';err.style.display='block';}
+    return;
+  }
   if(err)err.style.display='none';
-  var users=[
-    {e:'it@tmm.ae',p:'Admin@2026'},
-    {e:'biju@thomsun.ae',p:'Biju@2026'},
-    {e:'inventory@tmm.ae',p:'inv@2026'},
-    {e:'jubi@tmm.ae',p:'Jubi@2026'},
-    {e:'thomasmani@tmm.ae',p:'Thomas@2026'},
-  ];
-  var localUser=users.find(function(x){return x.e===email&&x.p===pwd;});
-  if(!localUser){if(err){err.textContent='Wrong email or password.';err.style.display='block';}if(document.getElementById('pwi'))document.getElementById('pwi').value='';return;}
+  if(btn){btn.textContent='Signing in...';btn.disabled=true;}
   initSupa();
-  if(supa){
-    supaSignIn(email,pwd).then(function(res){
-      if(res&&res.data&&res.data.user){doLogin(res.data.user);}
-      else{doLogin({email:email});}
-    }).catch(function(){doLogin({email:email});});
-  }else{doLogin({email:email});}
+  if(!supa){
+    // Supabase not loaded yet — retry after short delay
+    setTimeout(function(){
+      if(btn){btn.textContent='Sign In →';btn.disabled=false;}
+      initSupa();
+      if(!supa){
+        if(err){err.textContent='Connection error. Please refresh and try again.';err.style.display='block';}
+        return;
+      }
+      chkPw();
+    },1500);
+    return;
+  }
+  // Use Supabase auth only — supports ANY user created in Supabase
+  supaSignIn(email,pwd).then(function(res){
+    if(btn){btn.textContent='Sign In →';btn.disabled=false;}
+    if(res.error||!res.data||!res.data.user){
+      if(err){err.textContent='Wrong email or password. Please try again.';err.style.display='block';}
+      if(document.getElementById('pwi'))document.getElementById('pwi').value='';
+      return;
+    }
+    doLogin(res.data.user);
+  }).catch(function(e){
+    if(btn){btn.textContent='Sign In →';btn.disabled=false;}
+    if(err){err.textContent='Connection error: '+e.message;err.style.display='block';}
+  });
 }
+
 function doLogin(user){
   CURRENT_USER=user;
   if(supa){supa.auth.getSession().then(function(r){if(r&&r.data&&r.data.session)SESSION_TOKEN=r.data.session.access_token;});}
