@@ -303,6 +303,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <canvas id="capacityChart" height="200"></canvas>
   </div>
 
+  <div class="sl">TMM3 — Zone Breakdown</div>
+  <div id="tmm3ZoneSection"></div>
+  <div class="sl">TMM3 — Customer by Zone</div>
+  <div id="tmm3BreakdownSection"></div>
   <div class="sl">Customer Breakdown by Warehouse</div>
   <div class="g3" id="tmmcards"></div>
   <div class="g3">
@@ -464,6 +468,7 @@ function sw(n,el){
     if(n==='inbound'){owbar('ib');owdnt('ib');}
     if(n==='outbound'){owbar('ob');owdnt('ob');}
     if(n==='occupancy'){renderOcc();renderCapacity();}
+    if(n==='kpi'){KPI_DATA=[];renderKPI();}
   },60);
 }
 
@@ -1008,8 +1013,13 @@ function buildKPI(){
         t1:d.t1,t2:d.t2,t3:d.t3,storage:d.storage,
         ib:d.ib,ob:d.ob,net:d.net,pct:d.pct,wh:d.wh});
     });
+  }else if(typeof KPI_DATA_BAKED!=='undefined'&&KPI_DATA_BAKED&&KPI_DATA_BAKED.length>0){
+    KPI_DATA_BAKED.forEach(function(d){
+      KPI_DATA.push({code:d.code,name:d.name||(OWNER_MAP[d.code]||d.code),
+        t1:d.t1,t2:d.t2,t3:d.t3,storage:d.storage,
+        ib:d.ib,ob:d.ob,net:d.net,pct:d.pct,wh:d.wh});
+    });
   }else{
-    // No data available yet
     KPI_DATA=[];
   }
   KPI_DATA.sort(function(a,b){return b.storage-a.storage;});
@@ -1137,6 +1147,8 @@ function renderOcc(){
   });
   // Stacked chart
   drawStacked(cols);
+  renderTMM3Zones();
+  renderTMM3Breakdown();
 }
 
 function drawStacked(cols){
