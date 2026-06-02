@@ -868,7 +868,7 @@ function renderTMM3Zones(){
     var usedPct=Math.min(100,z.pct);
     // Location occupancy % from SAP data
     var totalLocs=z.total_locs||(Math.round(z.cap/1.2));
-    var occLocs=z.occ_locs||Math.round(z.occ/1.2);
+    var occLocs=z.occ_locs||(z.occ>0?Math.round(z.occ/1.2):0);
     var emptyLocs=z.empty_locs||Math.max(0,totalLocs-occLocs);
     var locPct=totalLocs>0?Math.round(occLocs/totalLocs*1000)/10:0;
     var avail=Math.max(0,z.cap-z.occ);
@@ -931,7 +931,9 @@ function renderTMM3Zones(){
     html+='</div>';
     html+='<div style="height:6px;border-radius:3px;background:rgba(0,0,0,.3);overflow:hidden;margin-bottom:4px">';
     html+='<div style="height:100%;width:'+Math.min(100,zEff)+'%;background:linear-gradient(90deg,#6366f1,'+zEffCol+');border-radius:3px"></div></div>';
+    // Average CBM per location — always calculated from actual data
     var zAvgCBM=occLocs>0?Math.round(zActCBM/occLocs*1000)/1000:0;
+    var zAvgPct=zAvgCBM>0?Math.round(zAvgCBM/1.2*1000)/10:0;
     var zAvgCol=zAvgCBM>=1.1?'#22c55e':zAvgCBM>=0.9?'#f59e0b':'#ef4444';
     html+='<div style="display:flex;justify-content:space-between;font-size:9px;font-weight:700;margin-bottom:8px">';
     html+='<span style="color:#ef4444">Lost: '+fD(zLoss)+' CBM</span>';
@@ -942,8 +944,11 @@ function renderTMM3Zones(){
     html+='<div><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase">Avg CBM / Occupied Location</div>';
     html+='<div style="font-size:9px;color:var(--tx3)">Actual occupied ÷ occupied locations</div></div></div>';
     html+='<div style="text-align:right">';
-    html+='<div style="font-size:18px;font-weight:900;color:'+zAvgCol+'">'+zAvgCBM.toFixed(3)+'</div>';
-    html+='<div style="font-size:9px;color:var(--tx3)">CBM/loc (max 1.2)</div></div>';
+    html+='<div style="font-size:20px;font-weight:900;color:'+zAvgCol+'">'+zAvgCBM.toFixed(3)+'</div>';
+    html+='<div style="font-size:9px;color:var(--tx3)">CBM/loc</div>';
+    html+='<div style="font-size:9px;font-weight:700;color:'+zAvgCol+'">'+(zAvgPct.toFixed(1))+'% of 1.2 max</div>';
+    html+='<div style="width:70px;height:4px;border-radius:2px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:3px">';
+    html+='<div style="height:100%;width:'+Math.min(100,zAvgPct)+'%;background:'+zAvgCol+';border-radius:2px"></div></div>';
     html+='</div>';
     html+='</div>';
     html+='<div style="padding:10px 14px;border-top:1px solid var(--bd)">';
@@ -1635,8 +1640,18 @@ function applyEmptyLocData(zd){
   if(!zd)return;
   var zones=window.LIVE_TMM3_ZONES||TMM3_ZONES;
   if(!zones||!zones.length)return;
-  zones.forEach(function(z){var d=zd[z.code];if(!d)return;if(d.total_locs)z.total_locs=d.total_locs;if(d.occ_locs)z.occ_locs=d.occ_locs;if(d.empty_locs)z.empty_locs=d.empty_locs;});
+  zones.forEach(function(z){
+    var d=zd[z.code];if(!d)return;
+    if(d.total_locs)z.total_locs=d.total_locs;
+    if(d.occ_locs!=null)z.occ_locs=d.occ_locs;
+    if(d.empty_locs!=null)z.empty_locs=d.empty_locs;
+  });
   window.LIVE_TMM3_ZONES=zones;
+  // Re-render occupancy tab to show updated location data
+  if(document.getElementById('tab-occupancy')&&
+     document.getElementById('tab-occupancy').classList.contains('active')){
+    renderOcc();
+  }
 }
 // PARSE XLSX
 function parseXL(buf){
