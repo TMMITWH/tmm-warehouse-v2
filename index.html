@@ -139,33 +139,24 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 </head>
 <body>
 <div class="ovl" id="ovl"><div class="spn"></div><div style="font-size:12px;font-weight:600;color:var(--tx2)">Processing SAP files...</div></div>
-<!-- LOGIN -->
 <div id="loginPage" style="display:flex;position:fixed;inset:0;z-index:9999;background:var(--bg);align-items:center;justify-content:center;flex-direction:column">
   <div style="width:100%;max-width:420px;padding:0 20px">
     <div style="text-align:center;margin-bottom:28px">
       <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#22c55e,#0d9488);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 12px">&#128260;</div>
-      <div style="font-size:22px;font-weight:800;color:var(--tx);margin-bottom:4px">TMM Warehouse</div>
-      <div style="font-size:13px;color:var(--tx3)">Cold Storage &middot; 3PL &middot; Secure Access</div>
+      <div style="font-size:22px;font-weight:800;color:var(--tx)">TMM Warehouse</div>
+      <div style="font-size:13px;color:var(--tx3);margin-top:4px">Cold Storage &middot; 3PL &middot; Secure Access</div>
     </div>
     <div style="background:var(--sf);border-radius:16px;border:1px solid var(--bd);padding:28px;box-shadow:var(--sh)">
       <div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Email</div>
-      <input type="email" id="puni" placeholder="your@email.com"
-        style="width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;color:var(--tx);font-size:14px;font-family:inherit;outline:none;margin-bottom:12px"
-        onkeydown="if(event.key==='Enter')document.getElementById('pwi').focus()">
+      <input type="email" id="puni" placeholder="your@email.com" style="width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;color:var(--tx);font-size:14px;font-family:inherit;outline:none;margin-bottom:12px" onkeydown="if(event.key==='Enter')document.getElementById('pwi').focus()">
       <div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Password</div>
-      <input type="password" id="pwi" placeholder="Enter password"
-        style="width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;color:var(--tx);font-size:14px;font-family:inherit;outline:none;margin-bottom:16px"
-        onkeydown="if(event.key==='Enter')chkPw()">
+      <input type="password" id="pwi" placeholder="Enter password" style="width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;color:var(--tx);font-size:14px;font-family:inherit;outline:none;margin-bottom:16px" onkeydown="if(event.key==='Enter')chkPw()">
       <div id="pwerr" style="font-size:12px;color:#ef4444;margin-bottom:12px;display:none;background:rgba(239,68,68,.1);padding:8px 12px;border-radius:8px">&#10060; Wrong email or password.</div>
-      <button onclick="chkPw()"
-        style="width:100%;padding:11px;border-radius:8px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;font-size:14px;font-weight:700;border:none;cursor:pointer">
-        Sign In &#8594;
-      </button>
+      <button onclick="chkPw()" style="width:100%;padding:11px;border-radius:8px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;font-size:14px;font-weight:700;border:none;cursor:pointer">Sign In &#8594;</button>
     </div>
     <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--tx3)">TMM Cold Storage &middot; 3PL Warehouse Management</div>
   </div>
 </div>
-
 <nav class="topbar">
   <div class="tbl">
     <div class="logo">&#128260;</div>
@@ -312,8 +303,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <canvas id="capacityChart" height="200"></canvas>
   </div>
 
-  <div class="sl">TMM3 &#8212; Zone Breakdown</div><div id="tmm3ZoneSection"></div>
-  <div class="sl">TMM3 &#8212; Customer by Zone</div><div id="tmm3BreakdownSection"></div>
   <div class="sl">Customer Breakdown by Warehouse</div>
   <div class="g3" id="tmmcards"></div>
   <div class="g3">
@@ -363,13 +352,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   </div>
   <div class="sl">All Customers &#8212; Full KPI Table</div>
   <div style="margin-bottom:12px;display:flex;gap:10px;flex-wrap:wrap">
-    <input type="text" id="kpiSearch" placeholder="Search customer..." oninput="filterKPI()"
-      style="flex:1;min-width:180px;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:8px 12px;color:var(--tx);font-family:inherit;font-size:13px;outline:none">
+    <input type="text" id="kpiSearch" placeholder="Search customer..." oninput="filterKPI()" style="flex:1;min-width:180px;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:8px 12px;color:var(--tx);font-family:inherit;font-size:13px;outline:none">
     <select id="kpiSort" onchange="filterKPI()" style="background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:8px 12px;color:var(--tx);font-family:inherit;font-size:13px;outline:none">
-      <option value="storage">Sort by Storage</option>
-      <option value="inbound">Sort by Inbound</option>
-      <option value="outbound">Sort by Outbound</option>
-      <option value="net">Sort by Net Flow</option>
+      <option value="storage">Sort by Storage</option><option value="inbound">Sort by Inbound</option>
+      <option value="outbound">Sort by Outbound</option><option value="net">Sort by Net Flow</option>
     </select>
   </div>
   <div style="background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);overflow:hidden;box-shadow:var(--sh)">
@@ -407,45 +393,16 @@ async function supaSignOut(){initSupa();if(supa)await supa.auth.signOut();}
 async function supaSession(){initSupa();if(!supa)return null;const r=await supa.auth.getSession();return r.data.session;}
 async function supaFetch(fn){
   var url=SUPA_URL+'/storage/v1/object/warehouse-data/'+fn;
-  try{
-    var token=SESSION_TOKEN||SUPA_KEY;
-    var res=await fetch(url,{headers:{'Authorization':'Bearer '+token}});
-    if(!res.ok)res=await fetch(url,{headers:{'Authorization':'Bearer '+SUPA_KEY}});
-    if(!res.ok)return null;
-    return res.arrayBuffer();
-  }catch(e){return null;}
-}
-async function supaUpload(fn,f){
-  var url=SUPA_URL+'/storage/v1/object/warehouse-data/'+fn;
-  try{await fetch(url,{method:'POST',headers:{'Authorization':'Bearer '+(SESSION_TOKEN||SUPA_KEY),'x-upsert':'true','Content-Type':'application/octet-stream'},body:f});}catch(e){}
+  try{var token=SESSION_TOKEN||SUPA_KEY;var res=await fetch(url,{headers:{'Authorization':'Bearer '+token}});if(!res.ok)res=await fetch(url,{headers:{'Authorization':'Bearer '+SUPA_KEY}});if(!res.ok)return null;return res.arrayBuffer();}catch(e){return null;}
 }
 
 const DAILY_DATA=[];
 const IB_OWNERS=[];
 const OB_OWNERS=[];
-const OWNER_MAP={};
-const TMM_OCC={TMM1:{},TMM2:{},TMM3:{}};
+const OWNER_MAP={"T001": "AL FUTTAIM TRADING (L.L.C)", "T003": "AL YOUSUF ELECTRONICS LLC", "T005": "MATRIX FZCO", "T007": "SPIDERNET TECHNOLOGY FZE", "T008": "BLUE CONTAINERS INTERNATIONAL", "T012": "CLARION LOGISTICS MIDDLE EAST", "T017": "CMC MAGNETICS CORPORATION - W/H", "T019": "EZRA SHIPPING LLC - STAR W/H", "T021": "EZRA SHIPPING LLC-W/H", "T022": "EZRA SHIPPING LLC - ETI", "T025": "HELLMANN WORLD WIDE LOGISTICS", "T026": "HELLMANN WORLDWIDE LOGISTICS", "T031": "NAVIGATORS SHIPPING & LOGISTICA FZE", "T032": "NAVIGATORS SHIPPING AND LOGISTICA", "T033": "Navigators Shipping And Logistica LLC", "T035": "PROCONNECT SUPPLY CHAIN LOGISTICS", "T037": "CRANE WORLDWIDE LOGISTICS L.L.C", "T038": "CRANE WORLDWIDE LOGISTICS L.L.C", "T039": "JOINT LINE SHIPPING AND FORWARDING", "T040": "IOR GLOBAL CARGO SERVICES LLC", "T041": "IOR GLOBAL CARGO SERVICES LLC -", "T042": "IOR SIGNAUX GLOBAL (WH)", "T043": "INTEX TECHNOLOGIES LLC- W/H", "T044": "MIG INFORMATION SYSTEMS - WH", "T045": "I LIFE DIGITAL TECHNOLOGY LLC- W/H", "T046": "TEKNODOME FZE", "T047": "JASPA GENERAL TRADING CO. (LLC)", "T049": "AL MAJID DIGITAL SOLUTIONS LLC", "T051": "ORBITE SKY TRADING LLC - W/H", "T053": "THOMSUN -MASTERPIECE LLC -W/H", "T055": "AQUA COOL TECHNICAL TRADING", "T056": "AVIENTEK FZCO - W/H", "T064": "EZRA SHIPPING LLC - AND -W/H", "T065": "EZRA SHIPPING LLC - IFL", "T066": "AVIENTEK FZCO", "T070": "HARIB EXPORT & IMPORT  CO. LLC \u2013WH", "T073": "HISENSE MIDDLE EAST FZE (WH)", "T075": "KLM MIDDLE EAST GENERAL TRADING LLC", "T076": "AL MATEEN EXPRESS LLC", "T080": "OCTAGON INTERNATIONAL FZCO - W/H", "T082": "R&M SN ELECTRICAL FZCO", "T084": "SAEED MUQADAS", "T085": "SIMBA GULF FZCO / CANON (WH)", "T086": "SIMBA GULF FZCO / ELECTRONICS (WH)", "T087": "SIMBA GULF FZCO / FMCG (WH)", "T088": "SIN LASER & PRINT FZE", "T089": "STARLINK DMCC (INV)", "T090": "TECHMAY INTERNATIONAL FZE", "T091": "THE INDEPENDENT TOBACCO FZE", "T095": "WORLDWIDE DISTRIBUTION CENTER", "T096": "THOMSUN TRADING EST", "T108": "EZRA SHIIPPING- ALLIANCE - 2", "T109": "AW ROSTAMANI LOGISTICS LLC", "T110": "CRANE WORLDWIDE LOGISTICS (CHEVRON)", "T112": "HISENSE MIDDLE EAST FZE-ACTIF", "T115": "HISENSE MIDDLE EAST FZE-WEJA", "T116": "HISENSE MIDDLE EAST FZE-AVATAR", "T117": "HISENSE MIDDLE EAST FZE-RPK", "T118": "HISENSE MIDDLE EAST FZE-EITHER", "T120": "HISENSE MIDDLE EAST FZE-TRISTAR", "T133": "AL MAJID DIGITAL SOLUTIONS LLC", "T155": "DATAM TRADING FZE", "T252": "WORLD WATERWAY SEA SHIPPING CO LLC", "T260": "THOMSUN TRADING EST W/H", "T273": "IOR GLOBAL -INFRA", "T276": "WELLNESS FIRST MIDDLE EAST SPORT", "T277": "CORNERSTONE SHIPPING & LOGISTICS L.L.C", "T281": "Ezra Shipping LLC - InterTabasc", "T285": "ABRECO FREIGHT L.L.C", "T291": "DAWNTAINERS MARITIME SERVICES L.L.C", "T293": "DP World Logistics UAE FZE", "T296": "Mass Allied Freighters LLC", "T297": "Universal Islamic Meat FZCO", "T301": "Gulf Evergreen Food Trading LLC", "T304": "M O T Shipping & Trading LLC", "T314": "C K F INTERNATIONAL SHIPPING &", "T315": "C K F INTERNATIONAL SHIPPING &", "T316": "C K F INTERNATIONAL SHIPPING &", "T320": "VIVA ENTERPRISE HOLDINGS LIMITED", "T321": "Cleantech Gulf FZCO", "T322": "A W ROSTAMANI LOGISTICS LLC-GP", "T323": "GLOBAL FOOD & DAIRY INGREDIENTS", "T329": "GENTCO L.L.C-FZ", "T330": "UNIKAI FOODS P.J.S.C", "T334": "HELLMANN WORLDWIDE LOGISTICS LLC", "T337": "Transworld Logistics FZE", "T339": "CORVETTE SHIPPING L.L.C", "T342": "BELLOMASSI FOODSTUFF TRADING L.L.C", "T348": "MOSACO SHIPPING & FORWARDING(L.L.C)", "T351": "FAISAL AL NUSIF TRADING CO. (L.L.C)", "T352": "MM GLOBAL LOGISTICS L.L.C", "T353": "DUEEFFE AFADO General Trading", "T355": "TRANS FREIGHT (L.L.C.)"};
+const TMM_OCC={"TMM1": {"T001": 6300.0, "T003": 92.038, "T007": 218.081, "T017": 100.17297, "T022": 71.133, "T035": 586.694, "T037": 43.263, "T038": 6.865, "T040": 57.58788, "T041": 474.36524, "T042": 36.76987, "T043": 45.784, "T046": 211.97519, "T047": 33.152, "T051": 13.935, "T053": 1525.0419, "T056": 0.014, "T064": 122.76, "T065": 1.354, "T066": 1.002, "T070": 3.61, "T073": 2407.44013, "T075": 3.127, "T080": 3.434, "T085": 19.399, "T086": 2765.239, "T087": 2981.238, "T089": 67.59, "T090": 217.91, "T091": 2474.33, "T095": 169.208, "T096": 0.0672, "T109": 5305.787, "T110": 39.964, "T112": 73.36514, "T115": 0.84, "T116": 0.72434, "T117": 960.40073, "T118": 0.21911, "T120": 2.968, "T260": 120.6504, "T273": 10.01546, "T277": 67.735, "T285": 1.508, "T296": 139.2, "T301": 21.723, "T316": 10.805, "T322": 352.621, "T329": 70.878}, "TMM2": {"T005": 26.476, "T019": 18.976, "T025": 138.725, "T026": 38.668, "T031": 3.375, "T032": 0.119, "T033": 0.488, "T035": 250.816, "T044": 0.843, "T045": 9.556, "T049": 2.0, "T053": 30.63493, "T055": 2.717, "T076": 2.888, "T082": 145.658, "T088": 327.074, "T108": 4748.345, "T110": 16.818, "T276": 2517.29611, "T321": 108.817}, "TMM3": {"T012": 224.904, "T021": 86.376, "T039": 20.904, "T073": 135.53876, "T109": 266.28, "T117": 597.03572, "T252": 417.214, "T281": 102.584, "T285": 1075.123, "T291": 679.823, "T293": 1385.269, "T296": 12.672, "T297": 125.648, "T304": 188.612, "T314": 579.082, "T315": 1711.2286, "T316": 381.527, "T320": 7342.992, "T322": 110.731, "T323": 25.238, "T330": 167.85, "T334": 89.193, "T337": 1009.482, "T339": 214.02, "T342": 487.8, "T348": 131.91, "T351": 185.112, "T352": 106.626, "T353": 28.252, "T355": 47.9661}};
 
 let DAILY=[...DAILY_DATA],FILT=[...DAILY];
-// Auto-detect current month from data
-function autoSelectMonth(){
-  if(!DAILY||DAILY.length===0)return;
-  var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  // Get most recent month in data
-  var lastDate=DAILY[DAILY.length-1];
-  if(!lastDate)return;
-  var parts=(lastDate.date||'').split(' ');
-  if(parts.length<2)return;
-  var mon=parts[1].toLowerCase();
-  // Find and click that month button
-  var btns=document.querySelectorAll('.fb');
-  btns.forEach(function(b){
-    if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+mon+"'")){
-      // Don't auto-click — just add indicator
-      b.style.borderColor='rgba(59,130,246,0.4)';
-    }
-  });
-}
 let IB=[...IB_OWNERS],OB=[...OB_OWNERS];
 let IBF=[...IB],OBF=[...OB];
 let PIB=null,POB=null,POCC=null;
@@ -456,10 +413,8 @@ const fN=n=>Number(Math.round(n)).toLocaleString();
 const now=()=>new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
 const oname=c=>OWNER_MAP[c]||c;
 const sname=c=>{const n=OWNER_MAP[c]||c;return n;}; // full name always
-const TMM3_ZONES=[];
-const PIB_BAKED={};
-const POB_BAKED={};
-const KPI_DATA_BAKED=[];
+const TMM3_ZONES=[{"code": "T3R1", "name": "C1", "desc": "+18C Temp Control", "cap": 28670.4, "col": "#f59e0b", "total_locs": 23890, "occ_locs": 13347, "empty_locs": 10543, "cbm_per_loc": 1.2, "occ": 13997.15, "avail": 14673.25, "pct": 48.8, "owners": {"T320": 7342.99, "T315": 1711.23, "T293": 1385.27, "T117": 597.04, "T314": 579.08, "T285": 448.87, "T316": 381.53, "T109": 266.28, "T337": 224.67, "T339": 214.02, "T291": 211.0, "T073": 135.54, "T297": 125.65, "T322": 110.73, "T281": 102.58, "T334": 89.19, "T304": 46.25, "T323": 25.24}}, {"code": "T3C1", "name": "C2", "desc": "Frozen", "cap": 2755.2, "col": "#3b82f6", "total_locs": 2296, "occ_locs": 532, "empty_locs": 1764, "cbm_per_loc": 1.2, "occ": 534.36, "avail": 2220.84, "pct": 19.4, "owners": {"T012": 176.58, "T330": 167.85, "T285": 141.96, "T355": 47.97}}, {"code": "T3C2", "name": "C3", "desc": "Frozen", "cap": 2889.6, "col": "#3b82f6", "total_locs": 2410, "occ_locs": 1546, "empty_locs": 864, "cbm_per_loc": 1.2, "occ": 1662.18, "avail": 1227.42, "pct": 57.5, "owners": {"T342": 487.8, "T285": 484.3, "T291": 468.83, "T352": 106.63, "T021": 86.38, "T353": 28.25}}, {"code": "T3C3", "name": "C4", "desc": "Chiller", "cap": 3192.0, "col": "#14b8a6", "total_locs": 2659, "occ_locs": 1156, "empty_locs": 1503, "cbm_per_loc": 1.2, "occ": 1743.31, "avail": 1448.69, "pct": 54.6, "owners": {"T337": 784.81, "T252": 417.21, "T351": 185.11, "T304": 142.36, "T348": 131.91, "T012": 48.32, "T039": 20.9, "T296": 12.67}}];
+const KPI_DATA_BAKED=[{"code": "T320", "name": "VIVA ENTERPRISE HOLDINGS LIMITED", "t1": 0.0, "t2": 0.0, "t3": 7342.99, "storage": 7342.99, "ib": 0, "ob": 1125.97, "net": -1125.97, "pct": 13.5, "wh": ["TMM3"]}, {"code": "T001", "name": "AL FUTTAIM TRADING (L.L.C)", "t1": 6300.0, "t2": 0.0, "t3": 0.0, "storage": 6300.0, "ib": 51.07, "ob": 0, "net": 51.07, "pct": 11.5, "wh": ["TMM1"]}, {"code": "T109", "name": "AW ROSTAMANI LOGISTICS LLC", "t1": 5305.79, "t2": 0.0, "t3": 266.28, "storage": 5572.07, "ib": 0, "ob": 216.23, "net": -216.23, "pct": 10.2, "wh": ["TMM1", "TMM3"]}, {"code": "T108", "name": "EZRA SHIIPPING- ALLIANCE - 2", "t1": 0.0, "t2": 4748.35, "t3": 0.0, "storage": 4748.35, "ib": 1456.19, "ob": 441.57, "net": 1014.62, "pct": 8.7, "wh": ["TMM2"]}, {"code": "T087", "name": "SIMBA GULF FZCO / FMCG (WH)", "t1": 2981.24, "t2": 0.0, "t3": 0.0, "storage": 2981.24, "ib": 220.97, "ob": 907.58, "net": -686.61, "pct": 5.5, "wh": ["TMM1"]}, {"code": "T086", "name": "SIMBA GULF FZCO / ELECTRONICS (WH)", "t1": 2765.24, "t2": 0.0, "t3": 0.0, "storage": 2765.24, "ib": 1104.49, "ob": 822.4, "net": 282.09, "pct": 5.1, "wh": ["TMM1"]}, {"code": "T073", "name": "HISENSE MIDDLE EAST FZE (WH)", "t1": 2407.44, "t2": 0.0, "t3": 135.54, "storage": 2542.98, "ib": 1916.71, "ob": 775.63, "net": 1141.08, "pct": 4.7, "wh": ["TMM1", "TMM3"]}, {"code": "T276", "name": "WELLNESS FIRST MIDDLE EAST SPORT", "t1": 0.0, "t2": 2517.3, "t3": 0.0, "storage": 2517.3, "ib": 110.97, "ob": 391.51, "net": -280.54, "pct": 4.6, "wh": ["TMM2"]}, {"code": "T091", "name": "THE INDEPENDENT TOBACCO FZE", "t1": 2474.33, "t2": 0.0, "t3": 0.0, "storage": 2474.33, "ib": 412.78, "ob": 216.04, "net": 196.74, "pct": 4.5, "wh": ["TMM1"]}, {"code": "T315", "name": "C K F INTERNATIONAL SHIPPING &", "t1": 0.0, "t2": 0.0, "t3": 1711.23, "storage": 1711.23, "ib": 672.49, "ob": 655.44, "net": 17.05, "pct": 3.1, "wh": ["TMM3"]}, {"code": "T117", "name": "HISENSE MIDDLE EAST FZE-RPK", "t1": 960.4, "t2": 0.0, "t3": 597.04, "storage": 1557.44, "ib": 0, "ob": 397.04, "net": -397.04, "pct": 2.9, "wh": ["TMM1", "TMM3"]}, {"code": "T053", "name": "THOMSUN -MASTERPIECE LLC -W/H", "t1": 1525.04, "t2": 30.63, "t3": 0.0, "storage": 1555.67, "ib": 59.24, "ob": 83.56, "net": -24.32, "pct": 2.9, "wh": ["TMM1", "TMM2"]}, {"code": "T293", "name": "DP World Logistics UAE FZE", "t1": 0.0, "t2": 0.0, "t3": 1385.27, "storage": 1385.27, "ib": 186.2, "ob": 220.8, "net": -34.6, "pct": 2.5, "wh": ["TMM3"]}, {"code": "T285", "name": "ABRECO FREIGHT L.L.C", "t1": 1.51, "t2": 0.0, "t3": 1075.12, "storage": 1076.63, "ib": 674.18, "ob": 1330.98, "net": -656.8, "pct": 2.0, "wh": ["TMM1", "TMM3"]}, {"code": "T337", "name": "Transworld Logistics FZE", "t1": 0.0, "t2": 0.0, "t3": 1009.48, "storage": 1009.48, "ib": 167.69, "ob": 204.0, "net": -36.31, "pct": 1.9, "wh": ["TMM3"]}, {"code": "T035", "name": "PROCONNECT SUPPLY CHAIN LOGISTICS", "t1": 586.69, "t2": 250.82, "t3": 0.0, "storage": 837.51, "ib": 0, "ob": 504.02, "net": -504.02, "pct": 1.5, "wh": ["TMM1", "TMM2"]}, {"code": "T291", "name": "DAWNTAINERS MARITIME SERVICES L.L.C", "t1": 0.0, "t2": 0.0, "t3": 679.82, "storage": 679.82, "ib": 0, "ob": 0, "net": 0, "pct": 1.2, "wh": ["TMM3"]}, {"code": "T314", "name": "C K F INTERNATIONAL SHIPPING &", "t1": 0.0, "t2": 0.0, "t3": 579.08, "storage": 579.08, "ib": 634.54, "ob": 465.24, "net": 169.3, "pct": 1.1, "wh": ["TMM3"]}, {"code": "T342", "name": "BELLOMASSI FOODSTUFF TRADING L.L.C", "t1": 0.0, "t2": 0.0, "t3": 487.8, "storage": 487.8, "ib": 51.64, "ob": 103.28, "net": -51.64, "pct": 0.9, "wh": ["TMM3"]}, {"code": "T041", "name": "IOR GLOBAL CARGO SERVICES LLC -", "t1": 474.37, "t2": 0.0, "t3": 0.0, "storage": 474.37, "ib": 39.0, "ob": 66.46, "net": -27.46, "pct": 0.9, "wh": ["TMM1"]}, {"code": "T322", "name": "A W ROSTAMANI LOGISTICS LLC-GP", "t1": 352.62, "t2": 0.0, "t3": 110.73, "storage": 463.35, "ib": 0, "ob": 1359.37, "net": -1359.37, "pct": 0.8, "wh": ["TMM1", "TMM3"]}, {"code": "T252", "name": "WORLD WATERWAY SEA SHIPPING CO LLC", "t1": 0.0, "t2": 0.0, "t3": 417.21, "storage": 417.21, "ib": 51.14, "ob": 0, "net": 51.14, "pct": 0.8, "wh": ["TMM3"]}, {"code": "T316", "name": "C K F INTERNATIONAL SHIPPING &", "t1": 10.8, "t2": 0.0, "t3": 381.53, "storage": 392.33, "ib": 138.32, "ob": 53.65, "net": 84.67, "pct": 0.7, "wh": ["TMM1", "TMM3"]}, {"code": "T088", "name": "SIN LASER & PRINT FZE", "t1": 0.0, "t2": 327.07, "t3": 0.0, "storage": 327.07, "ib": 3.1, "ob": 112.0, "net": -108.9, "pct": 0.6, "wh": ["TMM2"]}, {"code": "T012", "name": "CLARION LOGISTICS MIDDLE EAST", "t1": 0.0, "t2": 0.0, "t3": 224.9, "storage": 224.9, "ib": 0, "ob": 0, "net": 0, "pct": 0.4, "wh": ["TMM3"]}, {"code": "T007", "name": "SPIDERNET TECHNOLOGY FZE", "t1": 218.08, "t2": 0.0, "t3": 0.0, "storage": 218.08, "ib": 0, "ob": 12.73, "net": -12.73, "pct": 0.4, "wh": ["TMM1"]}, {"code": "T090", "name": "TECHMAY INTERNATIONAL FZE", "t1": 217.91, "t2": 0.0, "t3": 0.0, "storage": 217.91, "ib": 0, "ob": 43.57, "net": -43.57, "pct": 0.4, "wh": ["TMM1"]}, {"code": "T339", "name": "CORVETTE SHIPPING L.L.C", "t1": 0.0, "t2": 0.0, "t3": 214.02, "storage": 214.02, "ib": 0, "ob": 0, "net": 0, "pct": 0.4, "wh": ["TMM3"]}, {"code": "T046", "name": "TEKNODOME FZE", "t1": 211.98, "t2": 0.0, "t3": 0.0, "storage": 211.98, "ib": 0, "ob": 0, "net": 0, "pct": 0.4, "wh": ["TMM1"]}, {"code": "T304", "name": "M O T Shipping & Trading LLC", "t1": 0.0, "t2": 0.0, "t3": 188.61, "storage": 188.61, "ib": 0, "ob": 92.7, "net": -92.7, "pct": 0.3, "wh": ["TMM3"]}, {"code": "T351", "name": "FAISAL AL NUSIF TRADING CO. (L.L.C)", "t1": 0.0, "t2": 0.0, "t3": 185.11, "storage": 185.11, "ib": 352.8, "ob": 158.33, "net": 194.47, "pct": 0.3, "wh": ["TMM3"]}, {"code": "T095", "name": "WORLDWIDE DISTRIBUTION CENTER", "t1": 169.21, "t2": 0.0, "t3": 0.0, "storage": 169.21, "ib": 0, "ob": 0, "net": 0, "pct": 0.3, "wh": ["TMM1"]}, {"code": "T330", "name": "UNIKAI FOODS P.J.S.C", "t1": 0.0, "t2": 0.0, "t3": 167.85, "storage": 167.85, "ib": 0, "ob": 269.05, "net": -269.05, "pct": 0.3, "wh": ["TMM3"]}, {"code": "T296", "name": "Mass Allied Freighters LLC", "t1": 139.2, "t2": 0.0, "t3": 12.67, "storage": 151.87, "ib": 0, "ob": 88.8, "net": -88.8, "pct": 0.3, "wh": ["TMM1", "TMM3"]}, {"code": "T082", "name": "R&M SN ELECTRICAL FZCO", "t1": 0.0, "t2": 145.66, "t3": 0.0, "storage": 145.66, "ib": 109.96, "ob": 12.59, "net": 97.37, "pct": 0.3, "wh": ["TMM2"]}, {"code": "T025", "name": "HELLMANN WORLD WIDE LOGISTICS", "t1": 0.0, "t2": 138.72, "t3": 0.0, "storage": 138.72, "ib": 19.51, "ob": 0, "net": 19.51, "pct": 0.3, "wh": ["TMM2"]}, {"code": "T348", "name": "MOSACO SHIPPING & FORWARDING(L.L.C)", "t1": 0.0, "t2": 0.0, "t3": 131.91, "storage": 131.91, "ib": 0, "ob": 0.06, "net": -0.06, "pct": 0.2, "wh": ["TMM3"]}, {"code": "T297", "name": "Universal Islamic Meat FZCO", "t1": 0.0, "t2": 0.0, "t3": 125.65, "storage": 125.65, "ib": 107.89, "ob": 43.98, "net": 63.91, "pct": 0.2, "wh": ["TMM3"]}, {"code": "T064", "name": "EZRA SHIPPING LLC - AND -W/H", "t1": 122.76, "t2": 0.0, "t3": 0.0, "storage": 122.76, "ib": 0, "ob": 0, "net": 0, "pct": 0.2, "wh": ["TMM1"]}, {"code": "T260", "name": "THOMSUN TRADING EST W/H", "t1": 120.65, "t2": 0.0, "t3": 0.0, "storage": 120.65, "ib": 23.63, "ob": 13.48, "net": 10.15, "pct": 0.2, "wh": ["TMM1"]}, {"code": "T321", "name": "Cleantech Gulf FZCO", "t1": 0.0, "t2": 108.82, "t3": 0.0, "storage": 108.82, "ib": 22.97, "ob": 13.13, "net": 9.84, "pct": 0.2, "wh": ["TMM2"]}, {"code": "T352", "name": "MM GLOBAL LOGISTICS L.L.C", "t1": 0.0, "t2": 0.0, "t3": 106.63, "storage": 106.63, "ib": 141.57, "ob": 0, "net": 141.57, "pct": 0.2, "wh": ["TMM3"]}, {"code": "T281", "name": "Ezra Shipping LLC - InterTabasc", "t1": 0.0, "t2": 0.0, "t3": 102.58, "storage": 102.58, "ib": 38.06, "ob": 353.84, "net": -315.78, "pct": 0.2, "wh": ["TMM3"]}, {"code": "T017", "name": "CMC MAGNETICS CORPORATION - W/H", "t1": 100.17, "t2": 0.0, "t3": 0.0, "storage": 100.17, "ib": 0, "ob": 26.75, "net": -26.75, "pct": 0.2, "wh": ["TMM1"]}, {"code": "T003", "name": "AL YOUSUF ELECTRONICS LLC", "t1": 92.04, "t2": 0.0, "t3": 0.0, "storage": 92.04, "ib": 0, "ob": 0, "net": 0, "pct": 0.2, "wh": ["TMM1"]}, {"code": "T334", "name": "HELLMANN WORLDWIDE LOGISTICS LLC", "t1": 0.0, "t2": 0.0, "t3": 89.19, "storage": 89.19, "ib": 9.24, "ob": 16.35, "net": -7.11, "pct": 0.2, "wh": ["TMM3"]}, {"code": "T021", "name": "EZRA SHIPPING LLC-W/H", "t1": 0.0, "t2": 0.0, "t3": 86.38, "storage": 86.38, "ib": 0, "ob": 0, "net": 0, "pct": 0.2, "wh": ["TMM3"]}, {"code": "T112", "name": "HISENSE MIDDLE EAST FZE-ACTIF", "t1": 73.37, "t2": 0.0, "t3": 0.0, "storage": 73.37, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T022", "name": "EZRA SHIPPING LLC - ETI", "t1": 71.13, "t2": 0.0, "t3": 0.0, "storage": 71.13, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T329", "name": "GENTCO L.L.C-FZ", "t1": 70.88, "t2": 0.0, "t3": 0.0, "storage": 70.88, "ib": 22.07, "ob": 0, "net": 22.07, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T277", "name": "CORNERSTONE SHIPPING & LOGISTICS L.L.C", "t1": 67.73, "t2": 0.0, "t3": 0.0, "storage": 67.73, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T089", "name": "STARLINK DMCC (INV)", "t1": 67.59, "t2": 0.0, "t3": 0.0, "storage": 67.59, "ib": 47.67, "ob": 31.19, "net": 16.48, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T040", "name": "IOR GLOBAL CARGO SERVICES LLC", "t1": 57.59, "t2": 0.0, "t3": 0.0, "storage": 57.59, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T110", "name": "CRANE WORLDWIDE LOGISTICS (CHEVRON)", "t1": 39.96, "t2": 16.82, "t3": 0.0, "storage": 56.78, "ib": 34.22, "ob": 0, "net": 34.22, "pct": 0.1, "wh": ["TMM1", "TMM2"]}, {"code": "T355", "name": "TRANS FREIGHT (L.L.C.)", "t1": 0.0, "t2": 0.0, "t3": 47.97, "storage": 47.97, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM3"]}, {"code": "T043", "name": "INTEX TECHNOLOGIES LLC- W/H", "t1": 45.78, "t2": 0.0, "t3": 0.0, "storage": 45.78, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T037", "name": "CRANE WORLDWIDE LOGISTICS L.L.C", "t1": 43.26, "t2": 0.0, "t3": 0.0, "storage": 43.26, "ib": 4.07, "ob": 2.44, "net": 1.63, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T026", "name": "HELLMANN WORLDWIDE LOGISTICS", "t1": 0.0, "t2": 38.67, "t3": 0.0, "storage": 38.67, "ib": 26.81, "ob": 9.33, "net": 17.48, "pct": 0.1, "wh": ["TMM2"]}, {"code": "T042", "name": "IOR SIGNAUX GLOBAL (WH)", "t1": 36.77, "t2": 0.0, "t3": 0.0, "storage": 36.77, "ib": 0, "ob": 2.81, "net": -2.81, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T047", "name": "JASPA GENERAL TRADING CO. (LLC)", "t1": 33.15, "t2": 0.0, "t3": 0.0, "storage": 33.15, "ib": 0, "ob": 0, "net": 0, "pct": 0.1, "wh": ["TMM1"]}, {"code": "T353", "name": "DUEEFFE AFADO General Trading", "t1": 0.0, "t2": 0.0, "t3": 28.25, "storage": 28.25, "ib": 28.25, "ob": 0, "net": 28.25, "pct": 0.1, "wh": ["TMM3"]}, {"code": "T005", "name": "MATRIX FZCO", "t1": 0.0, "t2": 26.48, "t3": 0.0, "storage": 26.48, "ib": 7.83, "ob": 22.6, "net": -14.77, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T323", "name": "GLOBAL FOOD & DAIRY INGREDIENTS", "t1": 0.0, "t2": 0.0, "t3": 25.24, "storage": 25.24, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM3"]}, {"code": "T301", "name": "Gulf Evergreen Food Trading LLC", "t1": 21.72, "t2": 0.0, "t3": 0.0, "storage": 21.72, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T039", "name": "JOINT LINE SHIPPING AND FORWARDING", "t1": 0.0, "t2": 0.0, "t3": 20.9, "storage": 20.9, "ib": 20.9, "ob": 0, "net": 20.9, "pct": 0.0, "wh": ["TMM3"]}, {"code": "T085", "name": "SIMBA GULF FZCO / CANON (WH)", "t1": 19.4, "t2": 0.0, "t3": 0.0, "storage": 19.4, "ib": 15.5, "ob": 120.21, "net": -104.71, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T019", "name": "EZRA SHIPPING LLC - STAR W/H", "t1": 0.0, "t2": 18.98, "t3": 0.0, "storage": 18.98, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T051", "name": "ORBITE SKY TRADING LLC - W/H", "t1": 13.94, "t2": 0.0, "t3": 0.0, "storage": 13.94, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T273", "name": "IOR GLOBAL -INFRA", "t1": 10.02, "t2": 0.0, "t3": 0.0, "storage": 10.02, "ib": 0.01, "ob": 22.26, "net": -22.25, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T045", "name": "I LIFE DIGITAL TECHNOLOGY LLC- W/H", "t1": 0.0, "t2": 9.56, "t3": 0.0, "storage": 9.56, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T038", "name": "CRANE WORLDWIDE LOGISTICS L.L.C", "t1": 6.87, "t2": 0.0, "t3": 0.0, "storage": 6.87, "ib": 8.47, "ob": 3.4, "net": 5.07, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T070", "name": "HARIB EXPORT & IMPORT  CO. LLC \u2013WH", "t1": 3.61, "t2": 0.0, "t3": 0.0, "storage": 3.61, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T080", "name": "OCTAGON INTERNATIONAL FZCO - W/H", "t1": 3.43, "t2": 0.0, "t3": 0.0, "storage": 3.43, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T031", "name": "NAVIGATORS SHIPPING & LOGISTICA FZE", "t1": 0.0, "t2": 3.38, "t3": 0.0, "storage": 3.38, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T075", "name": "KLM MIDDLE EAST GENERAL TRADING LLC", "t1": 3.13, "t2": 0.0, "t3": 0.0, "storage": 3.13, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T120", "name": "HISENSE MIDDLE EAST FZE-TRISTAR", "t1": 2.97, "t2": 0.0, "t3": 0.0, "storage": 2.97, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T076", "name": "AL MATEEN EXPRESS LLC", "t1": 0.0, "t2": 2.89, "t3": 0.0, "storage": 2.89, "ib": 154.62, "ob": 2.19, "net": 152.43, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T055", "name": "AQUA COOL TECHNICAL TRADING", "t1": 0.0, "t2": 2.72, "t3": 0.0, "storage": 2.72, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T049", "name": "AL MAJID DIGITAL SOLUTIONS LLC", "t1": 0.0, "t2": 2.0, "t3": 0.0, "storage": 2.0, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T065", "name": "EZRA SHIPPING LLC - IFL", "t1": 1.35, "t2": 0.0, "t3": 0.0, "storage": 1.35, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T066", "name": "AVIENTEK FZCO", "t1": 1.0, "t2": 0.0, "t3": 0.0, "storage": 1.0, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T044", "name": "MIG INFORMATION SYSTEMS - WH", "t1": 0.0, "t2": 0.84, "t3": 0.0, "storage": 0.84, "ib": 0, "ob": 0.26, "net": -0.26, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T115", "name": "HISENSE MIDDLE EAST FZE-WEJA", "t1": 0.84, "t2": 0.0, "t3": 0.0, "storage": 0.84, "ib": 0, "ob": 24.07, "net": -24.07, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T116", "name": "HISENSE MIDDLE EAST FZE-AVATAR", "t1": 0.72, "t2": 0.0, "t3": 0.0, "storage": 0.72, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T033", "name": "Navigators Shipping And Logistica LLC", "t1": 0.0, "t2": 0.49, "t3": 0.0, "storage": 0.49, "ib": 0, "ob": 2.65, "net": -2.65, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T118", "name": "HISENSE MIDDLE EAST FZE-EITHER", "t1": 0.22, "t2": 0.0, "t3": 0.0, "storage": 0.22, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T032", "name": "NAVIGATORS SHIPPING AND LOGISTICA", "t1": 0.0, "t2": 0.12, "t3": 0.0, "storage": 0.12, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM2"]}, {"code": "T096", "name": "THOMSUN TRADING EST", "t1": 0.07, "t2": 0.0, "t3": 0.0, "storage": 0.07, "ib": 21.16, "ob": 0, "net": 21.16, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T056", "name": "AVIENTEK FZCO - W/H", "t1": 0.01, "t2": 0.0, "t3": 0.0, "storage": 0.01, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": ["TMM1"]}, {"code": "T008", "name": "BLUE CONTAINERS INTERNATIONAL", "t1": 0.0, "t2": 0.0, "t3": 0.0, "storage": 0.0, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": []}, {"code": "T084", "name": "SAEED MUQADAS", "t1": 0.0, "t2": 0.0, "t3": 0.0, "storage": 0.0, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": []}, {"code": "T133", "name": "AL MAJID DIGITAL SOLUTIONS LLC", "t1": 0.0, "t2": 0.0, "t3": 0.0, "storage": 0.0, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": []}, {"code": "T155", "name": "DATAM TRADING FZE", "t1": 0.0, "t2": 0.0, "t3": 0.0, "storage": 0.0, "ib": 0, "ob": 0, "net": 0, "pct": 0.0, "wh": []}];
 var KPI_DATA=[];
 const COLS=['#3b82f6','#22c55e','#f59e0b','#ef4444','#a78bfa','#f472b6','#14b8a6','#fbbf24','#60a5fa','#34d399','#fb923c','#f87171','#c084fc','#2dd4bf'];
 
@@ -509,49 +464,26 @@ function sw(n,el){
     if(n==='inbound'){owbar('ib');owdnt('ib');}
     if(n==='outbound'){owbar('ob');owdnt('ob');}
     if(n==='occupancy'){renderOcc();renderCapacity();}
-    if(n==='kpi'){KPI_DATA=[];renderKPI();}
   },60);
 }
 
 // FILTER
 function setF(t,el){
-  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.fb').forEach(function(b){b.classList.remove('active');});
   el.classList.add('active');
-  const dy=d=>parseInt(d.date);
-  const months={
-    jan:'Jan',feb:'Feb',mar:'Mar',apr:'Apr',may:'May',jun:'Jun',
-    jul:'Jul',aug:'Aug',sep:'Sep',oct:'Oct',nov:'Nov',dec:'Dec'
-  };
+  var dy=function(d){return parseInt(d.date);};
+  var months={jan:'Jan',feb:'Feb',mar:'Mar',apr:'Apr',may:'May',jun:'Jun',jul:'Jul',aug:'Aug',sep:'Sep',oct:'Oct',nov:'Nov',dec:'Dec'};
   switch(t){
-    case 'all': FILT=[...DAILY];break;
-    case 'w1':  FILT=DAILY.filter(d=>dy(d)<=7);break;
-    case 'w2':  FILT=DAILY.filter(d=>dy(d)>7&&dy(d)<=14);break;
-    case 'w3':  FILT=DAILY.filter(d=>dy(d)>14&&dy(d)<=21);break;
-    case 'w4':  FILT=DAILY.filter(d=>dy(d)>21);break;
-    case 'hi':  FILT=DAILY.filter(d=>(d.vol_in-d.vol_out)>200);break;
-    case 'ho':  FILT=DAILY.filter(d=>(d.vol_out-d.vol_in)>200);break;
+    case 'all':FILT=[...DAILY];break;
+    case 'w1':FILT=DAILY.filter(function(d){return dy(d)<=7;});break;
+    case 'w2':FILT=DAILY.filter(function(d){return dy(d)>7&&dy(d)<=14;});break;
+    case 'w3':FILT=DAILY.filter(function(d){return dy(d)>14&&dy(d)<=21;});break;
+    case 'w4':FILT=DAILY.filter(function(d){return dy(d)>21;});break;
+    case 'hi':FILT=DAILY.filter(function(d){return (d.vol_in-d.vol_out)>200;});break;
+    case 'ho':FILT=DAILY.filter(function(d){return (d.vol_out-d.vol_in)>200;});break;
     default:
-      // Month filter — e.g. 'may', 'jun'
-      if(months[t]){
-        var mon=months[t];
-        FILT=DAILY.filter(function(d){
-          var parts=(d.date||'').split(' ');
-          return parts.length>1&&parts[1]===mon;
-        });
-      } else {
-        FILT=[...DAILY];
-      }
-  }
-  // Show active month label in section title
-  var sl=document.querySelector('#tab-flow .sl');
-  if(sl){
-    if(months[t]){
-      sl.textContent='Monthly Flow Summary — '+months[t].toUpperCase();
-    } else if(t==='all'){
-      sl.textContent='Monthly Flow Summary';
-    } else if(t.startsWith('w')){
-      sl.textContent='Monthly Flow Summary — Week '+t.replace('w','');
-    }
+      if(months[t]){var mon=months[t];FILT=DAILY.filter(function(d){var p=(d.date||'').split(' ');return p.length>1&&p[1]===mon;});}
+      else FILT=[...DAILY];
   }
   renderFlow();
 }
@@ -849,56 +781,6 @@ function drawCapacityChart(tmms,cols){
   });
 }
 
-
-function parseTMM3ZoneXL(buf){
-  var wb=XLSX.read(buf,{type:'array'});
-  var ws=wb.Sheets['Data']||wb.Sheets[wb.SheetNames[0]];
-  var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null});
-  var lastRow={};
-  var validZones=['T3R1','T3C1','T3C2','T3C3'];
-  for(var i=1;i<rows.length;i++){
-    var r=rows[i],owner=r[0],stype=r[1],vol=r[2];
-    if(!stype||!vol||typeof vol!=='number'||!owner)continue;
-    if(validZones.indexOf(stype)<0)continue;
-    lastRow[owner+'|'+stype]=vol;
-  }
-  var ownerZoneDist={};
-  Object.entries(lastRow).forEach(function(e){
-    var parts=e[0].split('|'),owner=parts[0],stype=parts[1],vol=e[1];
-    if(!ownerZoneDist[owner])ownerZoneDist[owner]={};
-    ownerZoneDist[owner][stype]=(ownerZoneDist[owner][stype]||0)+vol;
-  });
-  var zVol={},zOwners={};
-  Object.entries(TMM_OCC.TMM3||{}).forEach(function(e){
-    var owner=e[0],tmm3cbm=e[1];
-    var zones=ownerZoneDist[owner]||{'T3R1':1};
-    var zoneSum=Object.values(zones).reduce(function(s,v){return s+v;},0)||1;
-    Object.entries(zones).forEach(function(ze){
-      var stype=ze[0],zvol=ze[1];
-      if(validZones.indexOf(stype)<0)return;
-      var allocated=tmm3cbm*(zvol/zoneSum);
-      zVol[stype]=(zVol[stype]||0)+allocated;
-      if(!zOwners[stype])zOwners[stype]={};
-      zOwners[stype][owner]=(zOwners[stype][owner]||0)+allocated;
-    });
-  });
-  var meta=[
-    {code:'T3R1',name:'C1',desc:'+18C Temp Control',cap:28670.40,col:'#f59e0b'},
-    {code:'T3C1',name:'C2',desc:'Frozen',cap:2755.20,col:'#3b82f6'},
-    {code:'T3C2',name:'C3',desc:'Frozen',cap:2889.60,col:'#3b82f6'},
-    {code:'T3C3',name:'C4',desc:'Chiller',cap:3192.00,col:'#14b8a6'},
-  ];
-  return meta.map(function(z){
-    var occ=Math.round((zVol[z.code]||0)*100)/100;
-    var avail=Math.round(Math.max(0,z.cap-occ)*100)/100;
-    var pct=Math.min(100,Math.round(occ/z.cap*1000)/10);
-    var owners={};
-    Object.entries(zOwners[z.code]||{}).sort(function(a,b){return b[1]-a[1];})
-      .forEach(function(e){owners[e[0]]=Math.round(e[1]*100)/100;});
-    return Object.assign({},z,{occ:occ,avail:avail,pct:pct,owners:owners});
-  });
-}
-
 function renderTMM3Zones(){
   var el=document.getElementById('tmm3ZoneSection');if(!el)return;
   var zones=typeof LIVE_TMM3_ZONES!=='undefined'&&LIVE_TMM3_ZONES?LIVE_TMM3_ZONES:TMM3_ZONES;
@@ -913,10 +795,16 @@ function renderTMM3Zones(){
   var sc=totalPct>=90?'#ef4444':totalPct>=70?'#f59e0b':'#22c55e';
   html+='<span style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:'+sc+'22;color:'+sc+'">'+totalPct+'% Occupied</span>';
   html+='</div>';
-  html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">';
-  html+='<div style="background:rgba(0,0,0,.2);border-radius:var(--rs);padding:10px;text-align:center"><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Total Capacity</div><div style="font-size:20px;font-weight:800;color:#f59e0b">'+fD(totalCap)+'</div><div style="font-size:10px;color:var(--tx3)">CBM</div></div>';
-  html+='<div style="background:rgba(0,0,0,.2);border-radius:var(--rs);padding:10px;text-align:center"><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Occupied</div><div style="font-size:20px;font-weight:800;color:#ef4444">'+fD(totalOcc)+'</div><div style="font-size:10px;color:#ef4444">'+totalPct+'%</div></div>';
-  html+='<div style="background:rgba(0,0,0,.2);border-radius:var(--rs);padding:10px;text-align:center"><div style="font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Available</div><div style="font-size:20px;font-weight:800;color:#22c55e">'+fD(totalAvail)+'</div><div style="font-size:10px;color:#22c55e">'+(100-totalPct)+'%</div></div>';
+  var totalLocs=31255;
+  var totalOccLocs=Math.round(totalOcc/1.2);
+  var totalEmptyLocs=Math.max(0,totalLocs-totalOccLocs);
+  html+='<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:10px">';
+  html+='<div style="background:rgba(0,0,0,.2);border-radius:var(--rs);padding:10px;text-align:center"><div style="font-size:8px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Capacity CBM</div><div style="font-size:16px;font-weight:800;color:#f59e0b">'+fD(totalCap)+'</div></div>';
+  html+='<div style="background:rgba(0,0,0,.2);border-radius:var(--rs);padding:10px;text-align:center"><div style="font-size:8px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Occupied CBM</div><div style="font-size:16px;font-weight:800;color:#ef4444">'+fD(totalOcc)+'</div><div style="font-size:9px;color:#ef4444">'+totalPct+'%</div></div>';
+  html+='<div style="background:rgba(0,0,0,.2);border-radius:var(--rs);padding:10px;text-align:center"><div style="font-size:8px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Available CBM</div><div style="font-size:16px;font-weight:800;color:#22c55e">'+fD(totalAvail)+'</div><div style="font-size:9px;color:#22c55e">'+(100-totalPct)+'%</div></div>';
+  html+='<div style="background:rgba(0,0,0,.2);border-radius:var(--rs);padding:10px;text-align:center"><div style="font-size:8px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Total Locs</div><div style="font-size:16px;font-weight:800;color:#f59e0b">'+totalLocs.toLocaleString()+'</div></div>';
+  html+='<div style="background:rgba(239,68,68,.08);border-radius:var(--rs);padding:10px;text-align:center;border:1px solid rgba(239,68,68,.15)"><div style="font-size:8px;font-weight:700;color:#ef4444;text-transform:uppercase;margin-bottom:3px">Occ Locs</div><div style="font-size:16px;font-weight:800;color:#ef4444">'+totalOccLocs.toLocaleString()+'</div></div>';
+  html+='<div style="background:rgba(34,197,94,.1);border-radius:var(--rs);padding:10px;text-align:center;border:1px solid rgba(34,197,94,.2)"><div style="font-size:8px;font-weight:700;color:#22c55e;text-transform:uppercase;margin-bottom:3px">&#9733; Empty Locs</div><div style="font-size:16px;font-weight:800;color:#22c55e">'+totalEmptyLocs.toLocaleString()+'</div></div>';
   html+='</div>';
   html+='<div style="height:10px;border-radius:5px;background:rgba(0,0,0,.3);overflow:hidden"><div style="height:100%;width:'+Math.min(100,totalPct)+'%;background:linear-gradient(90deg,#f59e0b,'+sc+');border-radius:5px"></div></div>';
   html+='<div style="display:flex;justify-content:space-between;font-size:10px;margin-top:4px"><span style="color:#ef4444;font-weight:600">Occ: '+fD(totalOcc)+' CBM</span><span style="color:#22c55e;font-weight:600">Free: '+fD(totalAvail)+' CBM</span></div>';
@@ -939,10 +827,18 @@ function renderTMM3Zones(){
     html+='<div style="border-left:3px solid '+col+';padding-left:10px;margin-bottom:12px">';
     html+='<div style="font-size:15px;font-weight:900;color:'+col+'">'+z.name+' ('+z.code+')</div>';
     html+='<div style="font-size:10px;color:var(--tx3)">'+z.desc+'</div></div>';
-    html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px">';
-    html+='<div style="background:var(--sf2);border-radius:var(--rs);padding:8px;text-align:center"><div style="font-size:8px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Capacity</div><div style="font-size:15px;font-weight:800;color:'+col+'">'+fD(z.cap)+'</div></div>';
+    var emptyLocs=z.empty_locs||Math.max(0,Math.round((z.cap-z.occ)/1.2));
+    var occLocs=z.occ_locs||Math.round(z.occ/1.2);
+    var totalLocs=z.total_locs||(emptyLocs+occLocs);
+    html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px">';
+    html+='<div style="background:var(--sf2);border-radius:var(--rs);padding:8px;text-align:center"><div style="font-size:8px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Capacity</div><div style="font-size:15px;font-weight:800;color:'+col+'">'+fD(z.cap)+'</div><div style="font-size:9px;color:var(--tx3)">CBM</div></div>';
     html+='<div style="background:var(--sf2);border-radius:var(--rs);padding:8px;text-align:center"><div style="font-size:8px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Occupied</div><div style="font-size:15px;font-weight:800;color:#ef4444">'+fD(z.occ)+'</div><div style="font-size:9px;color:#ef4444">'+usedPct.toFixed(1)+'%</div></div>';
-    html+='<div style="background:var(--sf2);border-radius:var(--rs);padding:8px;text-align:center"><div style="font-size:8px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Available</div><div style="font-size:15px;font-weight:800;color:#22c55e">'+fD(avail)+'</div></div>';
+    html+='<div style="background:var(--sf2);border-radius:var(--rs);padding:8px;text-align:center"><div style="font-size:8px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Available</div><div style="font-size:15px;font-weight:800;color:#22c55e">'+fD(avail)+'</div><div style="font-size:9px;color:#22c55e">CBM</div></div>';
+    html+='</div>';
+    html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px">';
+    html+='<div style="background:var(--sf2);border-radius:var(--rs);padding:8px;text-align:center"><div style="font-size:8px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Total Locs</div><div style="font-size:15px;font-weight:800;color:'+col+'">'+totalLocs.toLocaleString()+'</div><div style="font-size:9px;color:var(--tx3)">Locations</div></div>';
+    html+='<div style="background:rgba(239,68,68,.08);border-radius:var(--rs);padding:8px;text-align:center;border:1px solid rgba(239,68,68,.15)"><div style="font-size:8px;font-weight:700;color:#ef4444;text-transform:uppercase;margin-bottom:3px">Occupied</div><div style="font-size:15px;font-weight:800;color:#ef4444">'+occLocs.toLocaleString()+'</div><div style="font-size:9px;color:#ef4444">Locations</div></div>';
+    html+='<div style="background:rgba(34,197,94,.08);border-radius:var(--rs);padding:8px;text-align:center;border:1px solid rgba(34,197,94,.15)"><div style="font-size:8px;font-weight:700;color:#22c55e;text-transform:uppercase;margin-bottom:3px">&#9733; Empty</div><div style="font-size:15px;font-weight:800;color:#22c55e">'+emptyLocs.toLocaleString()+'</div><div style="font-size:9px;color:#22c55e">Locations</div></div>';
     html+='</div>';
     html+='<div style="height:8px;border-radius:4px;background:var(--sf3);overflow:hidden;margin-bottom:4px"><div style="height:100%;width:'+Math.min(100,usedPct)+'%;background:linear-gradient(90deg,'+col+','+sc2+');border-radius:4px"></div></div>';
     html+='<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:12px"><span style="color:'+sc2+';font-weight:600">'+usedPct.toFixed(1)+'% Used</span><span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;background:'+sc2+'22;color:'+sc2+'">'+lbl+'</span></div>';
@@ -1012,6 +908,85 @@ function renderTMM3Breakdown(){
   el.innerHTML=html;
 }
 
+function parseTMM3ZoneXL(buf){
+  var wb=XLSX.read(buf,{type:'array'});
+  var ws=wb.Sheets['Data']||wb.Sheets[wb.SheetNames[0]];
+  var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null});
+  var lastRow={};
+  var validZones=['T3R1','T3C1','T3C2','T3C3'];
+  for(var i=1;i<rows.length;i++){
+    var r=rows[i],owner=r[0],stype=r[1],vol=r[2];
+    if(!stype||!vol||typeof vol!=='number'||!owner)continue;
+    if(validZones.indexOf(stype)<0)continue;
+    lastRow[owner+'|'+stype]=vol;
+  }
+  var ownerZoneDist={};
+  Object.entries(lastRow).forEach(function(e){
+    var parts=e[0].split('|'),owner=parts[0],stype=parts[1],vol=e[1];
+    if(!ownerZoneDist[owner])ownerZoneDist[owner]={};
+    ownerZoneDist[owner][stype]=(ownerZoneDist[owner][stype]||0)+vol;
+  });
+  var zVol={},zOwners={};
+  Object.entries(TMM_OCC.TMM3||{}).forEach(function(e){
+    var owner=e[0],tmm3cbm=e[1];
+    var zones=ownerZoneDist[owner]||{'T3R1':1};
+    var zoneSum=Object.values(zones).reduce(function(s,v){return s+v;},0)||1;
+    Object.entries(zones).forEach(function(ze){
+      var stype=ze[0],zvol=ze[1];
+      if(validZones.indexOf(stype)<0)return;
+      var allocated=tmm3cbm*(zvol/zoneSum);
+      zVol[stype]=(zVol[stype]||0)+allocated;
+      if(!zOwners[stype])zOwners[stype]={};
+      zOwners[stype][owner]=(zOwners[stype][owner]||0)+allocated;
+    });
+  });
+  var meta=[
+    {code:'T3R1',name:'C1',desc:'+18C Temp Control',cap:28670.40,col:'#f59e0b',total_locs:23890,occ_locs:13347,empty_locs:10543,cbm_per_loc:1.2},
+    {code:'T3C1',name:'C2',desc:'Frozen',cap:2755.20,col:'#3b82f6',total_locs:2296,occ_locs:532,empty_locs:1764,cbm_per_loc:1.2},
+    {code:'T3C2',name:'C3',desc:'Frozen',cap:2889.60,col:'#3b82f6',total_locs:2410,occ_locs:1546,empty_locs:864,cbm_per_loc:1.2},
+    {code:'T3C3',name:'C4',desc:'Chiller',cap:3192.00,col:'#14b8a6',total_locs:2659,occ_locs:1156,empty_locs:1503,cbm_per_loc:1.2},
+  ];
+  return meta.map(function(z){
+    var occ=Math.round((zVol[z.code]||0)*100)/100;
+    var avail=Math.round(Math.max(0,z.cap-occ)*100)/100;
+    var pct=Math.min(100,Math.round(occ/z.cap*1000)/10);
+    var cpL=z.cbm_per_loc||1.2;
+    // Use SAP-reported locations directly if available, else calculate
+    var occ_locs=z.occ_locs||Math.round(occ/cpL);
+    var empty_locs=z.empty_locs||Math.max(0,(z.total_locs||0)-occ_locs);
+    var owners={};
+    Object.entries(zOwners[z.code]||{}).sort(function(a,b){return b[1]-a[1];})
+      .forEach(function(e){owners[e[0]]=Math.round(e[1]*100)/100;});
+    return Object.assign({},z,{occ:occ,avail:avail,pct:pct,
+      occ_locs:occ_locs,empty_locs:empty_locs,owners:owners});
+  });
+}
+
+function renderKPI(){
+  buildKPI();
+  var data=KPI_DATA;
+  var ts=data.reduce(function(s,d){return s+d.storage;},0);
+  var ti=data.reduce(function(s,d){return s+d.ib;},0);
+  var to=data.reduce(function(s,d){return s+d.ob;},0);
+  var net=Math.round((ti-to)*100)/100;
+  var totalCap=36998.24+11000+37507.2;
+  var cards=[
+    {label:'Total Customers',val:data.length+'',sub:'with storage',col:'#a78bfa',icon:'&#128101;'},
+    {label:'Total Storage',val:fD(ts)+' CBM',sub:'TMM1+TMM2+TMM3',col:'#f59e0b',icon:'&#127981;'},
+    {label:'Total Inbound',val:fD(ti)+' CBM',sub:data.filter(function(d){return d.ib>0;}).length+' active',col:'#22c55e',icon:'&#128229;'},
+    {label:'Total Outbound',val:fD(to)+' CBM',sub:data.filter(function(d){return d.ob>0;}).length+' active',col:'#ef4444',icon:'&#128228;'},
+    {label:'Net Flow',val:(net>=0?'+':'')+fD(net)+' CBM',sub:net>=0?'Net Inbound':'Net Outbound',col:net>=0?'#22c55e':'#ef4444',icon:'&#8644;'},
+    {label:'Utilization',val:Math.round(ts/totalCap*100)+'%',sub:'of total capacity',col:'#3b82f6',icon:'&#128202;'},
+  ];
+  var ce=document.getElementById('kpiCards');
+  if(ce)ce.innerHTML=cards.map(function(c){return '<div style="background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);padding:14px 16px;box-shadow:var(--sh)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:30px;height:30px;border-radius:8px;background:'+c.col+'22;display:flex;align-items:center;justify-content:center;font-size:15px">'+c.icon+'</div><div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase">'+c.label+'</div></div><div style="font-size:20px;font-weight:800;color:'+c.col+'">'+c.val+'</div><div style="font-size:10px;color:var(--tx3);margin-top:2px">'+c.sub+'</div></div>';}).join('');
+  drawKPIHBar('kpiStorageChart',data.slice(0,10),'storage','#a78bfa');
+  drawKPIHBar('kpiInChart',data.slice().sort(function(a,b){return b.ib-a.ib;}).slice(0,10),'ib','#22c55e');
+  drawKPIHBar('kpiOutChart',data.slice().sort(function(a,b){return b.ob-a.ob;}).slice(0,10),'ob','#ef4444');
+  drawNetFlowChart(data.filter(function(d){return d.ib>0||d.ob>0;}).slice(0,15));
+  filterKPI();
+}
+
 function buildKPI(){
   KPI_DATA=[];
   var ibByOwner={},obByOwner={},hasLive=false;
@@ -1040,31 +1015,18 @@ function buildKPI(){
   KPI_DATA.sort(function(a,b){return b.storage-a.storage;});
 }
 
-function renderKPI(){
-  buildKPI();
-  var data=KPI_DATA;
-  var ts=data.reduce(function(s,d){return s+d.storage;},0);
-  var ti=data.reduce(function(s,d){return s+d.ib;},0);
-  var to=data.reduce(function(s,d){return s+d.ob;},0);
-  var net=Math.round((ti-to)*100)/100;
-  var totalCap=36998.24+11000+37507.2;
-  var cards=[
-    {label:'Total Customers',val:data.length+'',sub:'with storage',col:'#a78bfa',icon:'&#128101;'},
-    {label:'Total Storage',val:fD(ts)+' CBM',sub:'TMM1+TMM2+TMM3',col:'#f59e0b',icon:'&#127981;'},
-    {label:'Total Inbound',val:fD(ti)+' CBM',sub:data.filter(function(d){return d.ib>0;}).length+' active',col:'#22c55e',icon:'&#128229;'},
-    {label:'Total Outbound',val:fD(to)+' CBM',sub:data.filter(function(d){return d.ob>0;}).length+' active',col:'#ef4444',icon:'&#128228;'},
-    {label:'Net Flow',val:(net>=0?'+':'')+fD(net)+' CBM',sub:net>=0?'Net Inbound':'Net Outbound',col:net>=0?'#22c55e':'#ef4444',icon:'&#8644;'},
-    {label:'Utilization',val:Math.round(ts/totalCap*100)+'%',sub:'of total capacity',col:'#3b82f6',icon:'&#128202;'},
-  ];
-  var ce=document.getElementById('kpiCards');
-  if(ce)ce.innerHTML=cards.map(function(c){return '<div style="background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);padding:14px 16px;box-shadow:var(--sh)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:30px;height:30px;border-radius:8px;background:'+c.col+'22;display:flex;align-items:center;justify-content:center;font-size:15px">'+c.icon+'</div><div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase">'+c.label+'</div></div><div style="font-size:20px;font-weight:800;color:'+c.col+'">'+c.val+'</div><div style="font-size:10px;color:var(--tx3);margin-top:2px">'+c.sub+'</div></div>';}).join('');
-  drawKPIHBar('kpiStorageChart',data.slice(0,10),'storage','#a78bfa');
-  drawKPIHBar('kpiInChart',data.slice().sort(function(a,b){return b.ib-a.ib;}).slice(0,10),'ib','#22c55e');
-  drawKPIHBar('kpiOutChart',data.slice().sort(function(a,b){return b.ob-a.ob;}).slice(0,10),'ob','#ef4444');
-  drawNetFlowChart(data.filter(function(d){return d.ib>0||d.ob>0;}).slice(0,15));
-  filterKPI();
+function filterKPI(){
+  var search=(document.getElementById('kpiSearch')&&document.getElementById('kpiSearch').value||'').toLowerCase();
+  var sort=document.getElementById('kpiSort')&&document.getElementById('kpiSort').value||'storage';
+  var data=KPI_DATA.filter(function(d){return !search||d.code.toLowerCase().includes(search)||(d.name||'').toLowerCase().includes(search);});
+  data=data.slice().sort(function(a,b){return sort==='inbound'?b.ib-a.ib:sort==='outbound'?b.ob-a.ob:sort==='net'?b.net-a.net:b.storage-a.storage;});
+  var tbody=document.getElementById('kpiTbody');if(!tbody)return;
+  tbody.innerHTML=data.map(function(d,i){
+    var nc=d.net>0?'#22c55e':d.net<0?'#ef4444':'#64748b';
+    var wh=(d.wh||[]).map(function(w){var c=w==='TMM1'?'#3b82f6':w==='TMM2'?'#22c55e':'#f59e0b';return '<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:5px;background:'+c+'22;color:'+c+';margin-right:2px">'+w+'</span>';}).join('');
+    return '<tr><td style="color:var(--tx3);font-size:11px">'+(i+1)+'</td><td><div style="font-weight:700;color:var(--tx)">'+d.code+'</div><div style="font-size:10px;color:var(--tx3)">'+(d.name||'')+'</div><div style="margin-top:2px">'+wh+'</div></td><td style="font-weight:800;color:#a78bfa">'+fD(d.storage)+'</td><td style="color:#3b82f6">'+(d.t1>0?fD(d.t1):'-')+'</td><td style="color:#22c55e">'+(d.t2>0?fD(d.t2):'-')+'</td><td style="color:#f59e0b">'+(d.t3>0?fD(d.t3):'-')+'</td><td style="color:#22c55e;font-weight:600">'+(d.ib>0?fD(d.ib):'-')+'</td><td style="color:#ef4444;font-weight:600">'+(d.ob>0?fD(d.ob):'-')+'</td><td style="font-weight:700;color:'+nc+'">'+(d.net>0?'+':'')+fD(d.net)+'</td><td><span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(167,139,250,.15);color:#a78bfa">'+d.pct+'%</span></td></tr>';
+  }).join('');
 }
-
 function drawKPIHBar(cid,data,field,col){
   var cv=document.getElementById(cid);if(!cv)return;
   var W=Math.max(300,cv.parentElement.clientWidth-20),ROW_H=26,PAD_T=8,PAD_B=8,NAME_W=160,VAL_W=70;
@@ -1104,18 +1066,6 @@ function drawNetFlowChart(data){
   });
 }
 
-function filterKPI(){
-  var search=(document.getElementById('kpiSearch')&&document.getElementById('kpiSearch').value||'').toLowerCase();
-  var sort=document.getElementById('kpiSort')&&document.getElementById('kpiSort').value||'storage';
-  var data=KPI_DATA.filter(function(d){return !search||d.code.toLowerCase().includes(search)||(d.name||'').toLowerCase().includes(search);});
-  data=data.slice().sort(function(a,b){return sort==='inbound'?b.ib-a.ib:sort==='outbound'?b.ob-a.ob:sort==='net'?b.net-a.net:b.storage-a.storage;});
-  var tbody=document.getElementById('kpiTbody');if(!tbody)return;
-  tbody.innerHTML=data.map(function(d,i){
-    var nc=d.net>0?'#22c55e':d.net<0?'#ef4444':'#64748b';
-    var wh=(d.wh||[]).map(function(w){var c=w==='TMM1'?'#3b82f6':w==='TMM2'?'#22c55e':'#f59e0b';return '<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:5px;background:'+c+'22;color:'+c+';margin-right:2px">'+w+'</span>';}).join('');
-    return '<tr><td style="color:var(--tx3);font-size:11px">'+(i+1)+'</td><td><div style="font-weight:700;color:var(--tx)">'+d.code+'</div><div style="font-size:10px;color:var(--tx3)">'+(d.name||'')+'</div><div style="margin-top:2px">'+wh+'</div></td><td style="font-weight:800;color:#a78bfa">'+fD(d.storage)+'</td><td style="color:#3b82f6">'+(d.t1>0?fD(d.t1):'-')+'</td><td style="color:#22c55e">'+(d.t2>0?fD(d.t2):'-')+'</td><td style="color:#f59e0b">'+(d.t3>0?fD(d.t3):'-')+'</td><td style="color:#22c55e;font-weight:600">'+(d.ib>0?fD(d.ib):'-')+'</td><td style="color:#ef4444;font-weight:600">'+(d.ob>0?fD(d.ob):'-')+'</td><td style="font-weight:700;color:'+nc+'">'+(d.net>0?'+':'')+fD(d.net)+'</td><td><span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(167,139,250,.15);color:#a78bfa">'+d.pct+'%</span></td></tr>';
-  }).join('');
-}
 function renderOcc(){
   const cols={'TMM1':'#3b82f6','TMM2':'#22c55e','TMM3':'#f59e0b'};
   const tmms=['TMM1','TMM2','TMM3'];
@@ -1187,8 +1137,6 @@ function renderOcc(){
   });
   // Stacked chart
   drawStacked(cols);
-  renderTMM3Zones();
-  renderTMM3Breakdown();
 }
 
 function drawStacked(cols){
@@ -1500,63 +1448,29 @@ function chkPw(){
   var pwd=(document.getElementById('pwi')||{value:''}).value.trim();
   var err=document.getElementById('pwerr');
   var btn=document.querySelector('#loginPage button');
-  if(!email||!pwd){
-    if(err){err.textContent='Please enter email and password.';err.style.display='block';}
-    return;
-  }
+  if(!email||!pwd){if(err){err.textContent='Enter email and password.';err.style.display='block';}return;}
   if(err)err.style.display='none';
   if(btn){btn.textContent='Signing in...';btn.disabled=true;}
   initSupa();
-  if(!supa){
-    // Supabase not loaded yet — retry after short delay
-    setTimeout(function(){
-      if(btn){btn.textContent='Sign In →';btn.disabled=false;}
-      initSupa();
-      if(!supa){
-        if(err){err.textContent='Connection error. Please refresh and try again.';err.style.display='block';}
-        return;
-      }
-      chkPw();
-    },1500);
-    return;
-  }
-  // Use Supabase auth only — supports ANY user created in Supabase
+  if(!supa){setTimeout(function(){if(btn){btn.textContent='Sign In →';btn.disabled=false;}chkPw();},1500);return;}
   supaSignIn(email,pwd).then(function(res){
     if(btn){btn.textContent='Sign In →';btn.disabled=false;}
     if(res.error||!res.data||!res.data.user){
-      if(err){err.textContent='Wrong email or password. Please try again.';err.style.display='block';}
-      if(document.getElementById('pwi'))document.getElementById('pwi').value='';
-      return;
+      if(err){err.textContent='Wrong email or password.';err.style.display='block';}
+      if(document.getElementById('pwi'))document.getElementById('pwi').value='';return;
     }
     doLogin(res.data.user);
-  }).catch(function(e){
-    if(btn){btn.textContent='Sign In →';btn.disabled=false;}
-    if(err){err.textContent='Connection error: '+e.message;err.style.display='block';}
-  });
+  }).catch(function(e){if(btn){btn.textContent='Sign In →';btn.disabled=false;}if(err){err.textContent='Connection error.';err.style.display='block';}});
 }
-
 function doLogin(user){
   CURRENT_USER=user;
-  // Get session token first
-  if(supa){
-    supa.auth.getSession().then(function(r){
-      if(r&&r.data&&r.data.session)SESSION_TOKEN=r.data.session.access_token;
-      // Show dashboard and load all data from Supabase
-      showDashboard(user);
-    });
-  } else {
-    showDashboard(user);
-  }
-}
-
-function showDashboard(user){
+  if(supa){supa.auth.getSession().then(function(r){if(r&&r.data&&r.data.session)SESSION_TOKEN=r.data.session.access_token;});}
   var lp=document.getElementById('loginPage');if(lp)lp.style.display='none';
   var mc=document.getElementById('mainContent');if(mc)mc.style.display='block';
   if(document.getElementById('puni'))document.getElementById('puni').value='';
   if(document.getElementById('pwi'))document.getElementById('pwi').value='';
   var ub=document.getElementById('userBadge');if(ub){ub.textContent=user.email||'User';ub.style.display='';}
   var lb=document.getElementById('lockBtn');if(lb)lb.style.display='';
-  // Fetch all data from Supabase — no baked data shown
   autoFetch();
 }
 function lockUp(){
@@ -1573,14 +1487,45 @@ function lockUp(){
 function showUnlock(){}function cancelUnlock(){}
 document.addEventListener('DOMContentLoaded',function(){
   initSupa();
-  var lp=document.getElementById('loginPage');
-  var mc=document.getElementById('mainContent');
+  var lp=document.getElementById('loginPage');var mc=document.getElementById('mainContent');
   if(!supa){if(lp)lp.style.display='flex';if(mc)mc.style.display='none';return;}
   supaSession().then(function(s){
     if(s&&s.user){SESSION_TOKEN=s.access_token||null;doLogin(s.user);}
     else{if(lp)lp.style.display='flex';if(mc)mc.style.display='none';}
   });
 });
+
+function parseEmptyLocHTML(text){
+  try{
+    var rows=[];
+    (text.match(/<tr[^>]*>[\s\S]*?<\/tr>/gi)||[]).forEach(function(tr){
+      var cells=[];
+      (tr.match(/<td[^>]*>[\s\S]*?<\/td>/gi)||[]).forEach(function(td){
+        cells.push(td.replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').replace(/&#x2a;/g,'*').trim());
+      });
+      if(cells.length>=5)rows.push(cells);
+    });
+    if(!rows.length)return null;
+    var zd={};
+    rows.forEach(function(r){
+      var lvl=r[0].replace(/\s/g,''),zone=r[1].trim(),ef=r[3].trim(),cnt=parseInt((r[4]||'').replace(/[,\s]/g,''))||0;
+      if(!zone)return;
+      if(!zd[zone])zd[zone]={};
+      if(lvl==='*'&&ef==='X')zd[zone].empty_locs=cnt;
+      else if(lvl==='*'&&ef==='')zd[zone].occ_locs=cnt;
+      else if(lvl==='**')zd[zone].total_locs=cnt;
+    });
+    var ok=['T3R1','T3C1','T3C2','T3C3'].some(function(z){return zd[z]&&zd[z].total_locs>0;});
+    return ok?zd:null;
+  }catch(e){return null;}
+}
+function applyEmptyLocData(zd){
+  if(!zd)return;
+  var zones=window.LIVE_TMM3_ZONES||TMM3_ZONES;
+  if(!zones||!zones.length)return;
+  zones.forEach(function(z){var d=zd[z.code];if(!d)return;if(d.total_locs)z.total_locs=d.total_locs;if(d.occ_locs)z.occ_locs=d.occ_locs;if(d.empty_locs)z.empty_locs=d.empty_locs;});
+  window.LIVE_TMM3_ZONES=zones;
+}
 // PARSE XLSX
 function parseXL(buf){
   const wb=XLSX.read(buf,{type:'array'});
@@ -1611,11 +1556,6 @@ function parseXL(buf){
   return{daily,ownerD};
 }
 function applyParsed(){
-  if((!PIB||!PIB.daily)&&(!POB||!POB.daily)){
-    // No files loaded yet
-    DAILY=[];FILT=[];IB=[];OB=[];IBF=[];OBF=[];
-    return;
-  }
   const ad=new Set([...Object.keys((PIB||{daily:{}}).daily),...Object.keys((POB||{daily:{}}).daily)]);
   const srt=[...ad].sort((a,b)=>{const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];const pa=a.split(' '),pb=b.split(' ');return(m.indexOf(pa[1])*31+parseInt(pa[0]))-(m.indexOf(pb[1])*31+parseInt(pb[0]));});
   DAILY=srt.map(date=>{
@@ -1657,23 +1597,8 @@ function hfile(file,t){
         renderOcc();
       } else {
         const p=parseXL(ev.target.result);
-        if(t==='ib'){PIB=p;
-        // Upload as dated file AND as inbound.xlsx (fallback)
-        var today=new Date();
-        var dd=String(today.getDate()).padStart(2,'0');
-        var mm=String(today.getMonth()+1).padStart(2,'0');
-        var yyyy=today.getFullYear();
-        var dated='inbound_'+yyyy+mm+dd+'.xlsx';
-        supaUpload(dated,file);
-        supaUpload('inbound.xlsx',file);document.getElementById('ibst').textContent='✅ '+file.name;document.getElementById('ibst').style.color='#22c55e';document.getElementById('ibbox').classList.add('loaded');}
-        else{POB=p;
-        var today2=new Date();
-        var dd2=String(today2.getDate()).padStart(2,'0');
-        var mm2=String(today2.getMonth()+1).padStart(2,'0');
-        var yyyy2=today2.getFullYear();
-        var dated2='outbound_'+today2.getFullYear()+mm2+dd2+'.xlsx';
-        supaUpload(dated2,file);
-        supaUpload('outbound.xlsx',file);document.getElementById('obst').textContent='✅ '+file.name;document.getElementById('obst').style.color='#ef4444';document.getElementById('obbox').classList.add('loaded');}
+        if(t==='ib'){PIB=p;document.getElementById('ibst').textContent='✅ '+file.name;document.getElementById('ibst').style.color='#22c55e';document.getElementById('ibbox').classList.add('loaded');}
+        else{POB=p;document.getElementById('obst').textContent='✅ '+file.name;document.getElementById('obst').style.color='#ef4444';document.getElementById('obbox').classList.add('loaded');}
         applyParsed();
         document.querySelectorAll('.fb').forEach((b,i)=>b.classList.toggle('active',i===0));
         renderFlow();owgrid('ib');owtbl('ib');owgrid('ob');owtbl('ob');owbar('ib');owdnt('ib');owbar('ob');owdnt('ob');
@@ -1684,141 +1609,34 @@ function hfile(file,t){
   rd.readAsArrayBuffer(file);
 }
 // AUTO FETCH from GitHub repository files
-
-// ── INCREMENTAL DAILY FILE LOADER ────────────────────────
-async function listSupaFiles(){
-  // List all files in warehouse-data bucket
-  try{
-    var url=SUPA_URL+'/storage/v1/object/list/warehouse-data';
-    var token=SESSION_TOKEN||SUPA_KEY;
-    var res=await fetch(url,{
-      method:'POST',
-      headers:{
-        'Authorization':'Bearer '+token,
-        'Content-Type':'application/json'
-      },
-      body:JSON.stringify({prefix:'',limit:200,offset:0})
-    });
-    if(!res.ok)return[];
-    var data=await res.json();
-    return Array.isArray(data)?data.map(function(f){return f.name;}):[];
-  }catch(e){
-    console.log('listSupaFiles error:',e.message);
-    return[];
-  }
-}
-
-async function fetchDailyFiles(prefix){
-  // prefix = 'inbound' or 'outbound'
-  var files=await listSupaFiles();
-  // Filter daily files: inbound_20260501.xlsx
-  var daily=files.filter(function(f){
-    return f.startsWith(prefix+'_')&&f.endsWith('.xlsx');
-  }).sort(); // sort by date ascending
-  console.log(prefix+' daily files found:',daily.length,daily);
-
-  if(daily.length===0){
-    // Fall back to single file
-    console.log('No daily files — trying '+prefix+'.xlsx');
-    var buf=await supaFetch(prefix+'.xlsx');
-    return buf?[buf]:[];
-  }
-
-  // Fetch all daily files
-  var buffers=[];
-  for(var i=0;i<daily.length;i++){
-    var buf=await supaFetch(daily[i]);
-    if(buf)buffers.push(buf);
-  }
-  return buffers;
-}
-
-function mergeXLBuffers(buffers){
-  // Parse each buffer and merge all rows
-  if(!buffers||buffers.length===0)return null;
-  if(buffers.length===1)return parseXL(buffers[0]);
-
-  var allRows=[];
-  var headers=null;
-  buffers.forEach(function(buf){
-    var wb=XLSX.read(buf,{type:'array'});
-    var ws=wb.Sheets[wb.SheetNames[0]];
-    var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null});
-    if(!headers&&rows.length>0)headers=rows[0];
-    // Skip header row for subsequent files
-    for(var i=1;i<rows.length;i++){
-      allRows.push(rows[i]);
-    }
-  });
-
-  if(!allRows.length)return null;
-
-  // Create merged workbook
-  var wsData=[headers].concat(allRows);
-  var newWb=XLSX.utils.book_new();
-  var newWs=XLSX.utils.aoa_to_sheet(wsData);
-  XLSX.utils.book_append_sheet(newWb,newWs,'Data');
-  var mergedBuf=XLSX.write(newWb,{type:'array',bookType:'xlsx'});
-  return parseXL(mergedBuf.buffer||mergedBuf);
-}
 async function autoFetch(){
   var ovl=document.getElementById('ovl');if(ovl)ovl.classList.add('show');
-  setLoadingMsg('Loading secure data...');
-  var ibOk=false,obOk=false;
 
-  // Load metadata first (owner map, occupancy, zones, daily, KPI)
   try{
     var mb=await supaFetch('warehouse_meta.json');
     if(mb){
-      var td=new TextDecoder();
-      var meta=JSON.parse(td.decode(new Uint8Array(mb)));
-      if(meta.owner_map){Object.assign(OWNER_MAP,meta.owner_map);}
+      var meta=JSON.parse(new TextDecoder().decode(new Uint8Array(mb)));
+      if(meta.owner_map)Object.assign(OWNER_MAP,meta.owner_map);
       if(meta.tmm_occ){TMM_OCC.TMM1=meta.tmm_occ.TMM1;TMM_OCC.TMM2=meta.tmm_occ.TMM2;TMM_OCC.TMM3=meta.tmm_occ.TMM3;}
-      if(meta.tmm3_zones){window.LIVE_TMM3_ZONES=meta.tmm3_zones;}
+      if(meta.tmm3_zones)window.LIVE_TMM3_ZONES=meta.tmm3_zones;
       if(meta.daily_data){DAILY=[...meta.daily_data];FILT=[...DAILY];}
       if(meta.ib_owners){IB=[...meta.ib_owners];IBF=[...IB];}
       if(meta.ob_owners){OB=[...meta.ob_owners];OBF=[...OB];}
-      if(meta.kpi_data){window.KPI_META=meta.kpi_data;}
-      console.log('✅ Metadata loaded from Supabase');
+      if(meta.kpi_data)window.KPI_META=meta.kpi_data;
     }
-  }catch(e){console.log('Meta load error:',e);}
+  }catch(e){}
 
-  // Load incremental daily files or fall back to single file
+  var ibOk=false,obOk=false;
+  try{var b=await supaFetch('inbound.xlsx');if(b){PIB=parseXL(b);if(PIB)ibOk=true;}}catch(e){}
+  try{var b=await supaFetch('outbound.xlsx');if(b){POB=parseXL(b);if(POB)obOk=true;}}catch(e){}
+  try{var b=await supaFetch('occupancy.xlsx');if(b){var oc=parseOccXL(b);if(oc){TMM_OCC.TMM1=oc.TMM1;TMM_OCC.TMM2=oc.TMM2;TMM_OCC.TMM3=oc.TMM3;POCC=oc;}}}catch(e){}
+  try{var b=await supaFetch('tmm3storagetype.xlsx');if(b){var zd=parseTMM3ZoneXL(b);if(zd)window.LIVE_TMM3_ZONES=zd;}}catch(e){}
   try{
-    var ibBufs=await fetchDailyFiles('inbound');
-    if(ibBufs.length>0){
-      PIB=ibBufs.length===1?parseXL(ibBufs[0]):mergeXLBuffers(ibBufs);
-      if(PIB){
-        ibOk=true;
-        var s=document.getElementById('ibst');
-        if(s){s.textContent='inbound loaded ('+ibBufs.length+' files)';s.style.color='#22c55e';}
-        var bx=document.getElementById('ibbox');if(bx)bx.classList.add('loaded');
-      }
-    }
-  }catch(e){console.log('IB load error:',e);}
+    var b=await supaFetch('data.html');
+    if(b){var emptyData=parseEmptyLocHTML(new TextDecoder().decode(new Uint8Array(b)));if(emptyData)applyEmptyLocData(emptyData);}
+  }catch(e){}
 
-  try{
-    var obBufs=await fetchDailyFiles('outbound');
-    if(obBufs.length>0){
-      POB=obBufs.length===1?parseXL(obBufs[0]):mergeXLBuffers(obBufs);
-      if(POB){
-        obOk=true;
-        var s=document.getElementById('obst');
-        if(s){s.textContent='outbound loaded ('+obBufs.length+' files)';s.style.color='#ef4444';}
-        var bx=document.getElementById('obbox');if(bx)bx.classList.add('loaded');
-      }
-    }
-  }catch(e){console.log('OB load error:',e);}
-  try{var b=await supaFetch('occupancy.xlsx');if(b){var oc=parseOccXL(b);if(oc){TMM_OCC.TMM1=oc.TMM1;TMM_OCC.TMM2=oc.TMM2;TMM_OCC.TMM3=oc.TMM3;POCC=oc;var s=document.getElementById('occst');if(s){s.textContent='occupancy.xlsx loaded';s.style.color='#f59e0b';}var bx=document.getElementById('occbox');if(bx)bx.classList.add('loaded');}}}catch(e){}
-  try{var b=await supaFetch('tmm3storagetype.xlsx');if(b){var zd=parseTMM3ZoneXL(b);if(zd){window.LIVE_TMM3_ZONES=zd;var s=document.getElementById('zonest');if(s){s.textContent='tmm3storagetype.xlsx loaded';s.style.color='#f59e0b';}var bx=document.getElementById('zonebox');if(bx)bx.classList.add('loaded');}}}catch(e){}
-  if(ibOk||obOk){
-    applyParsed();
-    document.querySelectorAll('.fb').forEach(function(btn,i){btn.classList.toggle('active',i===0);});
-  } else {
-    // Files not loaded yet — show empty state
-    DAILY=[];FILT=[];IB=[];OB=[];IBF=[];OBF=[];
-    setLoadingMsg('Waiting for data files...');
-  }
+  if(ibOk||obOk){applyParsed();document.querySelectorAll('.fb').forEach(function(btn,i){btn.classList.toggle('active',i===0);});}
   var ts=document.getElementById('tsLabel');if(ts)ts.textContent='Updated: '+now();
   renderFlow();owgrid('ib');owtbl('ib');owgrid('ob');owtbl('ob');owbar('ib');owdnt('ib');owbar('ob');owdnt('ob');
   renderOcc();KPI_DATA=[];
