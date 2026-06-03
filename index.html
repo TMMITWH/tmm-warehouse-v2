@@ -919,7 +919,6 @@ function renderTMM3Zones(){
     var usedPct=Math.min(100,z.pct);
     // Rack locs = cap ÷ 1.2 (physical config) | Active locs from data.html
     var rackLocs=z.total_locs||Math.round(z.cap/1.2);
-    var totalLocs=rackLocs;
     var occLocs=z.occ_locs||(z.occ>0?Math.round(z.occ/1.2):0);
     var emptyLocs=z.empty_locs||Math.max(0,rackLocs-occLocs);
     var locPct=rackLocs>0?Math.round(occLocs/rackLocs*1000)/10:0;
@@ -936,10 +935,8 @@ function renderTMM3Zones(){
     html+='<div class="cc">';
     html+='<div style="border-left:3px solid '+col+';padding-left:10px;margin-bottom:12px">';
     html+='<div style="font-size:15px;font-weight:900;color:'+col+'">'+z.name+' ('+z.code+')</div>';
-    html+='<div style="font-size:10px;color:var(--tx3)">'+z.desc+'</div></div>';
-    var emptyLocs=z.empty_locs||Math.max(0,Math.round((z.cap-z.occ)/1.2));
-    var occLocs=z.occ_locs||Math.round(z.occ/1.2);
-    var totalLocs=z.total_locs||(emptyLocs+occLocs);
+    html+='<div style="font-size:10px;color:var(--tx3)">'+z.desc+' &middot; '+rackLocs.toLocaleString()+' locs @ 1.2 CBM</div></div>';
+    // vars rackLocs/occLocs/emptyLocs already defined at top of loop
     html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px">';
     html+='<div style="background:var(--sf2);border-radius:var(--rs);padding:8px;text-align:center"><div style="font-size:8px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Capacity</div><div style="font-size:15px;font-weight:800;color:'+col+'">'+fD(z.cap)+'</div><div style="font-size:9px;color:var(--tx3)">CBM ('+rackLocs.toLocaleString()+' locs)</div></div>';
     html+='<div style="background:var(--sf2);border-radius:var(--rs);padding:8px;text-align:center"><div style="font-size:8px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Occupied</div><div style="font-size:15px;font-weight:800;color:#ef4444">'+fD(z.occ)+'</div><div style="font-size:9px;color:#ef4444">'+usedPct.toFixed(1)+'%</div></div>';
