@@ -1047,13 +1047,21 @@ function drawTMM3ZoneChart(zones){
 function renderTMM3Breakdown(){
   var el=document.getElementById('tmm3BreakdownSection');if(!el)return;
   var ownerZoneMap={};
-  TMM3_ZONES.forEach(function(z){Object.entries(z.owners||{}).forEach(function(e){if(!ownerZoneMap[e[0]])ownerZoneMap[e[0]]={};ownerZoneMap[e[0]][z.code]=e[1];});});
+  var zoneSource=typeof LIVE_TMM3_ZONES!=='undefined'&&LIVE_TMM3_ZONES?LIVE_TMM3_ZONES:TMM3_ZONES;
+  zoneSource.forEach(function(z){Object.entries(z.owners||{}).forEach(function(e){if(!ownerZoneMap[e[0]])ownerZoneMap[e[0]]={};ownerZoneMap[e[0]][z.code]=e[1];});});
   var tmm3owners=Object.entries(TMM_OCC.TMM3||{}).sort(function(a,b){return b[1]-a[1];});
+  // Use TMM_OCC.TMM3 sum for % share calculation (per owner data)
   var total=tmm3owners.reduce(function(s,e){return s+e[1];},0)||1;
   var html='<div style="background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);overflow:hidden;box-shadow:var(--sh);margin-bottom:14px">';
   html+='<table class="tbl2"><thead><tr><th>#</th><th>Customer</th><th style="color:#f59e0b">Total CBM</th><th style="color:#f59e0b">C1 T3R1</th><th style="color:#3b82f6">C2 T3C1</th><th style="color:#60a5fa">C3 T3C2</th><th style="color:#14b8a6">C4 T3C3</th><th>% Share</th></tr></thead><tbody>';
   tmm3owners.forEach(function(e,i){
-    var code=e[0],vol=e[1],nm=OWNER_MAP[code]||code,pct=(vol/total*100).toFixed(1),oz=ownerZoneMap[code]||{};
+    var code=e[0],vol=e[1],nm=OWNER_MAP[code]||code;
+    // Use TMM_OCC.TMM3 volume as owner total (master source)
+    var oz=ownerZoneMap[code]||{};
+    var ownerZoneTotal=Math.round(((oz.T3R1||0)+(oz.T3C1||0)+(oz.T3C2||0)+(oz.T3C3||0))*10)/10;
+    // Use the higher of the two as display total (handles rounding)
+    var displayVol=Math.round(Math.max(vol,ownerZoneTotal)*10)/10;
+    var pct=(vol/total*100).toFixed(1);
     html+='<tr><td style="color:var(--tx3);font-size:11px">'+(i+1)+'</td><td><div style="font-weight:700;color:var(--tx)">'+code+'</div><div style="font-size:10px;color:var(--tx3)">'+nm+'</div></td>';
     html+='<td style="font-weight:800;color:#f59e0b">'+fD(vol)+'</td>';
     html+='<td style="color:#f59e0b">'+(oz.T3R1?fD(oz.T3R1):'-')+'</td>';
@@ -1062,10 +1070,18 @@ function renderTMM3Breakdown(){
     html+='<td style="color:#14b8a6">'+(oz.T3C3?fD(oz.T3C3):'-')+'</td>';
     html+='<td><span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(245,158,11,.15);color:#f59e0b">'+pct+'%</span></td></tr>';
   });
-  var zones=TMM3_ZONES;
-  html+='<tr class="tot"><td></td><td>TOTAL</td><td style="color:#f59e0b">'+fD(tmm3owners.reduce(function(s,e){return s+e[1];},0))+'</td>';
-  html+='<td style="color:#f59e0b">'+fD(zones[0]?zones[0].occ:0)+'</td><td style="color:#3b82f6">'+fD(zones[1]?zones[1].occ:0)+'</td>';
-  html+='<td style="color:#60a5fa">'+fD(zones[2]?zones[2].occ:0)+'</td><td style="color:#14b8a6">'+fD(zones[3]?zones[3].occ:0)+'</td><td>100%</td></tr>';
+  var zones=typeof LIVE_TMM3_ZONES!=='undefined'&&LIVE_TMM3_ZONES?LIVE_TMM3_ZONES:TMM3_ZONES;
+  // Use zone occ as single source — sum zones for total to avoid rounding mismatch
+  // Total row: use TMM_OCC grand total as master, zones for zone cols
+  var zC1=zoneSource[0]?zoneSource[0].occ:0;
+  var zC2=zoneSource[1]?zoneSource[1].occ:0;
+  var zC3=zoneSource[2]?zoneSource[2].occ:0;
+  var zC4=zoneSource[3]?zoneSource[3].occ:0;
+  // Grand total from occupancy.xlsx (TMM_OCC) — this is the authoritative total
+  var zTotal=Math.round(total*10)/10;
+  html+='<tr class="tot"><td></td><td>TOTAL</td><td style="color:#f59e0b">'+fD(zTotal)+'</td>';
+  html+='<td style="color:#f59e0b">'+fD(zC1)+'</td><td style="color:#3b82f6">'+fD(zC2)+'</td>';
+  html+='<td style="color:#60a5fa">'+fD(zC3)+'</td><td style="color:#14b8a6">'+fD(zC4)+'</td><td>100%</td></tr>';
   html+='</tbody></table></div>';
   el.innerHTML=html;
 }
