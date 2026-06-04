@@ -1806,6 +1806,67 @@ function hfile(file,t){
   rd.readAsArrayBuffer(file);
 }
 // AUTO FETCH from GitHub repository files
+
+// ── Monthly file helpers ──────────────────────────────
+function getMonthlyFiles(){
+  var now=new Date();
+  var y=now.getFullYear();
+  var m=String(now.getMonth()+1).padStart(2,'0');
+  // Previous month
+  var d2=new Date(y, now.getMonth()-1, 1);
+  var py=d2.getFullYear();
+  var pm=String(d2.getMonth()+1).padStart(2,'0');
+  return {
+    ib_current:  'inbound_'+y+'_'+m+'.xlsx',
+    ob_current:  'outbound_'+y+'_'+m+'.xlsx',
+    ib_prev:     'inbound_'+py+'_'+pm+'.xlsx',
+    ob_prev:     'outbound_'+py+'_'+pm+'.xlsx',
+    ib_fallback: 'inbound.xlsx',
+    ob_fallback: 'outbound.xlsx',
+  };
+}
+
+// Merge two parsed XL objects (combine ownerD and daily data)
+function mergeXL(a, b){
+  if(!a) return b;
+  if(!b) return a;
+  var result={ownerD:{},daily:{}};
+
+  // Merge daily (docs is a Set in parseXL)
+  [a,b].forEach(function(src){
+    Object.entries(src.daily||{}).forEach(function(de){
+      var date=de[0], val=de[1];
+      if(!result.daily[date]){
+        result.daily[date]={docs:new Set(),vol:0};
+      }
+      // docs can be Set or Array
+      var docs=val.docs;
+      if(docs instanceof Set){docs.forEach(function(d){result.daily[date].docs.add(d);});}
+      else if(Array.isArray(docs)){docs.forEach(function(d){result.daily[date].docs.add(d);});}
+      result.daily[date].vol+=val.vol||0;
+    });
+  });
+
+  // Merge ownerD
+  [a,b].forEach(function(src){
+    Object.entries(src.ownerD||{}).forEach(function(oe){
+      var owner=oe[0], dates=oe[1];
+      if(!result.ownerD[owner]) result.ownerD[owner]={};
+      Object.entries(dates).forEach(function(de){
+        var date=de[0], val=de[1];
+        if(!result.ownerD[owner][date]){
+          result.ownerD[owner][date]={docs:new Set(),vol:0};
+        }
+        var docs=val.docs;
+        if(docs instanceof Set){docs.forEach(function(d){result.ownerD[owner][date].docs.add(d);});}
+        else if(Array.isArray(docs)){docs.forEach(function(d){result.ownerD[owner][date].docs.add(d);});}
+        result.ownerD[owner][date].vol+=val.vol||0;
+      });
+    });
+  });
+
+  return result;
+}
 async function autoFetch(){
   var ovl=document.getElementById('ovl');if(ovl)ovl.classList.add('show');
 
@@ -1824,8 +1885,64 @@ async function autoFetch(){
   }catch(e){}
 
   var ibOk=false,obOk=false;
-  try{var b=await supaFetch('inbound.xlsx');if(b){PIB=parseXL(b);if(PIB)ibOk=true;}}catch(e){}
-  try{var b=await supaFetch('outbound.xlsx');if(b){POB=parseXL(b);if(POB)obOk=true;}}catch(e){}
+  var mf=getMonthlyFiles();
+
+  // Fetch ALL available monthly inbound files and merge
+  try{
+    var ibBuffers=[];
+    // Try up to 12 months back
+    for(var mi=0;mi<12;mi++){
+      var d=new Date();
+      d.setMonth(d.getMonth()-mi);
+      var fy=d.getFullYear();
+      var fm=String(d.getMonth()+1).padStart(2,'0');
+      var fname='inbound_'+fy+'_'+fm+'.xlsx';
+      var buf=await supaFetch(fname);
+      if(buf){ibBuffers.push(buf);}
+      else{break;} // Stop if a month file not found
+    }
+    // Also try legacy inbound.xlsx as final fallback
+    if(ibBuffers.length===0){
+      var buf=await supaFetch('inbound.xlsx');
+      if(buf)ibBuffers.push(buf);
+    }
+    if(ibBuffers.length>0){
+      // Parse and merge all months
+      var merged=null;
+      ibBuffers.forEach(function(buf){
+        var parsed=parseXL(buf);
+        merged=mergeXL(merged,parsed);
+      });
+      if(merged){PIB=merged;ibOk=true;}
+    }
+  }catch(e){console.log('IB fetch error:',e);}
+
+  // Fetch ALL available monthly outbound files and merge
+  try{
+    var obBuffers=[];
+    for(var mi=0;mi<12;mi++){
+      var d=new Date();
+      d.setMonth(d.getMonth()-mi);
+      var fy=d.getFullYear();
+      var fm=String(d.getMonth()+1).padStart(2,'0');
+      var fname='outbound_'+fy+'_'+fm+'.xlsx';
+      var buf=await supaFetch(fname);
+      if(buf){obBuffers.push(buf);}
+      else{break;}
+    }
+    if(obBuffers.length===0){
+      var buf=await supaFetch('outbound.xlsx');
+      if(buf)obBuffers.push(buf);
+    }
+    if(obBuffers.length>0){
+      var merged=null;
+      obBuffers.forEach(function(buf){
+        var parsed=parseXL(buf);
+        merged=mergeXL(merged,parsed);
+      });
+      if(merged){POB=merged;obOk=true;}
+    }
+  }catch(e){console.log('OB fetch error:',e);}
   try{var b=await supaFetch('occupancy.xlsx');if(b){var oc=parseOccXL(b);if(oc){TMM_OCC.TMM1=oc.TMM1;TMM_OCC.TMM2=oc.TMM2;TMM_OCC.TMM3=oc.TMM3;POCC=oc;}}}catch(e){}
   try{var b=await supaFetch('tmm3storagetype.xlsx');if(b){var zd=parseTMM3ZoneXL(b);if(zd)window.LIVE_TMM3_ZONES=zd;}}catch(e){}
   try{
