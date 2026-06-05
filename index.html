@@ -175,6 +175,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     </div>
     <div class="lbdg"><span class="ldot"></span>Live</div>
     <div class="tspil" id="tsLabel">May 2026</div>
+    <button onclick="manualRefresh()" title="Refresh data"
+      style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:8px;background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.25);cursor:pointer;margin-left:8px">&#128260; Refresh</button>
     <span id="userBadge" style="font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.2);margin-left:8px;display:none"></span>
     <button id="lockBtn" onclick="lockUp()" style="display:none;font-size:11px;font-weight:700;padding:5px 13px;border-radius:8px;background:rgba(239,68,68,.12);color:#ef4444;border:1px solid rgba(239,68,68,.25);cursor:pointer;margin-left:6px">&#128274; Logout</button>
   </div>
@@ -396,8 +398,25 @@ async function supaSignIn(e,p){initSupa();if(!supa)return{error:true};return sup
 async function supaSignOut(){initSupa();if(supa)await supa.auth.signOut();}
 async function supaSession(){initSupa();if(!supa)return null;const r=await supa.auth.getSession();return r.data.session;}
 async function supaFetch(fn){
-  var url=SUPA_URL+'/storage/v1/object/warehouse-data/'+fn;
-  try{var token=SESSION_TOKEN||SUPA_KEY;var res=await fetch(url,{headers:{'Authorization':'Bearer '+token}});if(!res.ok)res=await fetch(url,{headers:{'Authorization':'Bearer '+SUPA_KEY}});if(!res.ok)return null;return res.arrayBuffer();}catch(e){return null;}
+  // Cache bust with timestamp so browser always fetches fresh file
+  var ts=new Date().getTime();
+  var url=SUPA_URL+'/storage/v1/object/warehouse-data/'+fn+'?t='+ts;
+  try{
+    var token=SESSION_TOKEN||SUPA_KEY;
+    var headers={
+      'Authorization':'Bearer '+token,
+      'Cache-Control':'no-cache, no-store, must-revalidate',
+      'Pragma':'no-cache'
+    };
+    var res=await fetch(url,{headers:headers,cache:'no-store'});
+    if(!res.ok){
+      // Retry with anon key
+      headers['Authorization']='Bearer '+SUPA_KEY;
+      res=await fetch(url,{headers:headers,cache:'no-store'});
+    }
+    if(!res.ok)return null;
+    return res.arrayBuffer();
+  }catch(e){console.log('supaFetch error:',fn,e);return null;}
 }
 
 const DAILY_DATA=[];
@@ -1659,6 +1678,13 @@ function doLogin(user){
   var ub=document.getElementById('userBadge');if(ub){ub.textContent=user.email||'User';ub.style.display='';}
   var lb=document.getElementById('lockBtn');if(lb)lb.style.display='';
   autoFetch();
+}
+function manualRefresh(){
+  var btn=document.querySelector('[onclick="manualRefresh()"]');
+  if(btn){btn.innerHTML='&#9203; Loading...';btn.disabled=true;}
+  autoFetch().then(function(){
+    if(btn){btn.innerHTML='&#128260; Refresh';btn.disabled=false;}
+  });
 }
 function lockUp(){
   supaSignOut().then(function(){
