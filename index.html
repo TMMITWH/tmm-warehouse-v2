@@ -177,6 +177,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="tspil" id="tsLabel">May 2026</div>
     <button onclick="manualRefresh()" title="Refresh data"
       style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:8px;background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.25);cursor:pointer;margin-left:8px">&#128260; Refresh</button>
+    <button onclick="downloadPDF()" title="Download PDF Report"
+      style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:8px;background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.25);cursor:pointer;margin-left:6px">&#128196; PDF</button>
     <span id="userBadge" style="font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.2);margin-left:8px;display:none"></span>
     <button id="lockBtn" onclick="lockUp()" style="display:none;font-size:11px;font-weight:700;padding:5px 13px;border-radius:8px;background:rgba(239,68,68,.12);color:#ef4444;border:1px solid rgba(239,68,68,.25);cursor:pointer;margin-left:6px">&#128274; Logout</button>
   </div>
@@ -390,6 +392,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 <input type="file" id="occin" accept=".xlsx,.xls" style="display:none">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>const SUPA_URL='https://gccbdujmfxkqpkzocliq.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjY2JkdWptZnhrcXBrem9jbGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2OTczMTEsImV4cCI6MjA5NTI3MzMxMX0.cosJ4LVExjDqV0bZZFF3ceqMNtlyUstz6-gNn6jvb9k';
 let supa=null;let SESSION_TOKEN=null;let CURRENT_USER=null;
@@ -1679,6 +1684,162 @@ function doLogin(user){
   var lb=document.getElementById('lockBtn');if(lb)lb.style.display='';
   autoFetch();
 }
+
+// ── PDF DOWNLOAD ─────────────────────────────────────
+function downloadPDF(){
+  var btn=document.querySelector('[onclick="downloadPDF()"]');
+  if(btn){btn.innerHTML='&#9203; Generating...';btn.disabled=true;}
+
+  // Get clean tab name
+  var activeTab=document.querySelector('.ntab.active');
+  var rawTab=activeTab?activeTab.textContent.trim():'Dashboard';
+  var tabName=rawTab.replace(/[^\x20-\x7E]/g,'').replace(/\s+/g,' ').trim();
+  var tabMap={'Daily Flow':'Daily Flow','Inbound Owners':'Inbound Analysis',
+    'Outbound Owners':'Outbound Analysis','TMM Occupancy':'TMM Occupancy','Customer KPI':'Customer KPI'};
+  Object.keys(tabMap).forEach(function(k){if(tabName.indexOf(k)>=0)tabName=tabMap[k];});
+
+  var now2=new Date();
+  var dateStr=now2.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  var timeStr=now2.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+
+  var activePanel=document.querySelector('.panel.active')||document.getElementById('mainContent');
+
+  // ── Switch to white theme ──
+  var root=document.documentElement;
+  var origVars={};
+  var whiteVars={
+    '--bg':'#ffffff','--sf':'#f8fafc','--sf2':'#f1f5f9','--sf3':'#e2e8f0',
+    '--bd':'#cbd5e1','--bd2':'#94a3b8',
+    '--tx':'#0f172a','--tx2':'#334155','--tx3':'#64748b',
+    '--sh':'0 1px 3px rgba(0,0,0,.1)'
+  };
+  Object.keys(whiteVars).forEach(function(v){
+    origVars[v]=root.style.getPropertyValue(v)||getComputedStyle(root).getPropertyValue(v);
+    root.style.setProperty(v,whiteVars[v]);
+  });
+  var topbar=document.querySelector('.topbar');
+  if(topbar)topbar.style.display='none';
+
+  setTimeout(function(){
+    html2canvas(activePanel,{
+      scale:2,
+      useCORS:true,
+      allowTaint:true,
+      backgroundColor:'#ffffff',
+      logging:false,
+      width:activePanel.scrollWidth,
+      height:activePanel.scrollHeight,
+      windowWidth:document.body.scrollWidth,
+      windowHeight:activePanel.scrollHeight,
+    }).then(function(canvas){
+
+      // ── Restore dark theme immediately ──
+      Object.keys(origVars).forEach(function(v){root.style.setProperty(v,origVars[v]);});
+      if(topbar)topbar.style.display='';
+
+      var {jsPDF}=window.jspdf;
+
+      // A4 landscape in mm
+      var pageW=297;
+      var pageH=210;
+      var headerH=14;  // mm
+      var footerH=10;  // mm
+      var marginL=8;
+      var marginR=8;
+      var contentW=pageW-marginL-marginR;
+      var contentH=pageH-headerH-footerH; // usable height per page in mm
+      var startY=headerH+2;
+
+      // Canvas dimensions in px
+      var canvasPxW=canvas.width;
+      var canvasPxH=canvas.height;
+
+      // Scale: how many px per mm
+      var pxPerMM=canvasPxW/contentW;
+
+      // How many px fit in one page height
+      var pxPerPage=Math.floor(contentH*pxPerMM);
+
+      // Total pages needed
+      var totalPages=Math.ceil(canvasPxH/pxPerPage);
+
+      var pdf=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+
+      function addHeader(pgNum){
+        pdf.setFillColor(30,64,175);
+        pdf.rect(0,0,pageW,headerH,'F');
+        pdf.setTextColor(255,255,255);
+        pdf.setFontSize(11);
+        pdf.setFont('helvetica','bold');
+        pdf.text('TMM Warehouse Dashboard',marginL,9);
+        pdf.setFont('helvetica','normal');
+        pdf.setFontSize(8);
+        var hdr=tabName+' | '+dateStr+' '+timeStr;
+        if(totalPages>1)hdr+=' | Page '+pgNum+'/'+totalPages;
+        pdf.text(hdr,pageW-marginR,9,{align:'right'});
+      }
+
+      function addFooter(){
+        pdf.setFillColor(241,245,249);
+        pdf.rect(0,pageH-footerH,pageW,footerH,'F');
+        pdf.setDrawColor(203,213,225);
+        pdf.line(0,pageH-footerH,pageW,pageH-footerH);
+        pdf.setTextColor(100,116,139);
+        pdf.setFontSize(7);
+        pdf.setFont('helvetica','normal');
+        pdf.text(
+          'TMM Cold Storage | 3PL Warehouse Management | Confidential | '+dateStr+' '+timeStr,
+          pageW/2,pageH-3,{align:'center'}
+        );
+      }
+
+      for(var pg=0;pg<totalPages;pg++){
+        if(pg>0)pdf.addPage();
+
+        addHeader(pg+1);
+        addFooter();
+
+        // Exact slice of canvas for this page — no overlap
+        var srcY=pg*pxPerPage;
+        var slicePxH=Math.min(pxPerPage, canvasPxH-srcY);
+        if(slicePxH<=0)break;
+
+        // Create precise slice canvas
+        var slice=document.createElement('canvas');
+        slice.width=canvasPxW;
+        slice.height=slicePxH;
+        var ctx=slice.getContext('2d');
+        ctx.fillStyle='#ffffff';
+        ctx.fillRect(0,0,slice.width,slice.height);
+        // Draw ONLY the exact slice — srcY offset, no bleed
+        ctx.drawImage(
+          canvas,
+          0,srcY,          // source x,y
+          canvasPxW,slicePxH,  // source w,h
+          0,0,             // dest x,y
+          canvasPxW,slicePxH   // dest w,h
+        );
+
+        var imgData=slice.toDataURL('image/jpeg',0.95);
+        // Height in mm for this slice (may be less than contentH on last page)
+        var sliceH_mm=(slicePxH/pxPerMM);
+        pdf.addImage(imgData,'JPEG',marginL,startY,contentW,sliceH_mm);
+      }
+
+      var fileName='TMM_'+tabName.replace(/[^a-zA-Z0-9]/g,'_')+'_'+dateStr.replace(/ /g,'_')+'.pdf';
+      pdf.save(fileName);
+      if(btn){btn.innerHTML='&#128196; PDF';btn.disabled=false;}
+
+    }).catch(function(e){
+      Object.keys(origVars).forEach(function(v){root.style.setProperty(v,origVars[v]);});
+      if(topbar)topbar.style.display='';
+      console.log('PDF error:',e);
+      alert('PDF generation failed. Please try again.');
+      if(btn){btn.innerHTML='&#128196; PDF';btn.disabled=false;}
+    });
+  },350);
+}
+
 function manualRefresh(){
   var btn=document.querySelector('[onclick="manualRefresh()"]');
   if(btn){btn.innerHTML='&#9203; Loading...';btn.disabled=true;}
