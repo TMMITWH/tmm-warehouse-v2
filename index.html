@@ -817,19 +817,19 @@ function renderTMM3Zones(){
   var totalCap=zones.reduce(function(s,z){return s+z.cap;},0);
   var totalAvail=Math.max(0,totalCap-totalOcc);
   var totalPct=Math.round(totalOcc/totalCap*100);
-  var html='<div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:var(--r);padding:16px 20px;margin-bottom:14px">';
-  html+='<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px">';
-  html+='<div><div style="font-size:14px;font-weight:800;color:#f59e0b">TMM3 Total &#8212; All Zones</div>';
-  html+='<div style="font-size:10px;color:var(--tx3)">C1+C2+C3+C4 &middot; 31,256 locations</div></div>';
-  var sc=totalLocPct>=90?'#ef4444':totalLocPct>=70?'#f59e0b':'#22c55e';
-  html+='<span style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:'+sc+'22;color:'+sc+'">';
-  html+=totalLocPct+'% Locs Occupied &nbsp;|&nbsp; '+totalPct+'% CBM Used</span>';
-  html+='</div>';
-  // Use actual SAP location data from zones
+  // Compute location-based stats BEFORE using them below (fixes undefined% bug)
   var totalLocs=zones.reduce(function(s,z){return s+(z.total_locs||Math.round(z.cap/1.2));},0);
   var totalOccLocs=zones.reduce(function(s,z){return s+(z.occ_locs||Math.round(z.occ/1.2));},0);
   var totalEmptyLocs=zones.reduce(function(s,z){return s+(z.empty_locs||Math.max(0,(z.total_locs||Math.round(z.cap/1.2))-(z.occ_locs||Math.round(z.occ/1.2))));},0);
   var totalLocPct=totalLocs>0?Math.round(totalOccLocs/totalLocs*100):0;
+  var html='<div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:var(--r);padding:16px 20px;margin-bottom:14px">';
+  html+='<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px">';
+  html+='<div><div style="font-size:14px;font-weight:800;color:#f59e0b">TMM3 Total &#8212; All Zones</div>';
+  html+='<div style="font-size:10px;color:var(--tx3)">C1+C2+C3+C4 &middot; '+totalLocs.toLocaleString()+' locations</div></div>';
+  var sc=totalLocPct>=90?'#ef4444':totalLocPct>=70?'#f59e0b':'#22c55e';
+  html+='<span style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:'+sc+'22;color:'+sc+'">';
+  html+=totalLocPct+'% Locs Occupied &nbsp;|&nbsp; '+totalPct+'% CBM Used</span>';
+  html+='</div>';
   html+='<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:10px">';
   html+='<div style="background:rgba(0,0,0,.2);border-radius:var(--rs);padding:10px;text-align:center"><div style="font-size:8px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Capacity CBM</div><div style="font-size:16px;font-weight:800;color:#f59e0b">'+fD(totalCap)+'</div></div>';
   html+='<div style="background:rgba(0,0,0,.2);border-radius:var(--rs);padding:10px;text-align:center"><div style="font-size:8px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:3px">Occupied CBM</div><div style="font-size:16px;font-weight:800;color:#ef4444">'+fD(totalOcc)+'</div><div style="font-size:9px;color:#ef4444">'+totalPct+'%</div></div>';
@@ -2131,7 +2131,12 @@ async function autoFetch(){
     }
   }catch(e){console.log('OB fetch error:',e);}
   try{var b=await supaFetch('occupancy.xlsx');if(b){var oc=parseOccXL(b);if(oc){TMM_OCC.TMM1=oc.TMM1;TMM_OCC.TMM2=oc.TMM2;TMM_OCC.TMM3=oc.TMM3;POCC=oc;}}}catch(e){}
-  try{var b=await supaFetch('tmm3storagetype.xlsx');if(b){var zd=parseTMM3ZoneXL(b);if(zd)window.LIVE_TMM3_ZONES=zd;}}catch(e){}
+  try{
+    // Try correct spelling first, then fallback to common typo variant
+    var b=await supaFetch('tmm3storagetype.xlsx');
+    if(!b)b=await supaFetch('tmm3stotagetype.xlsx');
+    if(b){var zd=parseTMM3ZoneXL(b);if(zd)window.LIVE_TMM3_ZONES=zd;}
+  }catch(e){console.log('TMM3 zone fetch error:',e);}
   try{
     var b=await supaFetch('data.html');
     if(b){var emptyData=parseEmptyLocHTML(new TextDecoder().decode(new Uint8Array(b)));if(emptyData)applyEmptyLocData(emptyData);}
