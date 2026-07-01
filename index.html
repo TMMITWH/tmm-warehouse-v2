@@ -2077,7 +2077,8 @@ async function autoFetch(){
   // Fetch ALL available monthly inbound files and merge
   try{
     var ibBuffers=[];
-    // Try up to 12 months back
+    // Try up to 12 months back — skip missing months, stop after 2 consecutive misses
+    var ibMissed=0;
     for(var mi=0;mi<12;mi++){
       var d=new Date();
       d.setMonth(d.getMonth()-mi);
@@ -2085,8 +2086,8 @@ async function autoFetch(){
       var fm=String(d.getMonth()+1).padStart(2,'0');
       var fname='inbound_'+fy+'_'+fm+'.xlsx';
       var buf=await supaFetch(fname);
-      if(buf){ibBuffers.push(buf);}
-      else{break;} // Stop if a month file not found
+      if(buf){ibBuffers.push(buf);ibMissed=0;}
+      else{ibMissed++;if(ibMissed>=2)break;} // stop after 2 consecutive misses
     }
     // Also try legacy inbound.xlsx as final fallback
     if(ibBuffers.length===0){
@@ -2107,6 +2108,7 @@ async function autoFetch(){
   // Fetch ALL available monthly outbound files and merge
   try{
     var obBuffers=[];
+    var obMissed=0;
     for(var mi=0;mi<12;mi++){
       var d=new Date();
       d.setMonth(d.getMonth()-mi);
@@ -2114,8 +2116,8 @@ async function autoFetch(){
       var fm=String(d.getMonth()+1).padStart(2,'0');
       var fname='outbound_'+fy+'_'+fm+'.xlsx';
       var buf=await supaFetch(fname);
-      if(buf){obBuffers.push(buf);}
-      else{break;}
+      if(buf){obBuffers.push(buf);obMissed=0;}
+      else{obMissed++;if(obMissed>=2)break;}
     }
     if(obBuffers.length===0){
       var buf=await supaFetch('outbound.xlsx');
