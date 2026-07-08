@@ -1682,6 +1682,12 @@ function doLogin(user){
   if(document.getElementById('pwi'))document.getElementById('pwi').value='';
   var ub=document.getElementById('userBadge');if(ub){ub.textContent=user.email||'User';ub.style.display='';}
   var lb=document.getElementById('lockBtn');if(lb)lb.style.display='';
+  // Show loading overlay immediately — hide only after autoFetch completes
+  var ovl=document.getElementById('ovl');
+  if(ovl){
+    ovl.classList.add('show');
+    setLoadingMsg('Loading data from Supabase...');
+  }
   autoFetch();
 }
 
@@ -2068,6 +2074,13 @@ async function autoFetch(){
       if(meta.ib_owners){IB=[...meta.ib_owners];IBF=[...IB];}
       if(meta.ob_owners){OB=[...meta.ob_owners];OBF=[...OB];}
       if(meta.kpi_data)window.KPI_META=meta.kpi_data;
+      // Render immediately with meta data — don't wait for xlsx files
+      if(DAILY.length>0){
+        setLoadingMsg('Updating with latest data...');
+        renderFlow();
+        owgrid('ib');owtbl('ib');owgrid('ob');owtbl('ob');
+        owbar('ib');owdnt('ib');owbar('ob');owdnt('ob');
+      }
     }
   }catch(e){}
 
@@ -2148,7 +2161,9 @@ async function autoFetch(){
   var ts=document.getElementById('tsLabel');if(ts)ts.textContent='Updated: '+now();
   renderFlow();owgrid('ib');owtbl('ib');owgrid('ob');owtbl('ob');owbar('ib');owdnt('ib');owbar('ob');owdnt('ob');
   renderOcc();KPI_DATA=[];
-  if(ovl)ovl.classList.remove('show');
+  // Always hide overlay — even if data is empty
+  var ovl2=document.getElementById('ovl');
+  if(ovl2)ovl2.classList.remove('show');
 }
 
 function setLoadingMsg(msg){
