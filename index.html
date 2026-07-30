@@ -669,14 +669,16 @@ function owtbl(t){
 
 // TMM OCCUPANCY
 function renderCapacity(){
-  const tmms=['TMM1','TMM2','TMM3'];
-  const cols={'TMM1':'#3b82f6','TMM2':'#22c55e','TMM3':'#f59e0b'};
+  var hasTMM6=Object.keys(TMM_OCC.TMM6||{}).length>0;
+  var tmms=hasTMM6?['TMM1','TMM2','TMM3','TMM6']:['TMM1','TMM2','TMM3'];
+  var tmmLabels={'TMM1':'TMM1 Warehouse','TMM2':'TMM2 Warehouse','TMM3':'TMM3 Warehouse','TMM6':'Other Warehouse'};
+  const cols={'TMM1':'#3b82f6','TMM2':'#22c55e','TMM3':'#f59e0b','TMM6':'#a78bfa'};
   const el=document.getElementById('capacitySection');
   if(!el)return;
 
   let html='';
   tmms.forEach(tmm=>{
-    const cap=WH_CAPACITY[tmm];
+    const cap=WH_CAPACITY[tmm]||{total:Math.max(1,Object.values(TMM_OCC[tmm]||{}).reduce((s,v)=>s+v,0)),sites:[]};
     const occ=Object.values(TMM_OCC[tmm]||{}).reduce((s,v)=>s+v,0);
     const avail=Math.max(0,cap.total-occ);
     const usedPct=Math.min(100,Math.round(occ/cap.total*100));
@@ -699,8 +701,8 @@ function renderCapacity(){
       <!-- Header -->
       <div style="background:${col}22;border-bottom:2px solid ${col};padding:14px 18px;display:flex;align-items:center;justify-content:space-between">
         <div>
-          <div style="font-size:16px;font-weight:800;color:${col}">${tmm} Warehouse</div>
-          <div style="font-size:11px;color:var(--tx3);margin-top:2px">Total Capacity: ${fD(cap.total)} CBM</div>
+          <div style="font-size:16px;font-weight:800;color:${col}">${tmmLabels[tmm]||tmm}</div>
+          <div style="font-size:11px;color:var(--tx3);margin-top:2px">${tmm==="TMM6"?"Current Stock: "+fD(occ)+" CBM":"Total Capacity: "+fD(cap.total)+" CBM"}</div>
         </div>
         <div style="text-align:right">
           <div style="font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;background:${statusColor}22;color:${statusColor};border:1px solid ${statusColor}44">${statusLabel}</div>
@@ -727,7 +729,7 @@ function renderCapacity(){
         </div>
       </div>
 
-      <!-- Progress Bar -->
+      ${tmm!=="TMM6"?`      <!-- Progress Bar -->
       <div style="padding:14px 18px;border-bottom:1px solid var(--bd)">
         <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--tx3);margin-bottom:6px">
           <span>Occupancy Level</span>
@@ -742,12 +744,15 @@ function renderCapacity(){
           <span style="color:${statusColor};font-weight:600">Occupied: ${fD(occ)} CBM</span>
           <span style="color:#22c55e;font-weight:600">Available: ${fD(avail)} CBM</span>
         </div>
-      </div>
+`:"" }      </div>
 
-      <!-- Site Breakdown -->
+      <!-- Site or Customer Breakdown -->
       <div style="padding:12px 18px">
-        <div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Site Breakdown</div>
-        ${sitesHtml}
+        ${tmm==="TMM6"?`<div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Customer Breakdown</div>
+        ${Object.entries(TMM_OCC.TMM6||{}).sort((a,b)=>b[1]-a[1]).map(([c,v])=>
+          '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--bd)"><span style="font-size:11px;color:var(--tx3)">'+(OWNER_MAP[c]||c)+'</span><span style="font-size:11px;font-weight:700;color:#a78bfa">'+fD(v)+' CBM</span></div>'
+        ).join('')}`:`<div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Site Breakdown</div>
+        ${sitesHtml}`}
       </div>
     </div>`;
   });
@@ -1637,19 +1642,20 @@ function parseOccXL(buf){
   const tmm1Idx=headers.findIndex(h=>h==='TMM1');
   const tmm2Idx=headers.findIndex(h=>h==='TMM2');
   const tmm3Idx=headers.findIndex(h=>h==='TMM3');
+  const tmm6Idx=headers.findIndex(h=>h==='TMM6');
   const codeIdx=0,nameIdx=1;
-  const occ={TMM1:{},TMM2:{},TMM3:{}};
+  const occ={TMM1:{},TMM2:{},TMM3:{},TMM6:{}};
   for(let i=hRow+1;i<rows.length;i++){
     const r=rows[i];
     if(!r||!r[codeIdx])continue;
     const code=String(r[codeIdx]).trim();
     const name=String(r[nameIdx]||'').trim();
     if(!code||code===''||code==='Total')continue;
-    // Update owner map if new name found
     if(name&&!OWNER_MAP[code])OWNER_MAP[code]=name;
     if(tmm1Idx>=0&&r[tmm1Idx]&&parseFloat(r[tmm1Idx])>0)occ.TMM1[code]=Math.round(parseFloat(r[tmm1Idx])*100)/100;
     if(tmm2Idx>=0&&r[tmm2Idx]&&parseFloat(r[tmm2Idx])>0)occ.TMM2[code]=Math.round(parseFloat(r[tmm2Idx])*100)/100;
     if(tmm3Idx>=0&&r[tmm3Idx]&&parseFloat(r[tmm3Idx])>0)occ.TMM3[code]=Math.round(parseFloat(r[tmm3Idx])*100)/100;
+    if(tmm6Idx>=0&&r[tmm6Idx]&&parseFloat(r[tmm6Idx])>0)occ.TMM6[code]=Math.round(parseFloat(r[tmm6Idx])*100)/100;
   }
   return occ;
 }
@@ -2068,7 +2074,7 @@ async function autoFetch(){
     if(mb){
       var meta=JSON.parse(new TextDecoder().decode(new Uint8Array(mb)));
       if(meta.owner_map)Object.assign(OWNER_MAP,meta.owner_map);
-      if(meta.tmm_occ){TMM_OCC.TMM1=meta.tmm_occ.TMM1;TMM_OCC.TMM2=meta.tmm_occ.TMM2;TMM_OCC.TMM3=meta.tmm_occ.TMM3;}
+      if(meta.tmm_occ){TMM_OCC.TMM1=meta.tmm_occ.TMM1;TMM_OCC.TMM2=meta.tmm_occ.TMM2;TMM_OCC.TMM3=meta.tmm_occ.TMM3;TMM_OCC.TMM6=meta.tmm_occ.TMM6||{};}
       if(meta.tmm3_zones)window.LIVE_TMM3_ZONES=meta.tmm3_zones;
       if(meta.daily_data){DAILY=[...meta.daily_data];FILT=[...DAILY];}
       if(meta.ib_owners){IB=[...meta.ib_owners];IBF=[...IB];}
@@ -2145,7 +2151,7 @@ async function autoFetch(){
       if(merged){POB=merged;obOk=true;}
     }
   }catch(e){console.log('OB fetch error:',e);}
-  try{var b=await supaFetch('occupancy.xlsx');if(b){var oc=parseOccXL(b);if(oc){TMM_OCC.TMM1=oc.TMM1;TMM_OCC.TMM2=oc.TMM2;TMM_OCC.TMM3=oc.TMM3;POCC=oc;}}}catch(e){}
+  try{var b=await supaFetch('occupancy.xlsx');if(b){var oc=parseOccXL(b);if(oc){TMM_OCC.TMM1=oc.TMM1;TMM_OCC.TMM2=oc.TMM2;TMM_OCC.TMM3=oc.TMM3;TMM_OCC.TMM6=oc.TMM6||{};POCC=oc;}}}catch(e){}
   try{
     // Try correct spelling first, then fallback to common typo variant
     var b=await supaFetch('tmm3storagetype.xlsx');
