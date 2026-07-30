@@ -759,8 +759,8 @@ function renderCapacity(){
 
   el.innerHTML=html;
 
-  // Also update capacity summary bar chart
-  drawCapacityChart(tmms,cols);
+  // Chart only shows warehouses with fixed capacity (exclude TMM6)
+  drawCapacityChart(tmms.filter(function(t){return WH_CAPACITY[t];}),cols);
 }
 
 function drawCapacityChart(tmms,cols){
@@ -778,6 +778,7 @@ function drawCapacityChart(tmms,cols){
 
   tmms.forEach((tmm,i)=>{
     const cap=WH_CAPACITY[tmm];
+    if(!cap)return; // Skip warehouses without fixed capacity (e.g. TMM6)
     const occ=Object.values(TMM_OCC[tmm]||{}).reduce((s,v)=>s+v,0);
     const avail=Math.max(0,cap.total-occ);
     const usedPct=Math.min(100,occ/cap.total);
