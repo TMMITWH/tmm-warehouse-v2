@@ -2030,38 +2030,40 @@ function getMonthlyFiles(){
 function mergeXL(a, b){
   if(!a) return b;
   if(!b) return a;
+  // a = newer months (loaded first), b = older month.
+  // For overlapping boundary dates (e.g. 01 Jun in both May & Jun files),
+  // the NEWER file's data wins — skip that date from the older file entirely.
   var result={ownerD:{},daily:{}};
 
-  // Merge daily (docs is a Set in parseXL)
-  [a,b].forEach(function(src){
-    Object.entries(src.daily||{}).forEach(function(de){
-      var date=de[0], val=de[1];
-      if(!result.daily[date]){
-        result.daily[date]={docs:new Set(),vol:0};
-      }
-      // docs can be Set or Array
-      var docs=val.docs;
-      if(docs instanceof Set){docs.forEach(function(d){result.daily[date].docs.add(d);});}
-      else if(Array.isArray(docs)){docs.forEach(function(d){result.daily[date].docs.add(d);});}
-      result.daily[date].vol+=val.vol||0;
+  // Copy a (newer) as-is
+  Object.entries(a.daily||{}).forEach(function(de){
+    var docs=new Set();
+    (de[1].docs instanceof Set?Array.from(de[1].docs):(de[1].docs||[])).forEach(function(x){docs.add(x);});
+    result.daily[de[0]]={docs:docs,vol:de[1].vol||0};
+  });
+  Object.entries(a.ownerD||{}).forEach(function(oe){
+    result.ownerD[oe[0]]={};
+    Object.entries(oe[1]).forEach(function(de){
+      var docs=new Set();
+      (de[1].docs instanceof Set?Array.from(de[1].docs):(de[1].docs||[])).forEach(function(x){docs.add(x);});
+      result.ownerD[oe[0]][de[0]]={docs:docs,vol:de[1].vol||0};
     });
   });
 
-  // Merge ownerD
-  [a,b].forEach(function(src){
-    Object.entries(src.ownerD||{}).forEach(function(oe){
-      var owner=oe[0], dates=oe[1];
-      if(!result.ownerD[owner]) result.ownerD[owner]={};
-      Object.entries(dates).forEach(function(de){
-        var date=de[0], val=de[1];
-        if(!result.ownerD[owner][date]){
-          result.ownerD[owner][date]={docs:new Set(),vol:0};
-        }
-        var docs=val.docs;
-        if(docs instanceof Set){docs.forEach(function(d){result.ownerD[owner][date].docs.add(d);});}
-        else if(Array.isArray(docs)){docs.forEach(function(d){result.ownerD[owner][date].docs.add(d);});}
-        result.ownerD[owner][date].vol+=val.vol||0;
-      });
+  // Add b (older) ONLY for dates not already present (later-file-wins dedup)
+  Object.entries(b.daily||{}).forEach(function(de){
+    if(result.daily[de[0]])return; // date already from newer file — skip
+    var docs=new Set();
+    (de[1].docs instanceof Set?Array.from(de[1].docs):(de[1].docs||[])).forEach(function(x){docs.add(x);});
+    result.daily[de[0]]={docs:docs,vol:de[1].vol||0};
+  });
+  Object.entries(b.ownerD||{}).forEach(function(oe){
+    if(!result.ownerD[oe[0]])result.ownerD[oe[0]]={};
+    Object.entries(oe[1]).forEach(function(de){
+      if(result.ownerD[oe[0]][de[0]])return; // owner+date already from newer file
+      var docs=new Set();
+      (de[1].docs instanceof Set?Array.from(de[1].docs):(de[1].docs||[])).forEach(function(x){docs.add(x);});
+      result.ownerD[oe[0]][de[0]]={docs:docs,vol:de[1].vol||0};
     });
   });
 
@@ -2101,6 +2103,7 @@ async function autoFetch(){
     var ibMissed=0;
     for(var mi=0;mi<12;mi++){
       var d=new Date();
+      d.setDate(1); // Avoid month rollover on 29/30/31st
       d.setMonth(d.getMonth()-mi);
       var fy=d.getFullYear();
       var fm=String(d.getMonth()+1).padStart(2,'0');
@@ -2131,6 +2134,7 @@ async function autoFetch(){
     var obMissed=0;
     for(var mi=0;mi<12;mi++){
       var d=new Date();
+      d.setDate(1); // Avoid month rollover on 29/30/31st
       d.setMonth(d.getMonth()-mi);
       var fy=d.getFullYear();
       var fm=String(d.getMonth()+1).padStart(2,'0');
