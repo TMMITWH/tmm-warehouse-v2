@@ -1946,7 +1946,7 @@ function parseXL(buf){
       if(pO&&pDoc===ds){
         if(!ownerD[pO])ownerD[pO]={};
         if(!ownerD[pO][key])ownerD[pO][key]={docs:new Set(),vol:0};
-        ownerD[pO][key].docs.add(ds);ownerD[pO][key].vol+=pVol;
+        ownerD[pO][key].docs.add(ds);ownerD[pO][key].vol+=vol; // use doc SUBTOTAL, not last detail row
       }
     }
   }
@@ -2057,10 +2057,14 @@ function mergeXL(a, b){
     (de[1].docs instanceof Set?Array.from(de[1].docs):(de[1].docs||[])).forEach(function(x){docs.add(x);});
     result.daily[de[0]]={docs:docs,vol:de[1].vol||0};
   });
+  // Dates fully covered by the newer file — skip these entirely from older ownerD
+  var aDates={};
+  Object.keys(a.daily||{}).forEach(function(k){aDates[k]=1;});
   Object.entries(b.ownerD||{}).forEach(function(oe){
     if(!result.ownerD[oe[0]])result.ownerD[oe[0]]={};
     Object.entries(oe[1]).forEach(function(de){
-      if(result.ownerD[oe[0]][de[0]])return; // owner+date already from newer file
+      if(aDates[de[0]])return; // whole DATE already from newer file — skip (match daily dedup)
+      if(result.ownerD[oe[0]][de[0]])return;
       var docs=new Set();
       (de[1].docs instanceof Set?Array.from(de[1].docs):(de[1].docs||[])).forEach(function(x){docs.add(x);});
       result.ownerD[oe[0]][de[0]]={docs:docs,vol:de[1].vol||0};
