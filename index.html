@@ -1937,7 +1937,10 @@ function parseXL(buf){
     let dt=date;
     if(typeof dt==='number')dt=new Date(Math.round((dt-25569)*86400000));
     if(!(dt instanceof Date)||isNaN(dt))continue;
-    const key=dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}).replace(/ /,' ');
+    // Locale-independent 3-letter month key. en-GB toLocaleDateString returns
+    // "Sept" (4 letters) for September, which breaks sorting and the month filter.
+    const MON3=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const key=String(dt.getDate()).padStart(2,'0')+' '+MON3[dt.getMonth()];
     const ds=String(doc);
     if(owner&&String(owner).trim()!==''){pO=String(owner).trim();pDoc=ds;pDate=key;pVol=vol;}
     else{
@@ -1952,9 +1955,10 @@ function parseXL(buf){
   }
   return{daily,ownerD};
 }
+function normMon(d){return typeof d==='string'?d.replace(/\bSept\b/,'Sep'):d;}
 function applyParsed(){
   const ad=new Set([...Object.keys((PIB||{daily:{}}).daily),...Object.keys((POB||{daily:{}}).daily)]);
-  const srt=[...ad].sort((a,b)=>{const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];const pa=a.split(' '),pb=b.split(' ');return(m.indexOf(pa[1])*31+parseInt(pa[0]))-(m.indexOf(pb[1])*31+parseInt(pb[0]));});
+  const srt=[...ad].map(normMon).sort((a,b)=>{const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];const pa=a.split(' '),pb=b.split(' ');return(m.indexOf(pa[1])*31+parseInt(pa[0]))-(m.indexOf(pb[1])*31+parseInt(pb[0]));});
   DAILY=srt.map(date=>{
     const ib=(PIB||{daily:{}}).daily[date]||{docs:new Set(),vol:0};
     const ob=(POB||{daily:{}}).daily[date]||{docs:new Set(),vol:0};
@@ -2083,7 +2087,7 @@ async function autoFetch(){
       if(meta.owner_map)Object.assign(OWNER_MAP,meta.owner_map);
       if(meta.tmm_occ){TMM_OCC.TMM1=meta.tmm_occ.TMM1;TMM_OCC.TMM2=meta.tmm_occ.TMM2;TMM_OCC.TMM3=meta.tmm_occ.TMM3;TMM_OCC.TMM6=meta.tmm_occ.TMM6||{};}
       if(meta.tmm3_zones)window.LIVE_TMM3_ZONES=meta.tmm3_zones;
-      if(meta.daily_data){DAILY=[...meta.daily_data];FILT=[...DAILY];}
+      if(meta.daily_data){DAILY=meta.daily_data.map(function(x){return Object.assign({},x,{date:normMon(x.date)});});FILT=[...DAILY];}
       if(meta.ib_owners){IB=[...meta.ib_owners];IBF=[...IB];}
       if(meta.ob_owners){OB=[...meta.ob_owners];OBF=[...OB];}
       if(meta.kpi_data)window.KPI_META=meta.kpi_data;
